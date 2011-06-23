@@ -1,0 +1,16 @@
+- id: 3
+  devices:
+    in:
+      reader: 1
+      lock: 2
+    out:
+      reader: 3
+      lock: 4
+- id: 4
+  devices:
+    in:
+      reader: 1
+      lock: 2
+    out:
+      reader: 3
+      lock: 4

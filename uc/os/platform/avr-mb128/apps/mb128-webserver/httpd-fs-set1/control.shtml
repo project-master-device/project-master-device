@@ -1,0 +1,8 @@
+%!: /header.html
+<center>
+<applet code="com.miklobit.contiki.mb128.MB128ctrl" archive="mb128ctrl.jar"  width="500" height="200">
+  <param name="PORT" value="100">
+   Java must be enabled in your web browser for this to work.
+</applet>
+</center>
+%!: /footer.html

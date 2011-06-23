@@ -1,0 +1,6 @@
+
+mb128-testprocess_src = test-process.c leds.c
+#mb128-testprocess_dsc = test-process-dsc.c
+
+#Tell platform main routine canconverter is present, for parameter display at startup
+CFLAGS             += -DTESTPROCESS

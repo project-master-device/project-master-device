@@ -1,0 +1,14 @@
+#SYSTEM += service.c
+#LIBS += malloc.c malloc_compact.c realloc.c 
+#DEV += cc2420.c cs8900a.c
+#NET += uipbuf.c hc-service.c
+
+ifdef CONTIKI_BACKYARD_NET_PPP
+  include $(CONTIKI_BACKYARD)/core/net/ppp/Makefile.ppp
+endif
+
+#CTK_ = ctk-conio-service.c ctk-draw.c ctk-graphic.c ctk-mouse.c ctk-term-in.c ctk-term-out.c ctk-term.c ctk-termserial.c ctk-termtelnet.c ctk-vncserver-service.c 
+#CTK += $(CTK_)
+#CTKVNC += $(CTK_)
+
+#CONTIKIDIRS += ${addprefix $(CONTIKI_BACKYARD)/core/,lib net net/ppp sys ctk .}

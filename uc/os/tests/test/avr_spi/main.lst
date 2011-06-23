@@ -1,0 +1,98 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	spi_init
+  20               	spi_init:
+  21               	.LFB6:
+  22               	.LM1:
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25               	.LM2:
+  26 0000 BF9A      		sbi 55-32,7
+  27               	.LM3:
+  28 0002 BD9A      		sbi 55-32,5
+  29               	.LM4:
+  30 0004 BB9A      		sbi 55-32,3
+  31               	.LM5:
+  32 0006 BE98      		cbi 55-32,6
+  33               	.LM6:
+  34 0008 80E5      		ldi r24,lo8(80)
+  35 000a 8DB9      		out 45-32,r24
+  36               	/* epilogue start */
+  37               	.LM7:
+  38 000c 0895      		ret
+  39               	.LFE6:
+  41               	.global	main
+  43               	main:
+  44               	.LFB7:
+  45               	.LM8:
+  46               	/* prologue: function */
+  47               	/* frame size = 0 */
+  48               	.LBB14:
+  49               	.LBB15:
+  50               	.LM9:
+  51 000e BF9A      		sbi 55-32,7
+  52               	.LM10:
+  53 0010 BD9A      		sbi 55-32,5
+  54               	.LM11:
+  55 0012 BB9A      		sbi 55-32,3
+  56               	.LM12:
+  57 0014 BE98      		cbi 55-32,6
+  58               	.LM13:
+  59 0016 80E5      		ldi r24,lo8(80)
+  60 0018 8DB9      		out 45-32,r24
+  61 001a 88EE      		ldi r24,lo8(1000)
+  62 001c 93E0      		ldi r25,hi8(1000)
+  63               	.LVL0:
+  64               	.LBE15:
+  65               	.LBE14:
+  66               	.LBB16:
+  67               	.LBB17:
+  68               	.LBB18:
+  69               	.LBB19:
+  70               	.LM14:
+  71 001e 20E9      		ldi r18,lo8(400)
+  72 0020 31E0      		ldi r19,hi8(400)
+  73               	.LVL1:
+  74               	.L8:
+  75 0022 F901      		movw r30,r18
+  76               	/* #APP */
+  77               	 ;  105 "/usr/lib/gcc/avr/4.3.4/../../../avr/include/util/delay_basic.h" 1
+  78 0024 3197      		1: sbiw r30,1
+  79 0026 01F4      		brne 1b
+  80               	 ;  0 "" 2
+  81               	/* #NOAPP */
+  82               	.LBE19:
+  83               	.LBE18:
+  84               	.LM15:
+  85 0028 0197      		sbiw r24,1
+  86               	.LM16:
+  87 002a 01F4      		brne .L8
+  88 002c 88EE      		ldi r24,lo8(1000)
+  89 002e 93E0      		ldi r25,hi8(1000)
+  90 0030 00C0      		rjmp .L8
+  91               	.LBE17:
+  92               	.LBE16:
+  93               	.LFE7:
+ 127               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/ccR3N0eq.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccR3N0eq.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccR3N0eq.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccR3N0eq.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccR3N0eq.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccR3N0eq.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccR3N0eq.s:20     .text:00000000 spi_init
+     /tmp/ccR3N0eq.s:43     .text:0000000e main
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

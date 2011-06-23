@@ -1,0 +1,4 @@
+%!: /header.html
+<h1>System time</h1><br>
+%! datetime
+%! file-stats .

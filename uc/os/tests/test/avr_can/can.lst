@@ -1,0 +1,303 @@
+   1               		.file	"can.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  16               	.Ltext0:
+  17               	.global	can_init
+  19               	can_init:
+  20               	.LFB0:
+  21               	.LM1:
+  22               	.LVL0:
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25               	/* stack size = 0 */
+  26               	.L__stack_usage = 0
+  27               	.LM2:
+  28 0000 0E94 0000 		call mcp2515_init
+  29               	.LVL1:
+  30               	.LM3:
+  31 0004 91E0      		ldi r25,lo8(1)
+  32 0006 8823      		tst r24
+  33 0008 01F4      		brne .L2
+  34 000a 90E0      		ldi r25,lo8(0)
+  35               	.L2:
+  36               	.LM4:
+  37 000c 892F      		mov r24,r25
+  38               	.LVL2:
+  39               	/* epilogue start */
+  40 000e 0895      		ret
+  41               	.LFE0:
+  43               	.global	can_initMessageStruct
+  45               	can_initMessageStruct:
+  46               	.LFB1:
+  47               	.LM5:
+  48               	.LVL3:
+  49               	/* prologue: function */
+  50               	/* frame size = 0 */
+  51               	/* stack size = 0 */
+  52               	.L__stack_usage = 0
+  53               	.LM6:
+  54 0010 FC01      		movw r30,r24
+  55 0012 80E1      		ldi r24,lo8(16)
+  56               	.LVL4:
+  57 0014 DF01      		movw r26,r30
+  58 0016 1D92      		st X+,__zero_reg__
+  59 0018 8A95      	        dec r24
+  60 001a 01F4      		brne .-6
+  61               	/* epilogue start */
+  62               	.LM7:
+  63 001c 0895      		ret
+  64               	.LFE1:
+  66               	.global	can_sendMessage
+  68               	can_sendMessage:
+  69               	.LFB2:
+  70               	.LM8:
+  71               	.LVL5:
+  72 001e BF92      		push r11
+  73 0020 CF92      		push r12
+  74 0022 DF92      		push r13
+  75 0024 EF92      		push r14
+  76 0026 FF92      		push r15
+  77 0028 0F93      		push r16
+  78 002a 1F93      		push r17
+  79 002c DF93      		push r29
+  80 002e CF93      		push r28
+  81 0030 0F92      		push __tmp_reg__
+  82 0032 CDB7      		in r28,__SP_L__
+  83 0034 DEB7      		in r29,__SP_H__
+  84               	/* prologue: function */
+  85               	/* frame size = 1 */
+  86               	/* stack size = 10 */
+  87               	.L__stack_usage = 10
+  88 0036 6C01      		movw r12,r24
+  89               	.LVL6:
+  90               	.LM9:
+  91 0038 0E94 0000 		call timebase_actTime
+  92               	.LVL7:
+  93 003c 7C01      		movw r14,r24
+  94               	.LVL8:
+  95               	.LM10:
+  96 003e 8E01      		movw r16,r28
+  97 0040 0F5F      		subi r16,lo8(-(1))
+  98 0042 1F4F      		sbci r17,hi8(-(1))
+  99               	.LVL9:
+ 100               	.L7:
+ 101 0044 C801      		movw r24,r16
+ 102 0046 0E94 0000 		call mcp2515_getNextFreeTXBuf
+ 103 004a B82E      		mov r11,r24
+ 104               	.LVL10:
+ 105               	.LM11:
+ 106 004c C701      		movw r24,r14
+ 107               	.LVL11:
+ 108 004e 0E94 0000 		call timebase_passedTimeMS
+ 109 0052 21E0      		ldi r18,lo8(1)
+ 110 0054 893C      		cpi r24,201
+ 111 0056 9105      		cpc r25,__zero_reg__
+ 112 0058 00F4      		brsh .L5
+ 113 005a 20E0      		ldi r18,lo8(0)
+ 114               	.L5:
+ 115               	.LVL12:
+ 116               	.LM12:
+ 117 005c 8B2D      		mov r24,r11
+ 118 005e 8230      		cpi r24,lo8(2)
+ 119 0060 01F4      		brne .L6
+ 120               	.LM13:
+ 121 0062 2223      		tst r18
+ 122 0064 01F0      		breq .L7
+ 123 0066 00C0      		rjmp .L8
+ 124               	.L6:
+ 125               	.LM14:
+ 126 0068 2223      		tst r18
+ 127 006a 01F4      		brne .L9
+ 128               	.LVL13:
+ 129               	.LM15:
+ 130 006c 8981      		ldd r24,Y+1
+ 131 006e B601      		movw r22,r12
+ 132 0070 0E94 0000 		call mcp2515_write_canMsg
+ 133               	.LVL14:
+ 134               	.LM16:
+ 135 0074 8981      		ldd r24,Y+1
+ 136 0076 0E94 0000 		call mcp2515_start_transmit
+ 137               	.LM17:
+ 138 007a 80E0      		ldi r24,lo8(0)
+ 139 007c 00C0      		rjmp .L8
+ 140               	.LVL15:
+ 141               	.L9:
+ 142               	.LM18:
+ 143 007e 82E0      		ldi r24,lo8(2)
+ 144               	.LVL16:
+ 145               	.L8:
+ 146               	/* epilogue start */
+ 147               	.LM19:
+ 148 0080 0F90      		pop __tmp_reg__
+ 149 0082 CF91      		pop r28
+ 150 0084 DF91      		pop r29
+ 151 0086 1F91      		pop r17
+ 152 0088 0F91      		pop r16
+ 153 008a FF90      		pop r15
+ 154 008c EF90      		pop r14
+ 155               	.LVL17:
+ 156 008e DF90      		pop r13
+ 157 0090 CF90      		pop r12
+ 158               	.LVL18:
+ 159 0092 BF90      		pop r11
+ 160               	.LVL19:
+ 161 0094 0895      		ret
+ 162               	.LFE2:
+ 164               	.global	can_readMessage
+ 166               	can_readMessage:
+ 167               	.LFB3:
+ 168               	.LM20:
+ 169               	.LVL20:
+ 170 0096 DF93      		push r29
+ 171 0098 CF93      		push r28
+ 172 009a 00D0      		rcall .
+ 173 009c CDB7      		in r28,__SP_L__
+ 174 009e DEB7      		in r29,__SP_H__
+ 175               	/* prologue: function */
+ 176               	/* frame size = 2 */
+ 177               	/* stack size = 4 */
+ 178               	.L__stack_usage = 4
+ 179 00a0 BC01      		movw r22,r24
+ 180               	.LM21:
+ 181 00a2 8983      		std Y+1,r24
+ 182 00a4 7A83      		std Y+2,r23
+ 183 00a6 0E94 0000 		call mcp2515_readStatus
+ 184               	.LVL21:
+ 185               	.LM22:
+ 186 00aa 6981      		ldd r22,Y+1
+ 187 00ac 7A81      		ldd r23,Y+2
+ 188 00ae 80FF      		sbrs r24,0
+ 189 00b0 00C0      		rjmp .L12
+ 190               	.LM23:
+ 191 00b2 81E6      		ldi r24,lo8(97)
+ 192               	.LVL22:
+ 193 00b4 0E94 0000 		call mcp2515_read_canMsg
+ 194               	.LM24:
+ 195 00b8 8CE2      		ldi r24,lo8(44)
+ 196 00ba 61E0      		ldi r22,lo8(1)
+ 197 00bc 00C0      		rjmp .L15
+ 198               	.LVL23:
+ 199               	.L12:
+ 200               	.LM25:
+ 201 00be 81FF      		sbrs r24,1
+ 202 00c0 00C0      		rjmp .L14
+ 203               	.LM26:
+ 204 00c2 81E7      		ldi r24,lo8(113)
+ 205               	.LVL24:
+ 206 00c4 0E94 0000 		call mcp2515_read_canMsg
+ 207               	.LM27:
+ 208 00c8 8CE2      		ldi r24,lo8(44)
+ 209 00ca 62E0      		ldi r22,lo8(2)
+ 210               	.L15:
+ 211 00cc 40E0      		ldi r20,lo8(0)
+ 212 00ce 0E94 0000 		call mcp2515_modifyRegister
+ 213               	.LVL25:
+ 214               	.LM28:
+ 215 00d2 80E0      		ldi r24,lo8(0)
+ 216 00d4 00C0      		rjmp .L13
+ 217               	.LVL26:
+ 218               	.L14:
+ 219               	.LM29:
+ 220 00d6 84E0      		ldi r24,lo8(4)
+ 221               	.LVL27:
+ 222               	.L13:
+ 223               	/* epilogue start */
+ 224               	.LM30:
+ 225 00d8 0F90      		pop __tmp_reg__
+ 226 00da 0F90      		pop __tmp_reg__
+ 227 00dc CF91      		pop r28
+ 228 00de DF91      		pop r29
+ 229 00e0 0895      		ret
+ 230               	.LFE3:
+ 232               	.global	can_checkReceive
+ 234               	can_checkReceive:
+ 235               	.LFB4:
+ 236               	.LM31:
+ 237               	/* prologue: function */
+ 238               	/* frame size = 0 */
+ 239               	/* stack size = 0 */
+ 240               	.L__stack_usage = 0
+ 241               	.LM32:
+ 242 00e2 0E94 0000 		call mcp2515_readStatus
+ 243               	.LVL28:
+ 244               	.LM33:
+ 245 00e6 90E0      		ldi r25,lo8(0)
+ 246 00e8 8370      		andi r24,lo8(3)
+ 247 00ea 9070      		andi r25,hi8(3)
+ 248               	.LVL29:
+ 249 00ec 0097      		sbiw r24,0
+ 250 00ee 01F0      		breq .L18
+ 251               	.LM34:
+ 252 00f0 83E0      		ldi r24,lo8(3)
+ 253 00f2 0895      		ret
+ 254               	.L18:
+ 255               	.LM35:
+ 256 00f4 84E0      		ldi r24,lo8(4)
+ 257               	.LM36:
+ 258 00f6 0895      		ret
+ 259               	.LFE4:
+ 261               	.global	can_checkError
+ 263               	can_checkError:
+ 264               	.LFB5:
+ 265               	.LM37:
+ 266               	/* prologue: function */
+ 267               	/* frame size = 0 */
+ 268               	/* stack size = 0 */
+ 269               	.L__stack_usage = 0
+ 270               	.LM38:
+ 271 00f8 8DE2      		ldi r24,lo8(45)
+ 272 00fa 0E94 0000 		call mcp2515_readRegister
+ 273               	.LVL30:
+ 274               	.LM39:
+ 275 00fe 887F      		andi r24,lo8(-8)
+ 276               	.LVL31:
+ 277 0100 01F0      		breq .L21
+ 278               	.LM40:
+ 279 0102 85E0      		ldi r24,lo8(5)
+ 280 0104 0895      		ret
+ 281               	.L21:
+ 282               	.LM41:
+ 283 0106 80E0      		ldi r24,lo8(0)
+ 284               	.LM42:
+ 285 0108 0895      		ret
+ 286               	.LFE5:
+ 288               	.global	gCANAutoProcess
+ 289               		.data
+ 292               	gCANAutoProcess:
+ 293 0000 01        		.byte	1
+ 294               		.comm gMilliSecTick,2,1
+ 359               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 can.c
+     /tmp/cc7rOOCK.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/cc7rOOCK.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/cc7rOOCK.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/cc7rOOCK.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc7rOOCK.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc7rOOCK.s:19     .text:0000000000000000 can_init
+     /tmp/cc7rOOCK.s:45     .text:0000000000000010 can_initMessageStruct
+     /tmp/cc7rOOCK.s:68     .text:000000000000001e can_sendMessage
+     /tmp/cc7rOOCK.s:166    .text:0000000000000096 can_readMessage
+     /tmp/cc7rOOCK.s:234    .text:00000000000000e2 can_checkReceive
+     /tmp/cc7rOOCK.s:263    .text:00000000000000f8 can_checkError
+     /tmp/cc7rOOCK.s:292    .data:0000000000000000 gCANAutoProcess
+                            *COM*:0000000000000002 gMilliSecTick
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+mcp2515_init
+timebase_actTime
+mcp2515_getNextFreeTXBuf
+timebase_passedTimeMS
+mcp2515_write_canMsg
+mcp2515_start_transmit
+mcp2515_readStatus
+mcp2515_read_canMsg
+mcp2515_modifyRegister
+mcp2515_readRegister

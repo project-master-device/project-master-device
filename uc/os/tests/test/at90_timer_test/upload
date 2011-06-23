@@ -1,0 +1,7 @@
+#!/bin/sh
+cd ../build
+make
+cd ..
+utils/convert_bin build/at90_timer_test/at90_timer_test
+
+sudo utils/upload hex/at90_timer_test /dev/`dmesg | grep 'FTDI.*ttyUSB' | tail -1 | cut -d ' ' -f 12` at90can

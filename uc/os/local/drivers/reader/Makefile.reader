@@ -1,0 +1,2 @@
+LIBS += reader.c
+CONTIKIDIRS += $(CONTIKI_LOCAL_DRIVERS)/reader

@@ -1,0 +1,49 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'serialport'
+
+if ARGV.size < 3
+    STDERR.print <<EOF
+    Usage: #{$0} executable_file serial_port device [other_options]
+EOF
+    exit(1)
+end
+
+devices = {'v2' => {:atmel => 'm162', :programmer => 'duemilanove', :other => ''}, 'arduino' => {:atmel => 'm168', :programmer => 'arduino', :other => '-b19200'}, 'at90can' => {:atmel => 'c128', :programmer => 'duemilanove', :other => ''}}
+
+fhex = ARGV[0] + ".hex"
+serial_port = ARGV[1]
+device = ARGV[2]
+other_options = ARGV[3]
+lfuse = ARGV[0] + ".lfuse"
+hfuse = ARGV[0] + ".hfuse"
+efuse = ARGV[0] + ".efuse"
+
+atmel = devices[device][:atmel]
+programmer = devices[device][:programmer]
+other = devices[device][:other]
+
+# no timeout, trash
+Thread.new do
+    sp = SerialPort.new(serial_port, 9600)
+    sp.dtr = 0
+    sleep 0.1
+    sp.dtr = 1
+    sp.close
+end
+
+#`avrdude -v -c #{programmer} -p #{atmel} -P #{serial_port} -U lfuse:w:0xff:m #{other} #{other_options}`
+#`avrdude -v -c #{programmer} -p #{atmel} -P #{serial_port} -U lfuse:r:tmp:h #{other} #{other_options}`
+
+exec = "avrdude -v -c #{programmer} -p #{atmel} -P #{serial_port} -U flash:w:#{fhex}:i #{other} #{other_options}"
+
+
+#`avrdude -v -c #{programmer} -p #{atmel} -P #{serial_port} -U lfuse:w:#{lfuse}:r #{other} #{other_options}`
+#`avrdude -v -c #{programmer} -p #{atmel} -P #{serial_port} -U hfuse:w:#{hfuse}:r #{other} #{other_options}`
+#`avrdude -v -c #{programmer} -p #{atmel} -P #{serial_port} -U efuse:w:#{efuse}:r #{other} #{other_options}`
+
+puts exec + "\n"
+
+`#{exec}`
+

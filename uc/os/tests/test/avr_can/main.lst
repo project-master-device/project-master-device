@@ -1,0 +1,75 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  16               	.Ltext0:
+  17               	.global	main
+  19               	main:
+  20               	.LFB12:
+  21               	.LM1:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	/* stack size = 0 */
+  25               	.L__stack_usage = 0
+  26               	.LBB14:
+  27               	.LBB15:
+  28               	.LM2:
+  29 0000 0E94 0000 		call spi_init
+  30 0004 88E8      		ldi r24,lo8(5000)
+  31 0006 93E1      		ldi r25,hi8(5000)
+  32               	.LBE15:
+  33               	.LBE14:
+  34               	.LBB16:
+  35               	.LBB17:
+  36               	.LBB18:
+  37               	.LBB19:
+  38               	.LM3:
+  39 0008 20E9      		ldi r18,lo8(400)
+  40 000a 31E0      		ldi r19,hi8(400)
+  41               	.L6:
+  42               	.LVL0:
+  43 000c F901      		movw r30,r18
+  44               	/* #APP */
+  45               	 ;  105 "/usr/lib/gcc/avr/4.5.2/../../../../avr/include/util/delay_basic.h" 1
+  46 000e 3197      		1: sbiw r30,1
+  47 0010 01F4      		brne 1b
+  48               	 ;  0 "" 2
+  49               	.LVL1:
+  50               	/* #NOAPP */
+  51 0012 0197      		sbiw r24,1
+  52               	.LBE19:
+  53               	.LBE18:
+  54               	.LM4:
+  55 0014 01F4      		brne .L6
+  56 0016 88E8      		ldi r24,lo8(5000)
+  57 0018 93E1      		ldi r25,hi8(5000)
+  58 001a 00C0      		rjmp .L6
+  59               	.LBE17:
+  60               	.LBE16:
+  61               	.LFE12:
+  63               	.global	send_errors
+  64               	.global	send_errors
+  65               		.section .bss
+  68               	send_errors:
+  69 0000 0000      		.skip 2,0
+  70               		.comm gMilliSecTick,2,1
+  95               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+     /tmp/ccKlSH4F.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccKlSH4F.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccKlSH4F.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccKlSH4F.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccKlSH4F.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccKlSH4F.s:19     .text:0000000000000000 main
+     /tmp/ccKlSH4F.s:68     .bss:0000000000000000 send_errors
+                            *COM*:0000000000000002 gMilliSecTick
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+spi_init

@@ -1,0 +1,444 @@
+   1               		.file	"main.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	main
+  20               	main:
+  21               	.LFB17:
+  22               	.LM1:
+  23 0000 3F92      		push r3
+  24 0002 4F92      		push r4
+  25 0004 5F92      		push r5
+  26 0006 6F92      		push r6
+  27 0008 7F92      		push r7
+  28 000a 8F92      		push r8
+  29 000c 9F92      		push r9
+  30 000e AF92      		push r10
+  31 0010 BF92      		push r11
+  32 0012 CF92      		push r12
+  33 0014 DF92      		push r13
+  34 0016 EF92      		push r14
+  35 0018 FF92      		push r15
+  36 001a 0F93      		push r16
+  37 001c 1F93      		push r17
+  38 001e DF93      		push r29
+  39 0020 CF93      		push r28
+  40 0022 CDB7      		in r28,__SP_L__
+  41 0024 DEB7      		in r29,__SP_H__
+  42 0026 6097      		sbiw r28,16
+  43 0028 0FB6      		in __tmp_reg__,__SREG__
+  44 002a F894      		cli
+  45 002c DEBF      		out __SP_H__,r29
+  46 002e 0FBE      		out __SREG__,__tmp_reg__
+  47 0030 CDBF      		out __SP_L__,r28
+  48               	/* prologue: function */
+  49               	/* frame size = 16 */
+  50               	.LBB104:
+  51               	.LBB105:
+  52               	.LM2:
+  53 0032 8AB1      		in r24,42-32
+  54 0034 8461      		ori r24,lo8(20)
+  55 0036 8AB9      		out 42-32,r24
+  56               	.LBB106:
+  57               	.LBB107:
+  58               	.LM3:
+  59 0038 5A98      		cbi 43-32,2
+  60               	.LBE107:
+  61               	.LBE106:
+  62               	.LBB108:
+  63               	.LBB109:
+  64               	.LM4:
+  65 003a 5C98      		cbi 43-32,4
+  66               	.LBE109:
+  67               	.LBE108:
+  68               	.LM5:
+  69 003c 0E94 0000 		call spi_init
+  70               	.LBB110:
+  71               	.LM6:
+  72 0040 82E0      		ldi r24,lo8(2)
+  73 0042 0E94 0000 		call can_init
+  74               	.LBB111:
+  75               	.LM7:
+  76 0046 8823      		tst r24
+  77 0048 01F0      		breq .L2
+  78 004a 20E3      		ldi r18,lo8(30000)
+  79 004c 35E7      		ldi r19,hi8(30000)
+  80               	.LVL0:
+  81               	.LBB117:
+  82               	.LBB118:
+  83               	.LM8:
+  84 004e 64E0      		ldi r22,lo8(4)
+  85               	.LBE118:
+  86               	.LBE117:
+  87               	.LBB113:
+  88               	.LBB114:
+  89               	.LBB115:
+  90               	.LBB116:
+  91               	.LM9:
+  92 0050 40E9      		ldi r20,lo8(400)
+  93 0052 51E0      		ldi r21,hi8(400)
+  94 0054 00C0      		rjmp .L26
+  95               	.LVL1:
+  96               	.L4:
+  97 0056 CA01      		movw r24,r20
+  98               	/* #APP */
+  99               	 ;  105 "/usr/lib/gcc/avr/4.3.4/../../../avr/include/util/delay_basic.h" 1
+ 100 0058 0197      		1: sbiw r24,1
+ 101 005a 01F4      		brne 1b
+ 102               	 ;  0 "" 2
+ 103               	/* #NOAPP */
+ 104               	.LBE116:
+ 105               	.LBE115:
+ 106               	.LM10:
+ 107 005c 2150      		subi r18,lo8(-(-1))
+ 108 005e 3040      		sbci r19,hi8(-(-1))
+ 109               	.L26:
+ 110               	.LM11:
+ 111 0060 2115      		cp r18,__zero_reg__
+ 112 0062 3105      		cpc r19,__zero_reg__
+ 113 0064 01F4      		brne .L4
+ 114               	.LBE114:
+ 115               	.LBE113:
+ 116               	.LBB112:
+ 117               	.LBB119:
+ 118               	.LM12:
+ 119 0066 8BB1      		in r24,43-32
+ 120               	.LVL2:
+ 121 0068 8627      		eor r24,r22
+ 122 006a 8BB9      		out 43-32,r24
+ 123 006c 20E3      		ldi r18,lo8(30000)
+ 124 006e 35E7      		ldi r19,hi8(30000)
+ 125 0070 00C0      		rjmp .L4
+ 126               	.LVL3:
+ 127               	.L2:
+ 128               	.LBE119:
+ 129               	.LBE112:
+ 130               	.LBE111:
+ 131               	.LM13:
+ 132 0072 80E0      		ldi r24,lo8(0)
+ 133 0074 0E94 0000 		call mcp2515_setCANCTRL_Mode
+ 134               	.LBB128:
+ 135               	.LM14:
+ 136 0078 8823      		tst r24
+ 137 007a 01F0      		breq .L17
+ 138 007c 20E1      		ldi r18,lo8(10000)
+ 139 007e 37E2      		ldi r19,hi8(10000)
+ 140               	.LVL4:
+ 141               	.LBB120:
+ 142               	.LBB121:
+ 143               	.LM15:
+ 144 0080 64E0      		ldi r22,lo8(4)
+ 145               	.LBE121:
+ 146               	.LBE120:
+ 147               	.LBB123:
+ 148               	.LBB124:
+ 149               	.LBB125:
+ 150               	.LBB126:
+ 151               	.LM16:
+ 152 0082 40E9      		ldi r20,lo8(400)
+ 153 0084 51E0      		ldi r21,hi8(400)
+ 154 0086 00C0      		rjmp .L27
+ 155               	.LVL5:
+ 156               	.L7:
+ 157 0088 CA01      		movw r24,r20
+ 158               	/* #APP */
+ 159               	 ;  105 "/usr/lib/gcc/avr/4.3.4/../../../avr/include/util/delay_basic.h" 1
+ 160 008a 0197      		1: sbiw r24,1
+ 161 008c 01F4      		brne 1b
+ 162               	 ;  0 "" 2
+ 163               	/* #NOAPP */
+ 164               	.LBE126:
+ 165               	.LBE125:
+ 166               	.LM17:
+ 167 008e 2150      		subi r18,lo8(-(-1))
+ 168 0090 3040      		sbci r19,hi8(-(-1))
+ 169               	.L27:
+ 170               	.LM18:
+ 171 0092 2115      		cp r18,__zero_reg__
+ 172 0094 3105      		cpc r19,__zero_reg__
+ 173 0096 01F4      		brne .L7
+ 174               	.LBE124:
+ 175               	.LBE123:
+ 176               	.LBB127:
+ 177               	.LBB122:
+ 178               	.LM19:
+ 179 0098 8BB1      		in r24,43-32
+ 180               	.LVL6:
+ 181 009a 8627      		eor r24,r22
+ 182 009c 8BB9      		out 43-32,r24
+ 183 009e 20E1      		ldi r18,lo8(10000)
+ 184 00a0 37E2      		ldi r19,hi8(10000)
+ 185 00a2 00C0      		rjmp .L7
+ 186               	.LVL7:
+ 187               	.L17:
+ 188               	.LBE122:
+ 189               	.LBE127:
+ 190               	.LBE128:
+ 191               	.LBE110:
+ 192               	.LBE105:
+ 193               	.LBE104:
+ 194               	.LBB129:
+ 195               	.LBB130:
+ 196               	.LM20:
+ 197 00a4 50E1      		ldi r21,lo8(16)
+ 198 00a6 352E      		mov r3,r21
+ 199               	.LBE130:
+ 200               	.LBE129:
+ 201               	.LBB132:
+ 202               	.LBB133:
+ 203               	.LBB134:
+ 204               	.LBB135:
+ 205               	.LM21:
+ 206 00a8 00E9      		ldi r16,lo8(400)
+ 207 00aa 11E0      		ldi r17,hi8(400)
+ 208               	.LBE135:
+ 209               	.LBE134:
+ 210               	.LBE133:
+ 211               	.LBE132:
+ 212               	.LBB139:
+ 213               	.LBB140:
+ 214               	.LM22:
+ 215 00ac 5E01      		movw r10,r28
+ 216 00ae 0894      		sec
+ 217 00b0 A11C      		adc r10,__zero_reg__
+ 218 00b2 B11C      		adc r11,__zero_reg__
+ 219 00b4 47E0      		ldi r20,lo8(7)
+ 220 00b6 642E      		mov r6,r20
+ 221 00b8 712C      		mov r7,__zero_reg__
+ 222 00ba 6C0E      		add r6,r28
+ 223 00bc 7D1E      		adc r7,r29
+ 224               	.LM23:
+ 225 00be 3FE0      		ldi r19,lo8(15)
+ 226 00c0 832E      		mov r8,r19
+ 227 00c2 912C      		mov r9,__zero_reg__
+ 228 00c4 8C0E      		add r8,r28
+ 229 00c6 9D1E      		adc r9,r29
+ 230               	.LM24:
+ 231 00c8 23E0      		ldi r18,lo8(3)
+ 232 00ca 422E      		mov r4,r18
+ 233               	.LM25:
+ 234 00cc 9CEC      		ldi r25,lo8(21964)
+ 235 00ce C92E      		mov r12,r25
+ 236 00d0 95E5      		ldi r25,hi8(21964)
+ 237 00d2 D92E      		mov r13,r25
+ 238 00d4 E12C      		mov r14,__zero_reg__
+ 239 00d6 F12C      		mov r15,__zero_reg__
+ 240               	.LBB146:
+ 241               	.LBB147:
+ 242               	.LM26:
+ 243 00d8 84E0      		ldi r24,lo8(4)
+ 244 00da 582E      		mov r5,r24
+ 245               	.LVL8:
+ 246               	.L25:
+ 247               	.LBE147:
+ 248               	.LBE146:
+ 249               	.LBE140:
+ 250               	.LBE139:
+ 251               	.LBB158:
+ 252               	.LBB131:
+ 253               	.LM27:
+ 254 00dc 8BB1      		in r24,43-32
+ 255               	.LVL9:
+ 256 00de 8325      		eor r24,r3
+ 257 00e0 8BB9      		out 43-32,r24
+ 258 00e2 88E8      		ldi r24,lo8(5000)
+ 259 00e4 93E1      		ldi r25,hi8(5000)
+ 260               	.LVL10:
+ 261               	.L8:
+ 262               	.LBE131:
+ 263               	.LBE158:
+ 264               	.LBB159:
+ 265               	.LBB138:
+ 266               	.LBB137:
+ 267               	.LBB136:
+ 268               	.LM28:
+ 269 00e6 F801      		movw r30,r16
+ 270               	.LVL11:
+ 271               	/* #APP */
+ 272               	 ;  105 "/usr/lib/gcc/avr/4.3.4/../../../avr/include/util/delay_basic.h" 1
+ 273 00e8 3197      		1: sbiw r30,1
+ 274 00ea 01F4      		brne 1b
+ 275               	 ;  0 "" 2
+ 276               	/* #NOAPP */
+ 277               	.LBE136:
+ 278               	.LBE137:
+ 279               	.LM29:
+ 280 00ec 0197      		sbiw r24,1
+ 281               	.LM30:
+ 282 00ee 01F4      		brne .L8
+ 283               	.LBE138:
+ 284               	.LBE159:
+ 285               	.LBB160:
+ 286               	.LBB155:
+ 287               	.LM31:
+ 288 00f0 C501      		movw r24,r10
+ 289               	.LVL12:
+ 290 00f2 0E94 0000 		call can_initMessageStruct
+ 291               	.LVL13:
+ 292 00f6 F301      		movw r30,r6
+ 293               	.L9:
+ 294               	.LM32:
+ 295 00f8 1192      		st Z+,__zero_reg__
+ 296               	.LM33:
+ 297 00fa E815      		cp r30,r8
+ 298 00fc F905      		cpc r31,r9
+ 299 00fe 01F4      		brne .L9
+ 300               	.LM34:
+ 301 0100 4F82      		std Y+7,r4
+ 302               	.LM35:
+ 303 0102 CA82      		std Y+2,r12
+ 304 0104 DB82      		std Y+3,r13
+ 305 0106 EC82      		std Y+4,r14
+ 306 0108 FD82      		std Y+5,r15
+ 307               	.LBE155:
+ 308               	.LM36:
+ 309 010a C501      		movw r24,r10
+ 310 010c 0E94 0000 		call can_sendMessage
+ 311               	.LBB156:
+ 312 0110 8823      		tst r24
+ 313 0112 01F0      		breq .L10
+ 314               	.LM37:
+ 315 0114 8091 0000 		lds r24,send_errors
+ 316 0118 9091 0000 		lds r25,(send_errors)+1
+ 317 011c 0196      		adiw r24,1
+ 318 011e 9093 0000 		sts (send_errors)+1,r25
+ 319 0122 8093 0000 		sts send_errors,r24
+ 320               	.LM38:
+ 321 0126 0197      		sbiw r24,1
+ 322 0128 01F4      		brne .L10
+ 323 012a 20E0      		ldi r18,lo8(0)
+ 324 012c 30E0      		ldi r19,hi8(0)
+ 325               	.LVL14:
+ 326               	.L12:
+ 327               	.LBB145:
+ 328               	.LBB148:
+ 329               	.LM39:
+ 330 012e 8BB1      		in r24,43-32
+ 331               	.LVL15:
+ 332 0130 8525      		eor r24,r5
+ 333 0132 8BB9      		out 43-32,r24
+ 334 0134 88EE      		ldi r24,lo8(1000)
+ 335 0136 93E0      		ldi r25,hi8(1000)
+ 336               	.LVL16:
+ 337               	.L11:
+ 338               	.LBE148:
+ 339               	.LBE145:
+ 340               	.LBB141:
+ 341               	.LBB142:
+ 342               	.LBB143:
+ 343               	.LBB144:
+ 344               	.LM40:
+ 345 0138 F801      		movw r30,r16
+ 346               	/* #APP */
+ 347               	 ;  105 "/usr/lib/gcc/avr/4.3.4/../../../avr/include/util/delay_basic.h" 1
+ 348 013a 3197      		1: sbiw r30,1
+ 349 013c 01F4      		brne 1b
+ 350               	 ;  0 "" 2
+ 351               	/* #NOAPP */
+ 352               	.LBE144:
+ 353               	.LBE143:
+ 354               	.LM41:
+ 355 013e 0197      		sbiw r24,1
+ 356               	.LM42:
+ 357 0140 01F4      		brne .L11
+ 358               	.LBE142:
+ 359               	.LBE141:
+ 360               	.LM43:
+ 361 0142 2F5F      		subi r18,lo8(-(1))
+ 362 0144 3F4F      		sbci r19,hi8(-(1))
+ 363 0146 2A30      		cpi r18,10
+ 364 0148 3105      		cpc r19,__zero_reg__
+ 365 014a 01F4      		brne .L12
+ 366               	.LM44:
+ 367 014c 1092 0000 		sts (send_errors)+1,__zero_reg__
+ 368 0150 1092 0000 		sts send_errors,__zero_reg__
+ 369               	.L10:
+ 370               	.LBE156:
+ 371               	.LM45:
+ 372 0154 0E94 0000 		call can_checkError
+ 373               	.LVL17:
+ 374               	.LBB157:
+ 375 0158 8823      		tst r24
+ 376 015a 01F4      		brne .+2
+ 377 015c 00C0      		rjmp .L25
+ 378 015e 20E0      		ldi r18,lo8(0)
+ 379 0160 30E0      		ldi r19,hi8(0)
+ 380               	.LVL18:
+ 381               	.L14:
+ 382               	.LBB149:
+ 383               	.LBB150:
+ 384               	.LM46:
+ 385 0162 8BB1      		in r24,43-32
+ 386               	.LVL19:
+ 387 0164 8525      		eor r24,r5
+ 388 0166 8BB9      		out 43-32,r24
+ 389 0168 88E8      		ldi r24,lo8(5000)
+ 390 016a 93E1      		ldi r25,hi8(5000)
+ 391               	.LVL20:
+ 392               	.L13:
+ 393               	.LBE150:
+ 394               	.LBE149:
+ 395               	.LBB151:
+ 396               	.LBB152:
+ 397               	.LBB153:
+ 398               	.LBB154:
+ 399               	.LM47:
+ 400 016c F801      		movw r30,r16
+ 401               	/* #APP */
+ 402               	 ;  105 "/usr/lib/gcc/avr/4.3.4/../../../avr/include/util/delay_basic.h" 1
+ 403 016e 3197      		1: sbiw r30,1
+ 404 0170 01F4      		brne 1b
+ 405               	 ;  0 "" 2
+ 406               	/* #NOAPP */
+ 407               	.LBE154:
+ 408               	.LBE153:
+ 409               	.LM48:
+ 410 0172 0197      		sbiw r24,1
+ 411               	.LM49:
+ 412 0174 01F4      		brne .L13
+ 413               	.LBE152:
+ 414               	.LBE151:
+ 415               	.LM50:
+ 416 0176 2F5F      		subi r18,lo8(-(1))
+ 417 0178 3F4F      		sbci r19,hi8(-(1))
+ 418 017a 2430      		cpi r18,4
+ 419 017c 3105      		cpc r19,__zero_reg__
+ 420 017e 01F4      		brne .L14
+ 421 0180 00C0      		rjmp .L25
+ 422               	.LBE157:
+ 423               	.LBE160:
+ 424               	.LFE17:
+ 426               	.global	send_errors
+ 427               	.global	send_errors
+ 428               		.section .bss
+ 431               	send_errors:
+ 432 0000 0000      		.skip 2,0
+ 433               		.comm gMilliSecTick,2,1
+ 458               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/cc6sNRbX.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc6sNRbX.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc6sNRbX.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc6sNRbX.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc6sNRbX.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc6sNRbX.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc6sNRbX.s:20     .text:00000000 main
+     /tmp/cc6sNRbX.s:431    .bss:00000000 send_errors
+                            *COM*:00000002 gMilliSecTick
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+spi_init
+can_init
+mcp2515_setCANCTRL_Mode
+can_initMessageStruct
+can_sendMessage
+can_checkError

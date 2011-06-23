@@ -1,0 +1,243 @@
+   1               		.file	"termio.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	term_putbin_byte
+  20               	term_putbin_byte:
+  21               	.LFB10:
+  22               	.LM1:
+  23               	.LVL0:
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26               	.LM2:
+  27 0000 0E94 0000 		call uart_putbin_byte
+  28               	.LVL1:
+  29               	/* epilogue start */
+  30               	.LM3:
+  31 0004 0895      		ret
+  32               	.LFE10:
+  34               	.global	term_puthex_byte
+  36               	term_puthex_byte:
+  37               	.LFB9:
+  38               	.LM4:
+  39               	.LVL2:
+  40               	/* prologue: function */
+  41               	/* frame size = 0 */
+  42               	.LM5:
+  43 0006 0E94 0000 		call uart_puthex_byte
+  44               	.LVL3:
+  45               	/* epilogue start */
+  46               	.LM6:
+  47 000a 0895      		ret
+  48               	.LFE9:
+  50               	.global	term_getc
+  52               	term_getc:
+  53               	.LFB4:
+  54               	.LM7:
+  55               	/* prologue: function */
+  56               	/* frame size = 0 */
+  57               	.LM8:
+  58 000c 0E94 0000 		call uart_getc
+  59               	/* epilogue start */
+  60               	.LM9:
+  61 0010 0895      		ret
+  62               	.LFE4:
+  64               	.global	term_putc
+  66               	term_putc:
+  67               	.LFB3:
+  68               	.LM10:
+  69               	.LVL4:
+  70               	/* prologue: function */
+  71               	/* frame size = 0 */
+  72               	.LM11:
+  73 0012 0E94 0000 		call uart_putc
+  74               	.LVL5:
+  75               	/* epilogue start */
+  76               	.LM12:
+  77 0016 0895      		ret
+  78               	.LFE3:
+  80               	.global	putc_cr
+  82               	putc_cr:
+  83               	.LFB2:
+  84               	.LM13:
+  85               	.LVL6:
+  86 0018 1F93      		push r17
+  87               	/* prologue: function */
+  88               	/* frame size = 0 */
+  89 001a 182F      		mov r17,r24
+  90               	.LM14:
+  91 001c 8A30      		cpi r24,lo8(10)
+  92 001e 01F4      		brne .L10
+  93 0020 8DE0      		ldi r24,lo8(13)
+  94               	.LVL7:
+  95 0022 0E94 0000 		call uart_putc
+  96               	.LVL8:
+  97               	.L10:
+  98               	.LM15:
+  99 0026 812F      		mov r24,r17
+ 100 0028 0E94 0000 		call uart_putc
+ 101               	/* epilogue start */
+ 102               	.LM16:
+ 103 002c 1F91      		pop r17
+ 104               	.LVL9:
+ 105 002e 0895      		ret
+ 106               	.LFE2:
+ 108               	.global	term_puts_p
+ 110               	term_puts_p:
+ 111               	.LFB7:
+ 112               	.LM17:
+ 113               	.LVL10:
+ 114 0030 CF93      		push r28
+ 115 0032 DF93      		push r29
+ 116               	/* prologue: function */
+ 117               	/* frame size = 0 */
+ 118 0034 EC01      		movw r28,r24
+ 119 0036 00C0      		rjmp .L13
+ 120               	.LVL11:
+ 121               	.L14:
+ 122               	.LM18:
+ 123 0038 0E94 0000 		call putc_cr
+ 124               	.LVL12:
+ 125               	.L13:
+ 126 003c FE01      		movw r30,r28
+ 127               	.LVL13:
+ 128               	.LBB2:
+ 129 003e 2196      		adiw r28,1
+ 130               	/* #APP */
+ 131               	 ;  68 "termio.c" 1
+ 132 0040 8491      		lpm r24, Z
+ 133               		
+ 134               	 ;  0 "" 2
+ 135               	.LVL14:
+ 136               	/* #NOAPP */
+ 137               	.LBE2:
+ 138 0042 8823      		tst r24
+ 139 0044 01F4      		brne .L14
+ 140               	/* epilogue start */
+ 141               	.LM19:
+ 142 0046 DF91      		pop r29
+ 143 0048 CF91      		pop r28
+ 144               	.LVL15:
+ 145 004a 0895      		ret
+ 146               	.LFE7:
+ 148               	.global	term_puts
+ 150               	term_puts:
+ 151               	.LFB6:
+ 152               	.LM20:
+ 153               	.LVL16:
+ 154 004c CF93      		push r28
+ 155 004e DF93      		push r29
+ 156               	/* prologue: function */
+ 157               	/* frame size = 0 */
+ 158 0050 EC01      		movw r28,r24
+ 159 0052 00C0      		rjmp .L17
+ 160               	.LVL17:
+ 161               	.L18:
+ 162               	.LM21:
+ 163 0054 0E94 0000 		call putc_cr
+ 164               	.LVL18:
+ 165               	.L17:
+ 166 0058 8991      		ld r24,Y+
+ 167               	.LVL19:
+ 168 005a 8823      		tst r24
+ 169 005c 01F4      		brne .L18
+ 170               	/* epilogue start */
+ 171               	.LM22:
+ 172 005e DF91      		pop r29
+ 173 0060 CF91      		pop r28
+ 174               	.LVL20:
+ 175 0062 0895      		ret
+ 176               	.LFE6:
+ 178               	.global	term_puti
+ 180               	term_puti:
+ 181               	.LFB8:
+ 182               	.LM23:
+ 183               	.LVL21:
+ 184 0064 0F93      		push r16
+ 185 0066 1F93      		push r17
+ 186 0068 DF93      		push r29
+ 187 006a CF93      		push r28
+ 188 006c CDB7      		in r28,__SP_L__
+ 189 006e DEB7      		in r29,__SP_H__
+ 190 0070 6197      		sbiw r28,17
+ 191 0072 0FB6      		in __tmp_reg__,__SREG__
+ 192 0074 F894      		cli
+ 193 0076 DEBF      		out __SP_H__,r29
+ 194 0078 0FBE      		out __SREG__,__tmp_reg__
+ 195 007a CDBF      		out __SP_L__,r28
+ 196               	/* prologue: function */
+ 197               	/* frame size = 17 */
+ 198               	.LM24:
+ 199 007c 8E01      		movw r16,r28
+ 200 007e 0F5F      		subi r16,lo8(-(1))
+ 201 0080 1F4F      		sbci r17,hi8(-(1))
+ 202 0082 B801      		movw r22,r16
+ 203 0084 4AE0      		ldi r20,lo8(10)
+ 204 0086 50E0      		ldi r21,hi8(10)
+ 205 0088 0E94 0000 		call itoa
+ 206               	.LVL22:
+ 207               	.LM25:
+ 208 008c C801      		movw r24,r16
+ 209 008e 0E94 0000 		call term_puts
+ 210               	/* epilogue start */
+ 211               	.LM26:
+ 212 0092 6196      		adiw r28,17
+ 213 0094 0FB6      		in __tmp_reg__,__SREG__
+ 214 0096 F894      		cli
+ 215 0098 DEBF      		out __SP_H__,r29
+ 216 009a 0FBE      		out __SREG__,__tmp_reg__
+ 217 009c CDBF      		out __SP_L__,r28
+ 218 009e CF91      		pop r28
+ 219 00a0 DF91      		pop r29
+ 220 00a2 1F91      		pop r17
+ 221 00a4 0F91      		pop r16
+ 222 00a6 0895      		ret
+ 223               	.LFE8:
+ 225               	.global	term_put_cr
+ 227               	term_put_cr:
+ 228               	.LFB5:
+ 229               	.LM27:
+ 230               	/* prologue: function */
+ 231               	/* frame size = 0 */
+ 232               	.LM28:
+ 233 00a8 8AE0      		ldi r24,lo8(10)
+ 234 00aa 0E94 0000 		call putc_cr
+ 235               	/* epilogue start */
+ 236               	.LM29:
+ 237 00ae 0895      		ret
+ 238               	.LFE5:
+ 240               		.comm term_timeout_flag,1,1
+ 329               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 termio.c
+     /tmp/cc3VQwZo.s:2      *ABS*:0000003f __SREG__
+     /tmp/cc3VQwZo.s:3      *ABS*:0000003e __SP_H__
+     /tmp/cc3VQwZo.s:4      *ABS*:0000003d __SP_L__
+     /tmp/cc3VQwZo.s:5      *ABS*:00000034 __CCP__
+     /tmp/cc3VQwZo.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/cc3VQwZo.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/cc3VQwZo.s:20     .text:00000000 term_putbin_byte
+     /tmp/cc3VQwZo.s:36     .text:00000006 term_puthex_byte
+     /tmp/cc3VQwZo.s:52     .text:0000000c term_getc
+     /tmp/cc3VQwZo.s:66     .text:00000012 term_putc
+     /tmp/cc3VQwZo.s:82     .text:00000018 putc_cr
+     /tmp/cc3VQwZo.s:110    .text:00000030 term_puts_p
+     /tmp/cc3VQwZo.s:150    .text:0000004c term_puts
+     /tmp/cc3VQwZo.s:180    .text:00000064 term_puti
+     /tmp/cc3VQwZo.s:227    .text:000000a8 term_put_cr
+                            *COM*:00000001 term_timeout_flag
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+uart_putbin_byte
+uart_puthex_byte
+uart_getc
+uart_putc
+itoa

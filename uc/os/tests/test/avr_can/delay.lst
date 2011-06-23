@@ -1,0 +1,58 @@
+   1               		.file	"delay.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  16               	.Ltext0:
+  17               	.global	delayloop32
+  19               	delayloop32:
+  20               	.LFB1:
+  21               	.LM1:
+  22               	.LVL0:
+  23               	/* prologue: function */
+  24               	/* frame size = 0 */
+  25               	/* stack size = 0 */
+  26               	.L__stack_usage = 0
+  27 0000 DC01      		movw r26,r24
+  28 0002 CB01      		movw r24,r22
+  29               	.LM2:
+  30               	/* #APP */
+  31               	 ;  18 "delay.c" 1
+  32 0004 8115      		cp  r24,__zero_reg__ 
+  33 0006 9105      		cpc r25,__zero_reg__ 
+  34 0008 A105      		cpc r26,__zero_reg__ 
+  35 000a B105      		cpc r27,__zero_reg__ 
+  36 000c 01F0      		breq L_Exit_7       
+  37               		L_LOOP_7:           
+  38 000e 8150      		subi r24,1           
+  39 0010 9040      		sbci r25,0           
+  40 0012 A040      		sbci r26,0           
+  41 0014 B040      		sbci r27,0           
+  42 0016 01F4      		brne L_LOOP_7            
+  43               		L_Exit_7:           
+  44               		
+  45               	 ;  0 "" 2
+  46               	.LVL1:
+  47               	/* epilogue start */
+  48               	.LM3:
+  49               	/* #NOAPP */
+  50 0018 0895      		ret
+  51               	.LFE1:
+  77               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 delay.c
+     /tmp/ccU38VPc.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccU38VPc.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccU38VPc.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccU38VPc.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccU38VPc.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccU38VPc.s:19     .text:0000000000000000 delayloop32
+     /tmp/ccU38VPc.s:43     .text:0000000000000018 L_Exit_7
+     /tmp/ccU38VPc.s:37     .text:000000000000000e L_LOOP_7
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

@@ -1,0 +1,30 @@
+.header  {  }
+h1{text-align:center;font-size:14px;font-family:arial,helvetica;font-weight:bold;padding:10px;}
+body{background-color:#c8c8c8;color:black;font-size: 10px;font-family:  Verdana, Tahoma, sans-serif; width: 745px ;}
+a { font-family: Verdana, Tahoma, Sans-serif; font-weight: bold; font-size: 10px; margin-left: 5px; margin-right: 5 px;}
+p.border-title a { font-size:14px; }
+a:link { color: #b60202; text-decoration: none }
+a:hover { color: #000000; text-decoration: underline }
+a:visited { color: #b60202; text-decoration: none }
+a:visited:hover { color: #000000; text-decoration: underline }
+.wrap{width:100%;margin:10px auto;text-align:left;font-family:  Verdana, Tahoma, sans-serif;}
+.menublock{margin:4px;width:20%;float:left;padding:10px;border:solid 1px;background-color:#a6bab1;text-align:left;font-size: 10px; font-family:  Verdana, Tahoma, sans-serif;}
+.contentblock{margin:4px;width:70%;float:right;padding:10px;border:1px dotted;background-color:#a6bab1;white;font-size: 10px; font-family:  Verdana, Tahoma, sans-serif;}
+.newsblock{margin:4px;width:24%;float:left;padding:10px;border:solid 1px;background-color:#fffcd2;text-align:left;font-size: 10px; font-family:  Verdana, Tahoma, sans-serif;}
+.printable{margin:4px;width:24%;float:left;padding:10px;border:0;background-color:#fffeec;text-align:right;font-size: 10px; font-family:  Verdana, Tahoma, sans-serif;}
+div.rfig{border:solid 1px; text-align:left;padding:10px;margin:10px;font-size: 10px; font-family:  Verdana, Tahoma, sans-serif;float:right;}
+pre.example{border:solid 1px; padding:10px;margin:10px;text-align:left;font-size: 10px; font-family:  Verdana, Tahoma, sans-serif;white-space:pre;}
+p.intro{margin-left:20px;margin-right:20px;font-size:10px;font-family:  Verdana, Tahoma, sans-serif;}
+p.intro a { font-size:10px; }
+p.clink{font-size:12pt;font-family:courier,monospace; text-align:center;}
+p.clink9{font-size:9pt;font-family:courier,monospace;text-align:center;}
+p.related{font-size:10pt;font-family:arial,helvetica;text-align:center;}
+img.right{float:right;margin:10px;}
+img.left{float:left;margin:10px;}
+p.fig{border:solid 1px;text-align:center;padding:10px;margin:10px;font-size:7pt;}
+p.rfig{border:solid 1px;text-align:center;padding:10px;margin:10px;font-size:7pt;float:right;}
+p.lfig{border:solid 1px;text-align:center;padding:10px;margin:10px;font-size:7pt;float:left;}
+p{padding-left:10px;}
+p.mailaddr{padding-left:10px;font-size:7pt;font-family:courier,terminal;text-align:right;}
+p.right{text-align:right;}
+p.border-title{text-align:center;font-size:14px; font-weight: bold;padding:5px;margin:5px;margin-bottom:10px;color:black;background-color:#c8c8c8;border:solid 1px;}

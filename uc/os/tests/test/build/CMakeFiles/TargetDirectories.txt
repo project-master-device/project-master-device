@@ -1,0 +1,2 @@
+/home/fs/Programming/arduino/workspaces/learning/test/build/arduino_spcr/CMakeFiles/arduino_spcr.dir
+/home/fs/Programming/arduino/workspaces/learning/test/build/libarduinocore/CMakeFiles/arduinocore.dir

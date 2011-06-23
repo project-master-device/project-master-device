@@ -1,0 +1,5 @@
+LIBS += config.c module.c module_manager.c devices_admin.c handlers.c 
+CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev .}
+CONTIKIDIRS += $(CONTIKI_LOCAL)
+
+CONTIKI_LOCAL_MODULES = $(CONTIKI_LOCAL)/module

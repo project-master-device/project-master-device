@@ -1,0 +1,58 @@
+   1               		.file	"delay.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	delayloop32
+  20               	delayloop32:
+  21               	.LFB3:
+  22               	.LM1:
+  23               	.LVL0:
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26 0000 DC01      		movw r26,r24
+  27 0002 CB01      		movw r24,r22
+  28               	.LM2:
+  29               	/* #APP */
+  30               	 ;  18 "delay.c" 1
+  31 0004 8115      		cp  r24,__zero_reg__ 
+  32 0006 9105      		cpc r25,__zero_reg__ 
+  33 0008 A105      		cpc r26,__zero_reg__ 
+  34 000a B105      		cpc r27,__zero_reg__ 
+  35 000c 01F0      		breq L_Exit_7       
+  36               		L_LOOP_7:           
+  37 000e 8150      		subi r24,1           
+  38 0010 9040      		sbci r25,0           
+  39 0012 A040      		sbci r26,0           
+  40 0014 B040      		sbci r27,0           
+  41 0016 01F4      		brne L_LOOP_7            
+  42               		L_Exit_7:           
+  43               		
+  44               	 ;  0 "" 2
+  45               	.LVL1:
+  46               	/* epilogue start */
+  47               	.LM3:
+  48               	/* #NOAPP */
+  49 0018 0895      		ret
+  50               	.LFE3:
+  76               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 delay.c
+     /tmp/ccIQTIGi.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccIQTIGi.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccIQTIGi.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccIQTIGi.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccIQTIGi.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccIQTIGi.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccIQTIGi.s:20     .text:00000000 delayloop32
+     /tmp/ccIQTIGi.s:42     .text:00000018 L_Exit_7
+     /tmp/ccIQTIGi.s:36     .text:0000000e L_LOOP_7
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

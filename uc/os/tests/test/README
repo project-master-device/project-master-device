@@ -1,0 +1,15 @@
+1) Build sources
+$cd build
+$cmake ..
+$make
+$cd ..
+
+2) Convert executable binary file into HEX format
+$util/convert_bin.rb build/<subproj_name>/<subproj_name>
+
+3) Upload the tmp HEX file to the device on ttyUSB serial
+$util/upload.rb tmp/<subproj_name> /dev/ttyUSB<num> [atmega | arduino]
+
+4) To monitor the serial port run
+$util/serialmonitor.rb /dev/ttyUSB<num>
+

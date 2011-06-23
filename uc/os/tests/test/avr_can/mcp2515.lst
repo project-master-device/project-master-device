@@ -1,0 +1,1179 @@
+   1               		.file	"mcp2515.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.global __do_copy_data
+   8               		.global __do_clear_bss
+  16               	.Ltext0:
+  18               	mcp2515_readXXStatus_helper:
+  19               	.LFB7:
+  20               	.LM1:
+  21               	.LVL0:
+  22               	/* prologue: function */
+  23               	/* frame size = 0 */
+  24               	/* stack size = 0 */
+  25               	.L__stack_usage = 0
+  26               	.LM2:
+  27 0000 C398      		cbi 56-0x20,3
+  28               	.LM3:
+  29 0002 0E94 0000 		call spi_readwrite
+  30               	.LVL1:
+  31               	.LM4:
+  32 0006 0E94 0000 		call spi_read
+  33               	.LVL2:
+  34               	.LM5:
+  35 000a C39A      		sbi 56-0x20,3
+  36               	/* epilogue start */
+  37               	.LM6:
+  38 000c 0895      		ret
+  39               	.LFE7:
+  41               	.global	mcp2515_reset
+  43               	mcp2515_reset:
+  44               	.LFB1:
+  45               	.LM7:
+  46               	/* prologue: function */
+  47               	/* frame size = 0 */
+  48               	/* stack size = 0 */
+  49               	.L__stack_usage = 0
+  50               	.LM8:
+  51 000e C398      		cbi 56-0x20,3
+  52               	.LM9:
+  53 0010 80EC      		ldi r24,lo8(-64)
+  54 0012 0E94 0000 		call spi_readwrite
+  55               	.LM10:
+  56 0016 C39A      		sbi 56-0x20,3
+  57               	.LM11:
+  58 0018 64E2      		ldi r22,lo8(26660)
+  59 001a 78E6      		ldi r23,hi8(26660)
+  60 001c 80E0      		ldi r24,hlo8(26660)
+  61 001e 90E0      		ldi r25,hhi8(26660)
+  62 0020 0E94 0000 		call delayloop32
+  63               	/* epilogue start */
+  64               	.LM12:
+  65 0024 0895      		ret
+  66               	.LFE1:
+  68               	.global	mcp2515_readRegister
+  70               	mcp2515_readRegister:
+  71               	.LFB2:
+  72               	.LM13:
+  73               	.LVL3:
+  74 0026 1F93      		push r17
+  75               	/* prologue: function */
+  76               	/* frame size = 0 */
+  77               	/* stack size = 1 */
+  78               	.L__stack_usage = 1
+  79 0028 182F      		mov r17,r24
+  80               	.LM14:
+  81 002a C398      		cbi 56-0x20,3
+  82               	.LM15:
+  83 002c 83E0      		ldi r24,lo8(3)
+  84               	.LVL4:
+  85 002e 0E94 0000 		call spi_readwrite
+  86               	.LM16:
+  87 0032 812F      		mov r24,r17
+  88 0034 0E94 0000 		call spi_readwrite
+  89               	.LM17:
+  90 0038 0E94 0000 		call spi_read
+  91               	.LVL5:
+  92               	.LM18:
+  93 003c C39A      		sbi 56-0x20,3
+  94               	/* epilogue start */
+  95               	.LM19:
+  96 003e 1F91      		pop r17
+  97               	.LVL6:
+  98 0040 0895      		ret
+  99               	.LFE2:
+ 101               	.global	mcp2515_readRegisterS
+ 103               	mcp2515_readRegisterS:
+ 104               	.LFB3:
+ 105               	.LM20:
+ 106               	.LVL7:
+ 107 0042 CF92      		push r12
+ 108 0044 DF92      		push r13
+ 109 0046 FF92      		push r15
+ 110 0048 0F93      		push r16
+ 111 004a 1F93      		push r17
+ 112 004c DF93      		push r29
+ 113 004e CF93      		push r28
+ 114 0050 0F92      		push __tmp_reg__
+ 115 0052 CDB7      		in r28,__SP_L__
+ 116 0054 DEB7      		in r29,__SP_H__
+ 117               	/* prologue: function */
+ 118               	/* frame size = 1 */
+ 119               	/* stack size = 8 */
+ 120               	.L__stack_usage = 8
+ 121 0056 182F      		mov r17,r24
+ 122 0058 062F      		mov r16,r22
+ 123 005a F42E      		mov r15,r20
+ 124               	.LM21:
+ 125 005c C398      		cbi 56-0x20,3
+ 126               	.LM22:
+ 127 005e 83E0      		ldi r24,lo8(3)
+ 128               	.LVL8:
+ 129 0060 7983      		std Y+1,r23
+ 130 0062 0E94 0000 		call spi_readwrite
+ 131               	.LVL9:
+ 132               	.LM23:
+ 133 0066 812F      		mov r24,r17
+ 134 0068 0E94 0000 		call spi_readwrite
+ 135               	.LVL10:
+ 136               	.LM24:
+ 137 006c 7981      		ldd r23,Y+1
+ 138 006e 402F      		mov r20,r16
+ 139 0070 572F      		mov r21,r23
+ 140 0072 6A01      		movw r12,r20
+ 141 0074 00C0      		rjmp .L5
+ 142               	.LVL11:
+ 143               	.L6:
+ 144               	.LM25:
+ 145 0076 0E94 0000 		call spi_read
+ 146 007a F601      		movw r30,r12
+ 147 007c 8193      		st Z+,r24
+ 148 007e 6F01      		movw r12,r30
+ 149               	.L5:
+ 150               	.LM26:
+ 151 0080 8C2D      		mov r24,r12
+ 152 0082 801B      		sub r24,r16
+ 153 0084 8F15      		cp r24,r15
+ 154 0086 00F0      		brlo .L6
+ 155               	.LM27:
+ 156 0088 C39A      		sbi 56-0x20,3
+ 157               	/* epilogue start */
+ 158               	.LM28:
+ 159 008a 0F90      		pop __tmp_reg__
+ 160 008c CF91      		pop r28
+ 161 008e DF91      		pop r29
+ 162 0090 1F91      		pop r17
+ 163               	.LVL12:
+ 164 0092 0F91      		pop r16
+ 165 0094 FF90      		pop r15
+ 166               	.LVL13:
+ 167 0096 DF90      		pop r13
+ 168 0098 CF90      		pop r12
+ 169 009a 0895      		ret
+ 170               	.LFE3:
+ 172               	.global	mcp2515_setRegister
+ 174               	mcp2515_setRegister:
+ 175               	.LFB4:
+ 176               	.LM29:
+ 177               	.LVL14:
+ 178 009c 1F93      		push r17
+ 179 009e DF93      		push r29
+ 180 00a0 CF93      		push r28
+ 181 00a2 0F92      		push __tmp_reg__
+ 182 00a4 CDB7      		in r28,__SP_L__
+ 183 00a6 DEB7      		in r29,__SP_H__
+ 184               	/* prologue: function */
+ 185               	/* frame size = 1 */
+ 186               	/* stack size = 4 */
+ 187               	.L__stack_usage = 4
+ 188 00a8 182F      		mov r17,r24
+ 189               	.LM30:
+ 190 00aa C398      		cbi 56-0x20,3
+ 191               	.LM31:
+ 192 00ac 82E0      		ldi r24,lo8(2)
+ 193               	.LVL15:
+ 194 00ae 6983      		std Y+1,r22
+ 195 00b0 0E94 0000 		call spi_readwrite
+ 196               	.LVL16:
+ 197               	.LM32:
+ 198 00b4 812F      		mov r24,r17
+ 199 00b6 0E94 0000 		call spi_readwrite
+ 200               	.LM33:
+ 201 00ba 6981      		ldd r22,Y+1
+ 202 00bc 862F      		mov r24,r22
+ 203 00be 0E94 0000 		call spi_readwrite
+ 204               	.LM34:
+ 205 00c2 C39A      		sbi 56-0x20,3
+ 206               	/* epilogue start */
+ 207               	.LM35:
+ 208 00c4 0F90      		pop __tmp_reg__
+ 209 00c6 CF91      		pop r28
+ 210 00c8 DF91      		pop r29
+ 211 00ca 1F91      		pop r17
+ 212               	.LVL17:
+ 213 00cc 0895      		ret
+ 214               	.LFE4:
+ 216               	.global	mcp2515_setRegisterS
+ 218               	mcp2515_setRegisterS:
+ 219               	.LFB5:
+ 220               	.LM36:
+ 221               	.LVL18:
+ 222 00ce CF92      		push r12
+ 223 00d0 DF92      		push r13
+ 224 00d2 FF92      		push r15
+ 225 00d4 0F93      		push r16
+ 226 00d6 1F93      		push r17
+ 227 00d8 DF93      		push r29
+ 228 00da CF93      		push r28
+ 229 00dc 0F92      		push __tmp_reg__
+ 230 00de CDB7      		in r28,__SP_L__
+ 231 00e0 DEB7      		in r29,__SP_H__
+ 232               	/* prologue: function */
+ 233               	/* frame size = 1 */
+ 234               	/* stack size = 8 */
+ 235               	.L__stack_usage = 8
+ 236 00e2 182F      		mov r17,r24
+ 237 00e4 062F      		mov r16,r22
+ 238 00e6 F42E      		mov r15,r20
+ 239               	.LM37:
+ 240 00e8 C398      		cbi 56-0x20,3
+ 241               	.LM38:
+ 242 00ea 82E0      		ldi r24,lo8(2)
+ 243               	.LVL19:
+ 244 00ec 7983      		std Y+1,r23
+ 245 00ee 0E94 0000 		call spi_readwrite
+ 246               	.LVL20:
+ 247               	.LM39:
+ 248 00f2 812F      		mov r24,r17
+ 249 00f4 0E94 0000 		call spi_readwrite
+ 250               	.LVL21:
+ 251               	.LM40:
+ 252 00f8 7981      		ldd r23,Y+1
+ 253 00fa 402F      		mov r20,r16
+ 254 00fc 572F      		mov r21,r23
+ 255 00fe 6A01      		movw r12,r20
+ 256 0100 00C0      		rjmp .L9
+ 257               	.LVL22:
+ 258               	.L10:
+ 259               	.LM41:
+ 260 0102 F601      		movw r30,r12
+ 261 0104 8191      		ld r24,Z+
+ 262 0106 6F01      		movw r12,r30
+ 263 0108 0E94 0000 		call spi_readwrite
+ 264               	.L9:
+ 265               	.LM42:
+ 266 010c 8C2D      		mov r24,r12
+ 267 010e 801B      		sub r24,r16
+ 268 0110 8F15      		cp r24,r15
+ 269 0112 00F0      		brlo .L10
+ 270               	.LM43:
+ 271 0114 C39A      		sbi 56-0x20,3
+ 272               	/* epilogue start */
+ 273               	.LM44:
+ 274 0116 0F90      		pop __tmp_reg__
+ 275 0118 CF91      		pop r28
+ 276 011a DF91      		pop r29
+ 277 011c 1F91      		pop r17
+ 278               	.LVL23:
+ 279 011e 0F91      		pop r16
+ 280 0120 FF90      		pop r15
+ 281               	.LVL24:
+ 282 0122 DF90      		pop r13
+ 283 0124 CF90      		pop r12
+ 284 0126 0895      		ret
+ 285               	.LFE5:
+ 287               	.global	mcp2515_modifyRegister
+ 289               	mcp2515_modifyRegister:
+ 290               	.LFB6:
+ 291               	.LM45:
+ 292               	.LVL25:
+ 293 0128 1F93      		push r17
+ 294 012a DF93      		push r29
+ 295 012c CF93      		push r28
+ 296 012e 00D0      		rcall .
+ 297 0130 CDB7      		in r28,__SP_L__
+ 298 0132 DEB7      		in r29,__SP_H__
+ 299               	/* prologue: function */
+ 300               	/* frame size = 2 */
+ 301               	/* stack size = 5 */
+ 302               	.L__stack_usage = 5
+ 303 0134 182F      		mov r17,r24
+ 304               	.LM46:
+ 305 0136 C398      		cbi 56-0x20,3
+ 306               	.LM47:
+ 307 0138 85E0      		ldi r24,lo8(5)
+ 308               	.LVL26:
+ 309 013a 4A83      		std Y+2,r20
+ 310 013c 6983      		std Y+1,r22
+ 311 013e 0E94 0000 		call spi_readwrite
+ 312               	.LVL27:
+ 313               	.LM48:
+ 314 0142 812F      		mov r24,r17
+ 315 0144 0E94 0000 		call spi_readwrite
+ 316               	.LM49:
+ 317 0148 6981      		ldd r22,Y+1
+ 318 014a 862F      		mov r24,r22
+ 319 014c 0E94 0000 		call spi_readwrite
+ 320               	.LM50:
+ 321 0150 4A81      		ldd r20,Y+2
+ 322 0152 842F      		mov r24,r20
+ 323 0154 0E94 0000 		call spi_readwrite
+ 324               	.LM51:
+ 325 0158 C39A      		sbi 56-0x20,3
+ 326               	/* epilogue start */
+ 327               	.LM52:
+ 328 015a 0F90      		pop __tmp_reg__
+ 329 015c 0F90      		pop __tmp_reg__
+ 330 015e CF91      		pop r28
+ 331 0160 DF91      		pop r29
+ 332 0162 1F91      		pop r17
+ 333               	.LVL28:
+ 334 0164 0895      		ret
+ 335               	.LFE6:
+ 337               	.global	mcp2515_readStatus
+ 339               	mcp2515_readStatus:
+ 340               	.LFB8:
+ 341               	.LM53:
+ 342               	/* prologue: function */
+ 343               	/* frame size = 0 */
+ 344               	/* stack size = 0 */
+ 345               	.L__stack_usage = 0
+ 346               	.LM54:
+ 347 0166 80EA      		ldi r24,lo8(-96)
+ 348 0168 0E94 0000 		call mcp2515_readXXStatus_helper
+ 349               	/* epilogue start */
+ 350               	.LM55:
+ 351 016c 0895      		ret
+ 352               	.LFE8:
+ 354               	.global	mcp2515_RXStatus
+ 356               	mcp2515_RXStatus:
+ 357               	.LFB9:
+ 358               	.LM56:
+ 359               	/* prologue: function */
+ 360               	/* frame size = 0 */
+ 361               	/* stack size = 0 */
+ 362               	.L__stack_usage = 0
+ 363               	.LM57:
+ 364 016e 80EB      		ldi r24,lo8(-80)
+ 365 0170 0E94 0000 		call mcp2515_readXXStatus_helper
+ 366               	/* epilogue start */
+ 367               	.LM58:
+ 368 0174 0895      		ret
+ 369               	.LFE9:
+ 371               	.global	mcp2515_setCANCTRL_Mode
+ 373               	mcp2515_setCANCTRL_Mode:
+ 374               	.LFB10:
+ 375               	.LM59:
+ 376               	.LVL29:
+ 377 0176 1F93      		push r17
+ 378               	/* prologue: function */
+ 379               	/* frame size = 0 */
+ 380               	/* stack size = 1 */
+ 381               	.L__stack_usage = 1
+ 382 0178 182F      		mov r17,r24
+ 383               	.LM60:
+ 384 017a 8FE0      		ldi r24,lo8(15)
+ 385               	.LVL30:
+ 386 017c 60EE      		ldi r22,lo8(-32)
+ 387 017e 412F      		mov r20,r17
+ 388 0180 0E94 0000 		call mcp2515_modifyRegister
+ 389               	.LM61:
+ 390 0184 8FE0      		ldi r24,lo8(15)
+ 391 0186 0E94 0000 		call mcp2515_readRegister
+ 392               	.LVL31:
+ 393               	.LM62:
+ 394 018a 982F      		mov r25,r24
+ 395 018c 907E      		andi r25,lo8(-32)
+ 396               	.LM63:
+ 397 018e 81E0      		ldi r24,lo8(1)
+ 398               	.LVL32:
+ 399 0190 9117      		cp r25,r17
+ 400 0192 01F4      		brne .L15
+ 401 0194 80E0      		ldi r24,lo8(0)
+ 402               	.L15:
+ 403               	/* epilogue start */
+ 404               	.LM64:
+ 405 0196 1F91      		pop r17
+ 406               	.LVL33:
+ 407 0198 0895      		ret
+ 408               	.LFE10:
+ 410               	.global	mcp2515_configRate
+ 412               	mcp2515_configRate:
+ 413               	.LFB11:
+ 414               	.LM65:
+ 415               	.LVL34:
+ 416 019a 0F93      		push r16
+ 417 019c 1F93      		push r17
+ 418               	/* prologue: function */
+ 419               	/* frame size = 0 */
+ 420               	/* stack size = 2 */
+ 421               	.L__stack_usage = 2
+ 422               	.LVL35:
+ 423               	.LM66:
+ 424 019e 8130      		cpi r24,lo8(1)
+ 425 01a0 01F0      		breq .L21
+ 426 01a2 8230      		cpi r24,lo8(2)
+ 427 01a4 01F4      		brne .L22
+ 428               	.LM67:
+ 429 01a6 12E0      		ldi r17,lo8(2)
+ 430               	.LM68:
+ 431 01a8 09E8      		ldi r16,lo8(-119)
+ 432               	.LM69:
+ 433 01aa 61E0      		ldi r22,lo8(1)
+ 434 01ac 00C0      		rjmp .L18
+ 435               	.L21:
+ 436               	.LM70:
+ 437 01ae 17E0      		ldi r17,lo8(7)
+ 438               	.LM71:
+ 439 01b0 0AEB      		ldi r16,lo8(-70)
+ 440               	.LM72:
+ 441 01b2 64E0      		ldi r22,lo8(4)
+ 442               	.L18:
+ 443               	.LVL36:
+ 444               	.LM73:
+ 445 01b4 8AE2      		ldi r24,lo8(42)
+ 446               	.LVL37:
+ 447 01b6 0E94 0000 		call mcp2515_setRegister
+ 448               	.LVL38:
+ 449               	.LM74:
+ 450 01ba 89E2      		ldi r24,lo8(41)
+ 451 01bc 602F      		mov r22,r16
+ 452 01be 0E94 0000 		call mcp2515_setRegister
+ 453               	.LM75:
+ 454 01c2 88E2      		ldi r24,lo8(40)
+ 455 01c4 612F      		mov r22,r17
+ 456 01c6 0E94 0000 		call mcp2515_setRegister
+ 457               	.LM76:
+ 458 01ca 80E0      		ldi r24,lo8(0)
+ 459 01cc 00C0      		rjmp .L17
+ 460               	.LVL39:
+ 461               	.L22:
+ 462               	.LM77:
+ 463 01ce 81E0      		ldi r24,lo8(1)
+ 464               	.LVL40:
+ 465               	.L17:
+ 466               	/* epilogue start */
+ 467               	.LM78:
+ 468 01d0 1F91      		pop r17
+ 469 01d2 0F91      		pop r16
+ 470 01d4 0895      		ret
+ 471               	.LFE11:
+ 473               	.global	mcp2515_read_can_id
+ 475               	mcp2515_read_can_id:
+ 476               	.LFB12:
+ 477               	.LM79:
+ 478               	.LVL41:
+ 479 01d6 EF92      		push r14
+ 480 01d8 FF92      		push r15
+ 481 01da 0F93      		push r16
+ 482 01dc 1F93      		push r17
+ 483 01de DF93      		push r29
+ 484 01e0 CF93      		push r28
+ 485 01e2 00D0      		rcall .
+ 486 01e4 00D0      		rcall .
+ 487 01e6 CDB7      		in r28,__SP_L__
+ 488 01e8 DEB7      		in r29,__SP_H__
+ 489               	/* prologue: function */
+ 490               	/* frame size = 4 */
+ 491               	/* stack size = 10 */
+ 492               	.L__stack_usage = 10
+ 493 01ea 7B01      		movw r14,r22
+ 494 01ec 8A01      		movw r16,r20
+ 495               	.LM80:
+ 496 01ee FB01      		movw r30,r22
+ 497 01f0 1082      		st Z,__zero_reg__
+ 498               	.LM81:
+ 499 01f2 FA01      		movw r30,r20
+ 500 01f4 1082      		st Z,__zero_reg__
+ 501 01f6 1182      		std Z+1,__zero_reg__
+ 502 01f8 1282      		std Z+2,__zero_reg__
+ 503 01fa 1382      		std Z+3,__zero_reg__
+ 504               	.LM82:
+ 505 01fc BE01      		movw r22,r28
+ 506               	.LVL42:
+ 507 01fe 6F5F      		subi r22,lo8(-(1))
+ 508 0200 7F4F      		sbci r23,hi8(-(1))
+ 509 0202 44E0      		ldi r20,lo8(4)
+ 510               	.LVL43:
+ 511 0204 0E94 0000 		call mcp2515_readRegisterS
+ 512               	.LVL44:
+ 513               	.LM83:
+ 514 0208 6A81      		ldd r22,Y+2
+ 515 020a 862F      		mov r24,r22
+ 516 020c 8295      		swap r24
+ 517 020e 8695      		lsr r24
+ 518 0210 8770      		andi r24,lo8(7)
+ 519 0212 2981      		ldd r18,Y+1
+ 520 0214 30E0      		ldi r19,lo8(0)
+ 521 0216 E3E0      		ldi r30,3
+ 522 0218 220F      	1:	lsl r18
+ 523 021a 331F      		rol r19
+ 524 021c EA95      		dec r30
+ 525 021e 01F4      		brne 1b
+ 526 0220 280F      		add r18,r24
+ 527 0222 311D      		adc r19,__zero_reg__
+ 528 0224 4427      		clr r20
+ 529 0226 37FD      		sbrc r19,7
+ 530 0228 4095      		com r20
+ 531 022a 542F      		mov r21,r20
+ 532 022c F801      		movw r30,r16
+ 533 022e 2083      		st Z,r18
+ 534 0230 3183      		std Z+1,r19
+ 535 0232 4283      		std Z+2,r20
+ 536 0234 5383      		std Z+3,r21
+ 537               	.LM84:
+ 538 0236 63FF      		sbrs r22,3
+ 539 0238 00C0      		rjmp .L23
+ 540               	.LM85:
+ 541 023a 9B81      		ldd r25,Y+3
+ 542 023c 80E0      		ldi r24,lo8(0)
+ 543 023e AA27      		clr r26
+ 544 0240 97FD      		sbrc r25,7
+ 545 0242 A095      		com r26
+ 546 0244 BA2F      		mov r27,r26
+ 547 0246 7C81      		ldd r23,Y+4
+ 548 0248 870F      		add r24,r23
+ 549 024a 911D      		adc r25,__zero_reg__
+ 550 024c A11D      		adc r26,__zero_reg__
+ 551 024e B11D      		adc r27,__zero_reg__
+ 552               	.LM86:
+ 553 0250 72E0      		ldi r23,2
+ 554 0252 220F      	1:	lsl r18
+ 555 0254 331F      		rol r19
+ 556 0256 441F      		rol r20
+ 557 0258 551F      		rol r21
+ 558 025a 7A95      		dec r23
+ 559 025c 01F4      		brne 1b
+ 560 025e 6370      		andi r22,lo8(3)
+ 561 0260 260F      		add r18,r22
+ 562 0262 311D      		adc r19,__zero_reg__
+ 563 0264 411D      		adc r20,__zero_reg__
+ 564 0266 511D      		adc r21,__zero_reg__
+ 565               	.LM87:
+ 566 0268 A901      		movw r20,r18
+ 567 026a 3327      		clr r19
+ 568 026c 2227      		clr r18
+ 569               	.LM88:
+ 570 026e 820F      		add r24,r18
+ 571 0270 931F      		adc r25,r19
+ 572 0272 A41F      		adc r26,r20
+ 573 0274 B51F      		adc r27,r21
+ 574 0276 8083      		st Z,r24
+ 575 0278 9183      		std Z+1,r25
+ 576 027a A283      		std Z+2,r26
+ 577 027c B383      		std Z+3,r27
+ 578               	.LM89:
+ 579 027e 81E0      		ldi r24,lo8(1)
+ 580 0280 F701      		movw r30,r14
+ 581 0282 8083      		st Z,r24
+ 582               	.L23:
+ 583               	/* epilogue start */
+ 584               	.LM90:
+ 585 0284 0F90      		pop __tmp_reg__
+ 586 0286 0F90      		pop __tmp_reg__
+ 587 0288 0F90      		pop __tmp_reg__
+ 588 028a 0F90      		pop __tmp_reg__
+ 589 028c CF91      		pop r28
+ 590 028e DF91      		pop r29
+ 591 0290 1F91      		pop r17
+ 592 0292 0F91      		pop r16
+ 593               	.LVL45:
+ 594 0294 FF90      		pop r15
+ 595 0296 EF90      		pop r14
+ 596               	.LVL46:
+ 597 0298 0895      		ret
+ 598               	.LFE12:
+ 600               	.global	mcp2515_read_canMsg
+ 602               	mcp2515_read_canMsg:
+ 603               	.LFB13:
+ 604               	.LM91:
+ 605               	.LVL47:
+ 606 029a 0F93      		push r16
+ 607 029c 1F93      		push r17
+ 608 029e CF93      		push r28
+ 609 02a0 DF93      		push r29
+ 610               	/* prologue: function */
+ 611               	/* frame size = 0 */
+ 612               	/* stack size = 4 */
+ 613               	.L__stack_usage = 4
+ 614 02a2 182F      		mov r17,r24
+ 615 02a4 EB01      		movw r28,r22
+ 616               	.LVL48:
+ 617               	.LM92:
+ 618 02a6 AB01      		movw r20,r22
+ 619 02a8 4F5F      		subi r20,lo8(-(1))
+ 620 02aa 5F4F      		sbci r21,hi8(-(1))
+ 621 02ac 0E94 0000 		call mcp2515_read_can_id
+ 622               	.LVL49:
+ 623               	.LM93:
+ 624 02b0 812F      		mov r24,r17
+ 625 02b2 8150      		subi r24,lo8(-(-1))
+ 626               	.LVL50:
+ 627 02b4 0E94 0000 		call mcp2515_readRegister
+ 628 02b8 082F      		mov r16,r24
+ 629               	.LVL51:
+ 630               	.LM94:
+ 631 02ba 812F      		mov r24,r17
+ 632               	.LVL52:
+ 633 02bc 8C5F      		subi r24,lo8(-(4))
+ 634 02be 0E94 0000 		call mcp2515_readRegister
+ 635 02c2 8D83      		std Y+5,r24
+ 636               	.LM95:
+ 637 02c4 03FF      		sbrs r16,3
+ 638 02c6 00C0      		rjmp .L26
+ 639               	.LM96:
+ 640 02c8 91E0      		ldi r25,lo8(1)
+ 641 02ca 9E87      		std Y+14,r25
+ 642 02cc 00C0      		rjmp .L27
+ 643               	.L26:
+ 644               	.LM97:
+ 645 02ce 1E86      		std Y+14,__zero_reg__
+ 646               	.L27:
+ 647               	.LM98:
+ 648 02d0 482F      		mov r20,r24
+ 649 02d2 4F70      		andi r20,lo8(15)
+ 650 02d4 4D83      		std Y+5,r20
+ 651               	.LM99:
+ 652 02d6 BE01      		movw r22,r28
+ 653 02d8 6A5F      		subi r22,lo8(-(6))
+ 654 02da 7F4F      		sbci r23,hi8(-(6))
+ 655 02dc 812F      		mov r24,r17
+ 656 02de 8B5F      		subi r24,lo8(-(5))
+ 657 02e0 0E94 0000 		call mcp2515_readRegisterS
+ 658               	/* epilogue start */
+ 659               	.LM100:
+ 660 02e4 DF91      		pop r29
+ 661 02e6 CF91      		pop r28
+ 662               	.LVL53:
+ 663 02e8 1F91      		pop r17
+ 664               	.LVL54:
+ 665 02ea 0F91      		pop r16
+ 666               	.LVL55:
+ 667 02ec 0895      		ret
+ 668               	.LFE13:
+ 670               	.global	mcp2515_write_can_id
+ 672               	mcp2515_write_can_id:
+ 673               	.LFB14:
+ 674               	.LM101:
+ 675               	.LVL56:
+ 676 02ee DF93      		push r29
+ 677 02f0 CF93      		push r28
+ 678 02f2 00D0      		rcall .
+ 679 02f4 00D0      		rcall .
+ 680 02f6 CDB7      		in r28,__SP_L__
+ 681 02f8 DEB7      		in r29,__SP_H__
+ 682               	/* prologue: function */
+ 683               	/* frame size = 4 */
+ 684               	/* stack size = 6 */
+ 685               	.L__stack_usage = 6
+ 686               	.LM102:
+ 687 02fa F901      		movw r30,r18
+ 688               	.LVL57:
+ 689               	.LM103:
+ 690 02fc 6130      		cpi r22,lo8(1)
+ 691 02fe 01F4      		brne .L29
+ 692               	.LM104:
+ 693 0300 2C83      		std Y+4,r18
+ 694               	.LM105:
+ 695 0302 FB83      		std Y+3,r31
+ 696               	.LM106:
+ 697 0304 9A01      		movw r18,r20
+ 698               	.LVL58:
+ 699               	.LM107:
+ 700 0306 942F      		mov r25,r20
+ 701 0308 9C71      		andi r25,lo8(28)
+ 702 030a 990F      		lsl r25
+ 703 030c 990F      		lsl r25
+ 704 030e 990F      		lsl r25
+ 705               	.LM108:
+ 706 0310 4370      		andi r20,lo8(3)
+ 707               	.LVL59:
+ 708               	.LM109:
+ 709 0312 940F      		add r25,r20
+ 710               	.LM110:
+ 711 0314 9860      		ori r25,lo8(8)
+ 712 0316 9A83      		std Y+2,r25
+ 713               	.LM111:
+ 714 0318 A5E0      		ldi r26,5
+ 715 031a 3695      	1:	lsr r19
+ 716 031c 2795      		ror r18
+ 717 031e AA95      		dec r26
+ 718 0320 01F4      		brne 1b
+ 719               	.LVL60:
+ 720 0322 2983      		std Y+1,r18
+ 721 0324 00C0      		rjmp .L30
+ 722               	.LVL61:
+ 723               	.L29:
+ 724               	.LM112:
+ 725 0326 F3E0      		ldi r31,3
+ 726 0328 3695      	1:	lsr r19
+ 727 032a 2795      		ror r18
+ 728 032c FA95      		dec r31
+ 729 032e 01F4      		brne 1b
+ 730               	.LVL62:
+ 731 0330 2983      		std Y+1,r18
+ 732               	.LM113:
+ 733 0332 E295      		swap r30
+ 734               	.LVL63:
+ 735 0334 EE0F      		lsl r30
+ 736 0336 E07E      		andi r30,lo8(-32)
+ 737 0338 EA83      		std Y+2,r30
+ 738               	.LM114:
+ 739 033a 1C82      		std Y+4,__zero_reg__
+ 740               	.LM115:
+ 741 033c 1B82      		std Y+3,__zero_reg__
+ 742               	.L30:
+ 743               	.LM116:
+ 744 033e BE01      		movw r22,r28
+ 745               	.LVL64:
+ 746 0340 6F5F      		subi r22,lo8(-(1))
+ 747 0342 7F4F      		sbci r23,hi8(-(1))
+ 748 0344 44E0      		ldi r20,lo8(4)
+ 749 0346 0E94 0000 		call mcp2515_setRegisterS
+ 750               	.LVL65:
+ 751               	/* epilogue start */
+ 752               	.LM117:
+ 753 034a 0F90      		pop __tmp_reg__
+ 754 034c 0F90      		pop __tmp_reg__
+ 755 034e 0F90      		pop __tmp_reg__
+ 756 0350 0F90      		pop __tmp_reg__
+ 757 0352 CF91      		pop r28
+ 758 0354 DF91      		pop r29
+ 759 0356 0895      		ret
+ 760               	.LFE14:
+ 762               	.global	mcp2515_write_canMsg
+ 764               	mcp2515_write_canMsg:
+ 765               	.LFB15:
+ 766               	.LM118:
+ 767               	.LVL66:
+ 768 0358 0F93      		push r16
+ 769 035a 1F93      		push r17
+ 770 035c CF93      		push r28
+ 771 035e DF93      		push r29
+ 772               	/* prologue: function */
+ 773               	/* frame size = 0 */
+ 774               	/* stack size = 4 */
+ 775               	.L__stack_usage = 4
+ 776 0360 082F      		mov r16,r24
+ 777 0362 EB01      		movw r28,r22
+ 778               	.LVL67:
+ 779               	.LM119:
+ 780 0364 1D81      		ldd r17,Y+5
+ 781               	.LVL68:
+ 782               	.LM120:
+ 783 0366 6A5F      		subi r22,lo8(-(6))
+ 784 0368 7F4F      		sbci r23,hi8(-(6))
+ 785               	.LVL69:
+ 786 036a 8B5F      		subi r24,lo8(-(5))
+ 787               	.LVL70:
+ 788 036c 412F      		mov r20,r17
+ 789 036e 0E94 0000 		call mcp2515_setRegisterS
+ 790               	.LVL71:
+ 791               	.LM121:
+ 792 0372 2981      		ldd r18,Y+1
+ 793 0374 3A81      		ldd r19,Y+2
+ 794 0376 4B81      		ldd r20,Y+3
+ 795 0378 5C81      		ldd r21,Y+4
+ 796 037a 802F      		mov r24,r16
+ 797 037c 6881      		ld r22,Y
+ 798 037e 0E94 0000 		call mcp2515_write_can_id
+ 799               	.LM122:
+ 800 0382 8E85      		ldd r24,Y+14
+ 801 0384 8130      		cpi r24,lo8(1)
+ 802 0386 01F4      		brne .L32
+ 803               	.LM123:
+ 804 0388 1064      		ori r17,lo8(64)
+ 805               	.LVL72:
+ 806               	.L32:
+ 807               	.LM124:
+ 808 038a 802F      		mov r24,r16
+ 809 038c 8C5F      		subi r24,lo8(-(4))
+ 810 038e 612F      		mov r22,r17
+ 811 0390 0E94 0000 		call mcp2515_setRegister
+ 812               	/* epilogue start */
+ 813               	.LM125:
+ 814 0394 DF91      		pop r29
+ 815 0396 CF91      		pop r28
+ 816               	.LVL73:
+ 817 0398 1F91      		pop r17
+ 818               	.LVL74:
+ 819 039a 0F91      		pop r16
+ 820               	.LVL75:
+ 821 039c 0895      		ret
+ 822               	.LFE15:
+ 824               	.global	mcp2515_start_transmit
+ 826               	mcp2515_start_transmit:
+ 827               	.LFB16:
+ 828               	.LM126:
+ 829               	.LVL76:
+ 830               	/* prologue: function */
+ 831               	/* frame size = 0 */
+ 832               	/* stack size = 0 */
+ 833               	.L__stack_usage = 0
+ 834               	.LM127:
+ 835 039e 8150      		subi r24,lo8(-(-1))
+ 836               	.LVL77:
+ 837 03a0 68E0      		ldi r22,lo8(8)
+ 838 03a2 48E0      		ldi r20,lo8(8)
+ 839 03a4 0E94 0000 		call mcp2515_modifyRegister
+ 840               	.LVL78:
+ 841               	/* epilogue start */
+ 842               	.LM128:
+ 843 03a8 0895      		ret
+ 844               	.LFE16:
+ 846               	.global	mcp2515_getNextFreeTXBuf
+ 848               	mcp2515_getNextFreeTXBuf:
+ 849               	.LFB17:
+ 850               	.LM129:
+ 851               	.LVL79:
+ 852 03aa BF92      		push r11
+ 853 03ac CF92      		push r12
+ 854 03ae DF92      		push r13
+ 855 03b0 EF92      		push r14
+ 856 03b2 FF92      		push r15
+ 857 03b4 0F93      		push r16
+ 858 03b6 1F93      		push r17
+ 859 03b8 DF93      		push r29
+ 860 03ba CF93      		push r28
+ 861 03bc 00D0      		rcall .
+ 862 03be 0F92      		push __tmp_reg__
+ 863 03c0 CDB7      		in r28,__SP_L__
+ 864 03c2 DEB7      		in r29,__SP_H__
+ 865               	/* prologue: function */
+ 866               	/* frame size = 3 */
+ 867               	/* stack size = 12 */
+ 868               	.L__stack_usage = 12
+ 869 03c4 7C01      		movw r14,r24
+ 870               	.LM130:
+ 871 03c6 DE01      		movw r26,r28
+ 872 03c8 1196      		adiw r26,1
+ 873 03ca E0E0      		ldi r30,lo8(C.0.2226)
+ 874 03cc F0E0      		ldi r31,hi8(C.0.2226)
+ 875 03ce 83E0      		ldi r24,lo8(3)
+ 876               	.LVL80:
+ 877               	.L35:
+ 878 03d0 0190      		ld r0,Z+
+ 879 03d2 0D92      		st X+,r0
+ 880 03d4 8150      		subi r24,lo8(-(-1))
+ 881 03d6 01F4      		brne .L35
+ 882               	.LVL81:
+ 883               	.LM131:
+ 884 03d8 F701      		movw r30,r14
+ 885 03da 1082      		st Z,__zero_reg__
+ 886               	.LVL82:
+ 887 03dc 8E01      		movw r16,r28
+ 888 03de 0F5F      		subi r16,lo8(-(1))
+ 889 03e0 1F4F      		sbci r17,hi8(-(1))
+ 890               	.LM132:
+ 891 03e2 B4E0      		ldi r27,lo8(4)
+ 892 03e4 CB2E      		mov r12,r27
+ 893 03e6 D12C      		mov r13,__zero_reg__
+ 894 03e8 CC0E      		add r12,r28
+ 895 03ea DD1E      		adc r13,r29
+ 896               	.LVL83:
+ 897               	.L38:
+ 898               	.LM133:
+ 899 03ec F801      		movw r30,r16
+ 900 03ee B190      		ld r11,Z+
+ 901 03f0 8F01      		movw r16,r30
+ 902 03f2 8B2D      		mov r24,r11
+ 903 03f4 0E94 0000 		call mcp2515_readRegister
+ 904               	.LVL84:
+ 905               	.LM134:
+ 906 03f8 83FD      		sbrc r24,3
+ 907 03fa 00C0      		rjmp .L36
+ 908               	.LM135:
+ 909 03fc B394      		inc r11
+ 910 03fe F701      		movw r30,r14
+ 911 0400 B082      		st Z,r11
+ 912               	.LVL85:
+ 913               	.LM136:
+ 914 0402 80E0      		ldi r24,lo8(0)
+ 915               	.LVL86:
+ 916 0404 00C0      		rjmp .L37
+ 917               	.LVL87:
+ 918               	.L36:
+ 919               	.LM137:
+ 920 0406 0C15      		cp r16,r12
+ 921 0408 1D05      		cpc r17,r13
+ 922 040a 01F4      		brne .L38
+ 923               	.LM138:
+ 924 040c 82E0      		ldi r24,lo8(2)
+ 925               	.LVL88:
+ 926               	.L37:
+ 927               	/* epilogue start */
+ 928               	.LM139:
+ 929 040e 0F90      		pop __tmp_reg__
+ 930 0410 0F90      		pop __tmp_reg__
+ 931 0412 0F90      		pop __tmp_reg__
+ 932 0414 CF91      		pop r28
+ 933 0416 DF91      		pop r29
+ 934 0418 1F91      		pop r17
+ 935 041a 0F91      		pop r16
+ 936 041c FF90      		pop r15
+ 937 041e EF90      		pop r14
+ 938               	.LVL89:
+ 939 0420 DF90      		pop r13
+ 940 0422 CF90      		pop r12
+ 941 0424 BF90      		pop r11
+ 942 0426 0895      		ret
+ 943               	.LFE17:
+ 945               	.global	mcp2515_initCANBuffers
+ 947               	mcp2515_initCANBuffers:
+ 948               	.LFB18:
+ 949               	.LM140:
+ 950 0428 1F93      		push r17
+ 951               	/* prologue: function */
+ 952               	/* frame size = 0 */
+ 953               	/* stack size = 1 */
+ 954               	.L__stack_usage = 1
+ 955               	.LM141:
+ 956 042a 80E2      		ldi r24,lo8(32)
+ 957 042c 60E0      		ldi r22,lo8(0)
+ 958 042e 20E0      		ldi r18,lo8(0)
+ 959 0430 30E0      		ldi r19,hi8(0)
+ 960 0432 40E0      		ldi r20,hlo8(0)
+ 961 0434 50E0      		ldi r21,hhi8(0)
+ 962 0436 0E94 0000 		call mcp2515_write_can_id
+ 963               	.LM142:
+ 964 043a 84E2      		ldi r24,lo8(36)
+ 965 043c 60E0      		ldi r22,lo8(0)
+ 966 043e 20E0      		ldi r18,lo8(0)
+ 967 0440 30E0      		ldi r19,hi8(0)
+ 968 0442 40E0      		ldi r20,hlo8(0)
+ 969 0444 50E0      		ldi r21,hhi8(0)
+ 970 0446 0E94 0000 		call mcp2515_write_can_id
+ 971               	.LM143:
+ 972 044a 80E0      		ldi r24,lo8(0)
+ 973 044c 61E0      		ldi r22,lo8(1)
+ 974 044e 20E0      		ldi r18,lo8(0)
+ 975 0450 30E0      		ldi r19,hi8(0)
+ 976 0452 40E0      		ldi r20,hlo8(0)
+ 977 0454 50E0      		ldi r21,hhi8(0)
+ 978 0456 0E94 0000 		call mcp2515_write_can_id
+ 979               	.LM144:
+ 980 045a 84E0      		ldi r24,lo8(4)
+ 981 045c 60E0      		ldi r22,lo8(0)
+ 982 045e 20E0      		ldi r18,lo8(0)
+ 983 0460 30E0      		ldi r19,hi8(0)
+ 984 0462 40E0      		ldi r20,hlo8(0)
+ 985 0464 50E0      		ldi r21,hhi8(0)
+ 986 0466 0E94 0000 		call mcp2515_write_can_id
+ 987               	.LM145:
+ 988 046a 88E0      		ldi r24,lo8(8)
+ 989 046c 61E0      		ldi r22,lo8(1)
+ 990 046e 20E0      		ldi r18,lo8(0)
+ 991 0470 30E0      		ldi r19,hi8(0)
+ 992 0472 40E0      		ldi r20,hlo8(0)
+ 993 0474 50E0      		ldi r21,hhi8(0)
+ 994 0476 0E94 0000 		call mcp2515_write_can_id
+ 995               	.LM146:
+ 996 047a 80E1      		ldi r24,lo8(16)
+ 997 047c 60E0      		ldi r22,lo8(0)
+ 998 047e 20E0      		ldi r18,lo8(0)
+ 999 0480 30E0      		ldi r19,hi8(0)
+ 1000 0482 40E0      		ldi r20,hlo8(0)
+ 1001 0484 50E0      		ldi r21,hhi8(0)
+ 1002 0486 0E94 0000 		call mcp2515_write_can_id
+ 1003               	.LM147:
+ 1004 048a 84E1      		ldi r24,lo8(20)
+ 1005 048c 60E0      		ldi r22,lo8(0)
+ 1006 048e 20E0      		ldi r18,lo8(0)
+ 1007 0490 30E0      		ldi r19,hi8(0)
+ 1008 0492 40E0      		ldi r20,hlo8(0)
+ 1009 0494 50E0      		ldi r21,hhi8(0)
+ 1010 0496 0E94 0000 		call mcp2515_write_can_id
+ 1011               	.LM148:
+ 1012 049a 88E1      		ldi r24,lo8(24)
+ 1013 049c 60E0      		ldi r22,lo8(0)
+ 1014 049e 20E0      		ldi r18,lo8(0)
+ 1015 04a0 30E0      		ldi r19,hi8(0)
+ 1016 04a2 40E0      		ldi r20,hlo8(0)
+ 1017 04a4 50E0      		ldi r21,hhi8(0)
+ 1018 04a6 0E94 0000 		call mcp2515_write_can_id
+ 1019               	.LVL90:
+ 1020               	.LM149:
+ 1021 04aa 10E3      		ldi r17,lo8(48)
+ 1022               	.LVL91:
+ 1023               	.L42:
+ 1024               	.LM150:
+ 1025 04ac 812F      		mov r24,r17
+ 1026 04ae 60E0      		ldi r22,lo8(0)
+ 1027 04b0 0E94 0000 		call mcp2515_setRegister
+ 1028               	.LM151:
+ 1029 04b4 812F      		mov r24,r17
+ 1030 04b6 805F      		subi r24,lo8(-(16))
+ 1031 04b8 60E0      		ldi r22,lo8(0)
+ 1032 04ba 0E94 0000 		call mcp2515_setRegister
+ 1033               	.LM152:
+ 1034 04be 812F      		mov r24,r17
+ 1035 04c0 805E      		subi r24,lo8(-(32))
+ 1036 04c2 60E0      		ldi r22,lo8(0)
+ 1037 04c4 0E94 0000 		call mcp2515_setRegister
+ 1038               	.LM153:
+ 1039 04c8 1F5F      		subi r17,lo8(-(1))
+ 1040               	.LVL92:
+ 1041               	.LM154:
+ 1042 04ca 1E33      		cpi r17,lo8(62)
+ 1043 04cc 01F4      		brne .L42
+ 1044               	.LM155:
+ 1045 04ce 80E6      		ldi r24,lo8(96)
+ 1046 04d0 60E0      		ldi r22,lo8(0)
+ 1047 04d2 0E94 0000 		call mcp2515_setRegister
+ 1048               	.LM156:
+ 1049 04d6 80E7      		ldi r24,lo8(112)
+ 1050 04d8 60E0      		ldi r22,lo8(0)
+ 1051 04da 0E94 0000 		call mcp2515_setRegister
+ 1052               	/* epilogue start */
+ 1053               	.LM157:
+ 1054 04de 1F91      		pop r17
+ 1055               	.LVL93:
+ 1056 04e0 0895      		ret
+ 1057               	.LFE18:
+ 1059               	.global	mcp2515_set_config_mode
+ 1061               	mcp2515_set_config_mode:
+ 1062               	.LFB19:
+ 1063               	.LM158:
+ 1064               	/* prologue: function */
+ 1065               	/* frame size = 0 */
+ 1066               	/* stack size = 0 */
+ 1067               	.L__stack_usage = 0
+ 1068               	.LM159:
+ 1069 04e2 8FE0      		ldi r24,lo8(15)
+ 1070 04e4 0E94 0000 		call mcp2515_readRegister
+ 1071               	.LVL94:
+ 1072               	.LM160:
+ 1073 04e8 682F      		mov r22,r24
+ 1074 04ea 6068      		ori r22,lo8(-128)
+ 1075               	.LVL95:
+ 1076               	.LM161:
+ 1077 04ec 6F79      		andi r22,lo8(-97)
+ 1078               	.LVL96:
+ 1079               	.LM162:
+ 1080 04ee 8FE0      		ldi r24,lo8(15)
+ 1081 04f0 0E94 0000 		call mcp2515_setRegister
+ 1082               	.LVL97:
+ 1083               	.LM163:
+ 1084 04f4 8FE0      		ldi r24,lo8(15)
+ 1085 04f6 0E94 0000 		call mcp2515_readRegister
+ 1086               	.LVL98:
+ 1087               	.LM164:
+ 1088 04fa 982F      		mov r25,r24
+ 1089 04fc 907E      		andi r25,lo8(-32)
+ 1090               	.LM165:
+ 1091 04fe 81E0      		ldi r24,lo8(1)
+ 1092               	.LVL99:
+ 1093 0500 9038      		cpi r25,lo8(-128)
+ 1094 0502 01F4      		brne .L45
+ 1095 0504 80E0      		ldi r24,lo8(0)
+ 1096               	.L45:
+ 1097               	.LM166:
+ 1098 0506 0895      		ret
+ 1099               	.LFE19:
+ 1101               	.global	mcp2515_init
+ 1103               	mcp2515_init:
+ 1104               	.LFB24:
+ 1105               	.LM167:
+ 1106               	.LVL100:
+ 1107 0508 1F93      		push r17
+ 1108 050a DF93      		push r29
+ 1109 050c CF93      		push r28
+ 1110 050e 0F92      		push __tmp_reg__
+ 1111 0510 CDB7      		in r28,__SP_L__
+ 1112 0512 DEB7      		in r29,__SP_H__
+ 1113               	/* prologue: function */
+ 1114               	/* frame size = 1 */
+ 1115               	/* stack size = 4 */
+ 1116               	.L__stack_usage = 4
+ 1117               	.LM168:
+ 1118 0514 8983      		std Y+1,r24
+ 1119 0516 0E94 0000 		call mcp2515_reset
+ 1120               	.LVL101:
+ 1121               	.LM169:
+ 1122 051a C398      		cbi 56-0x20,3
+ 1123               	.LM170:
+ 1124 051c 8981      		ldd r24,Y+1
+ 1125 051e 0E94 0000 		call mcp2515_configRate
+ 1126 0522 182F      		mov r17,r24
+ 1127               	.LVL102:
+ 1128               	.LM171:
+ 1129 0524 8823      		tst r24
+ 1130 0526 01F4      		brne .L47
+ 1131               	.LM172:
+ 1132 0528 0E94 0000 		call mcp2515_initCANBuffers
+ 1133               	.LVL103:
+ 1134               	.LM173:
+ 1135 052c 80E6      		ldi r24,lo8(96)
+ 1136 052e 64E6      		ldi r22,lo8(100)
+ 1137 0530 44E0      		ldi r20,lo8(4)
+ 1138 0532 0E94 0000 		call mcp2515_modifyRegister
+ 1139               	.LM174:
+ 1140 0536 80E7      		ldi r24,lo8(112)
+ 1141 0538 60E6      		ldi r22,lo8(96)
+ 1142 053a 40E0      		ldi r20,lo8(0)
+ 1143 053c 0E94 0000 		call mcp2515_modifyRegister
+ 1144               	.L47:
+ 1145               	.LM175:
+ 1146 0540 C39A      		sbi 56-0x20,3
+ 1147               	.LVL104:
+ 1148 0542 28EE      		ldi r18,lo8(1000)
+ 1149 0544 33E0      		ldi r19,hi8(1000)
+ 1150               	.LBB12:
+ 1151               	.LBB13:
+ 1152               	.LBB14:
+ 1153               	.LBB15:
+ 1154               	.LM176:
+ 1155 0546 40E9      		ldi r20,lo8(400)
+ 1156 0548 51E0      		ldi r21,hi8(400)
+ 1157               	.LVL105:
+ 1158               	.L48:
+ 1159 054a FA01      		movw r30,r20
+ 1160               	/* #APP */
+ 1161               	 ;  105 "/usr/lib/gcc/avr/4.5.2/../../../../avr/include/util/delay_basic.h" 1
+ 1162 054c 3197      		1: sbiw r30,1
+ 1163 054e 01F4      		brne 1b
+ 1164               	 ;  0 "" 2
+ 1165               	.LVL106:
+ 1166               	/* #NOAPP */
+ 1167 0550 2150      		subi r18,lo8(-(-1))
+ 1168 0552 3040      		sbci r19,hi8(-(-1))
+ 1169               	.LBE15:
+ 1170               	.LBE14:
+ 1171               	.LM177:
+ 1172 0554 01F4      		brne .L48
+ 1173               	.LBE13:
+ 1174               	.LBE12:
+ 1175               	.LM178:
+ 1176 0556 812F      		mov r24,r17
+ 1177               	/* epilogue start */
+ 1178 0558 0F90      		pop __tmp_reg__
+ 1179 055a CF91      		pop r28
+ 1180 055c DF91      		pop r29
+ 1181 055e 1F91      		pop r17
+ 1182               	.LVL107:
+ 1183 0560 0895      		ret
+ 1184               	.LFE24:
+ 1186               		.data
+ 1189               	C.0.2226:
+ 1190 0000 30        		.byte	48
+ 1191 0001 40        		.byte	64
+ 1192 0002 50        		.byte	80
+ 1369               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 mcp2515.c
+     /tmp/ccgaw8kU.s:2      *ABS*:000000000000003f __SREG__
+     /tmp/ccgaw8kU.s:3      *ABS*:000000000000003e __SP_H__
+     /tmp/ccgaw8kU.s:4      *ABS*:000000000000003d __SP_L__
+     /tmp/ccgaw8kU.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccgaw8kU.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccgaw8kU.s:18     .text:0000000000000000 mcp2515_readXXStatus_helper
+     /tmp/ccgaw8kU.s:43     .text:000000000000000e mcp2515_reset
+     /tmp/ccgaw8kU.s:70     .text:0000000000000026 mcp2515_readRegister
+     /tmp/ccgaw8kU.s:103    .text:0000000000000042 mcp2515_readRegisterS
+     /tmp/ccgaw8kU.s:174    .text:000000000000009c mcp2515_setRegister
+     /tmp/ccgaw8kU.s:218    .text:00000000000000ce mcp2515_setRegisterS
+     /tmp/ccgaw8kU.s:289    .text:0000000000000128 mcp2515_modifyRegister
+     /tmp/ccgaw8kU.s:339    .text:0000000000000166 mcp2515_readStatus
+     /tmp/ccgaw8kU.s:356    .text:000000000000016e mcp2515_RXStatus
+     /tmp/ccgaw8kU.s:373    .text:0000000000000176 mcp2515_setCANCTRL_Mode
+     /tmp/ccgaw8kU.s:412    .text:000000000000019a mcp2515_configRate
+     /tmp/ccgaw8kU.s:475    .text:00000000000001d6 mcp2515_read_can_id
+     /tmp/ccgaw8kU.s:602    .text:000000000000029a mcp2515_read_canMsg
+     /tmp/ccgaw8kU.s:672    .text:00000000000002ee mcp2515_write_can_id
+     /tmp/ccgaw8kU.s:764    .text:0000000000000358 mcp2515_write_canMsg
+     /tmp/ccgaw8kU.s:826    .text:000000000000039e mcp2515_start_transmit
+     /tmp/ccgaw8kU.s:848    .text:00000000000003aa mcp2515_getNextFreeTXBuf
+     /tmp/ccgaw8kU.s:1189   .data:0000000000000000 C.0.2226
+     /tmp/ccgaw8kU.s:947    .text:0000000000000428 mcp2515_initCANBuffers
+     /tmp/ccgaw8kU.s:1061   .text:00000000000004e2 mcp2515_set_config_mode
+     /tmp/ccgaw8kU.s:1103   .text:0000000000000508 mcp2515_init
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+spi_readwrite
+spi_read
+delayloop32

@@ -1,0 +1,100 @@
+   1               		.file	"debughelper.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               	.global	Debug_ByteToUart_p
+  20               	Debug_ByteToUart_p:
+  21               	.LFB2:
+  22               	.LM1:
+  23               	.LVL0:
+  24 0000 1F93      		push r17
+  25               	/* prologue: function */
+  26               	/* frame size = 0 */
+  27 0002 162F      		mov r17,r22
+  28               	.LM2:
+  29 0004 0E94 0000 		call term_puts_p
+  30               	.LVL1:
+  31               	.LM3:
+  32 0008 80E0      		ldi r24,lo8(__c.1361)
+  33 000a 90E0      		ldi r25,hi8(__c.1361)
+  34 000c 0E94 0000 		call term_puts_p
+  35               	.LM4:
+  36 0010 812F      		mov r24,r17
+  37 0012 0E94 0000 		call term_puthex_byte
+  38               	.LM5:
+  39 0016 80E0      		ldi r24,lo8(__c.1363)
+  40 0018 90E0      		ldi r25,hi8(__c.1363)
+  41 001a 0E94 0000 		call term_puts_p
+  42               	.LM6:
+  43 001e 812F      		mov r24,r17
+  44 0020 0E94 0000 		call term_putbin_byte
+  45               	.LM7:
+  46 0024 812F      		mov r24,r17
+  47 0026 90E0      		ldi r25,lo8(0)
+  48 0028 0E94 0000 		call isprint
+  49 002c 892B      		or r24,r25
+  50 002e 01F0      		breq .L2
+  51               	.LM8:
+  52 0030 80E0      		ldi r24,lo8(__c.1365)
+  53 0032 90E0      		ldi r25,hi8(__c.1365)
+  54 0034 0E94 0000 		call term_puts_p
+  55               	.LM9:
+  56 0038 812F      		mov r24,r17
+  57 003a 0E94 0000 		call term_putc
+  58               	.LM10:
+  59 003e 80E0      		ldi r24,lo8(__c.1367)
+  60 0040 90E0      		ldi r25,hi8(__c.1367)
+  61 0042 0E94 0000 		call term_puts_p
+  62               	.L2:
+  63               	.LM11:
+  64 0046 80E0      		ldi r24,lo8(__c.1369)
+  65 0048 90E0      		ldi r25,hi8(__c.1369)
+  66 004a 0E94 0000 		call term_puts_p
+  67               	/* epilogue start */
+  68               	.LM12:
+  69 004e 1F91      		pop r17
+  70               	.LVL2:
+  71 0050 0895      		ret
+  72               	.LFE2:
+  74               		.section	.progmem.data,"a",@progbits
+  77               	__c.1369:
+  78 0000 0A00      		.string	"\n"
+  81               	__c.1367:
+  82 0002 2900      		.string	")"
+  85               	__c.1365:
+  86 0004 2028 00   		.string	" ("
+  89               	__c.1363:
+  90 0007 203D 2000 		.string	" = "
+  93               	__c.1361:
+  94 000b 203D 2030 		.string	" = 0x"
+  94      7800 
+ 119               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 debughelper.c
+     /tmp/ccuTssTY.s:2      *ABS*:0000003f __SREG__
+     /tmp/ccuTssTY.s:3      *ABS*:0000003e __SP_H__
+     /tmp/ccuTssTY.s:4      *ABS*:0000003d __SP_L__
+     /tmp/ccuTssTY.s:5      *ABS*:00000034 __CCP__
+     /tmp/ccuTssTY.s:6      *ABS*:00000000 __tmp_reg__
+     /tmp/ccuTssTY.s:7      *ABS*:00000001 __zero_reg__
+     /tmp/ccuTssTY.s:20     .text:00000000 Debug_ByteToUart_p
+     /tmp/ccuTssTY.s:93     .progmem.data:0000000b __c.1361
+     /tmp/ccuTssTY.s:89     .progmem.data:00000007 __c.1363
+     /tmp/ccuTssTY.s:85     .progmem.data:00000004 __c.1365
+     /tmp/ccuTssTY.s:81     .progmem.data:00000002 __c.1367
+     /tmp/ccuTssTY.s:77     .progmem.data:00000000 __c.1369
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+term_puts_p
+term_puthex_byte
+term_putbin_byte
+isprint
+term_putc

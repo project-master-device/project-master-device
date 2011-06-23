@@ -1,0 +1,2 @@
+/usr/bin/ar cr libarduinocore.a  CMakeFiles/arduinocore.dir/HardwareSerial.cpp.o CMakeFiles/arduinocore.dir/Print.cpp.o CMakeFiles/arduinocore.dir/wiring.c.o CMakeFiles/arduinocore.dir/wiring_shift.c.o CMakeFiles/arduinocore.dir/WInterrupts.c.o CMakeFiles/arduinocore.dir/wiring_digital.c.o CMakeFiles/arduinocore.dir/WMath.cpp.o CMakeFiles/arduinocore.dir/Tone.cpp.o CMakeFiles/arduinocore.dir/WString.cpp.o CMakeFiles/arduinocore.dir/pins_arduino.c.o CMakeFiles/arduinocore.dir/wiring_analog.c.o CMakeFiles/arduinocore.dir/wiring_pulse.c.o
+/usr/bin/ranlib libarduinocore.a

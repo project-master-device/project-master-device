@@ -114,7 +114,7 @@ int can_net_init(const uint32_t send_frame_timeout_us, const uint32_t confirmati
  * @ 2) send_callback: callback to be called after sending msg
  * without CAN_NET_QUEUING you should not send msgs too often
  */
-void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg,/*const uint8_t port,*/ can_net_send_callback_t send_callback);
+void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback);
 
 /* ----------------------------------------------------------------------------------------------*/
 //#ifdef CAN_NET_LOWLVL_FUNCS

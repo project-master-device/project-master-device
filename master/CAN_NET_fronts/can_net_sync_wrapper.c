@@ -2,8 +2,10 @@
  * can_net_sync_wrapper.c
  *
  *  Created on: Jun 3, 2011
- *      Author: mgaldoru
+ *      Author: Gennady.Kalashnikov
  */
+
+//TODO: licence - MIT
 
 #include "can_net_sync_wrapper.h"
 

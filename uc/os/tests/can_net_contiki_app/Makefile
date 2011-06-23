@@ -1,7 +1,7 @@
 CONTIKI_PROJECT = can_net_contiki_app
 all: $(CONTIKI_PROJECT)
 
-CONTIKI = ../../trunk/
+CONTIKI = ../../
 
 CONTIKI_BACKYARD_TREE = on
 CONTIKI_LOCAL_TREE = on

@@ -13,7 +13,7 @@
 #include "../../../../net/trunk/can_net.h"
 
 /**
- * can_net_start_sending_msg - start message sending
+ * can_net_send_msg_sync - start message sending
  * @ 1) msg: message to send - const msg_lvl2_t*
  * @return: return codes: look at callback return codes in can_net_middle.h
  */

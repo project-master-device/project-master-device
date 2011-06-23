@@ -15,6 +15,7 @@
 #  define CANCTRL_REQOP_NORMAL      0x00
 #  define CANCTRL_OSM               0x08
 #  define CANCTRL_ABAT              0x10
+#define FUCK EAH
 
 byte mcp_read_reg(byte reg) {
   digitalWrite(cs_pin, LOW);

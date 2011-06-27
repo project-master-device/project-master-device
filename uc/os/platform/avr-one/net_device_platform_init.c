@@ -7,6 +7,7 @@
 #include "dev/reader.h"
 
 #include <string.h>
+#include <util/delay.h>
 
 int net_device_platform_init() {
     config_section_t * sect = NULL;

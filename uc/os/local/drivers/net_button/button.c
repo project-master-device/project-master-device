@@ -24,7 +24,7 @@ int button_init(config_section_t * conf_sect) {
     process_start(&process_handle_button, NULL);
 
     //enable button interrupt
-    interrupt_register(config_section_get_uint(conf_sect, "offset", 9), INTERRUPT_ANY, button_handle_irq, (void *)conf_sect);
+    interrupt_register(config_section_get_uint(conf_sect, "offset", 9), INTERRUPT_FALL, button_handle_irq, (void *)conf_sect);
 
     return 0;
 }
@@ -39,8 +39,8 @@ PROCESS_THREAD(process_handle_button, ev, data) {
         if (ev == but_click) {
             //TODO send event to master
 //            ftimer_register_func(blink, NULL, 2);
-
-            interrupt_register(config_section_get_uint((config_section_t *)data, "offset", 9), INTERRUPT_ANY, button_handle_irq, data);
+            led2_blink(1, 1000);
+            interrupt_register(config_section_get_uint((config_section_t *)data, "offset", 9), INTERRUPT_FALL, button_handle_irq, data);
         }
     }
 

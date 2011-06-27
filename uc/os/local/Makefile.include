@@ -1,4 +1,4 @@
-LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net.c can_protocols.c
+LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c
 CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev net .}
 CONTIKIDIRS += $(CONTIKI_LOCAL)
 

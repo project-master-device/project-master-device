@@ -1,0 +1,14 @@
+CONTIKI_TARGET_DIRS = . dev
+CONTIKI_CORE = contiki-avr-one-main
+CONTIKI_TARGET_MAIN = ${CONTIKI_CORE}.o
+
+CONTIKI_TARGET_SOURCEFILES += ${CONTIKI_CORE}.c cfs-eeprom.c can_drv.c can_lowlevel.c net_device_platform_init.c lowlevel.c
+
+CONTIKI_SOURCEFILES += $(CONTIKI_TARGET_SOURCEFILES) 
+
+MCU=at90can128
+
+CONTIKI_PLAT_DEFS = -DF_CPU=16000000UL -DCAN_NET_CONTIKI
+
+CONTIKI_CPU=$(CONTIKI)/cpu/avr
+include $(CONTIKI_CPU)/Makefile.avr

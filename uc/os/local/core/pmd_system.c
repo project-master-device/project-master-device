@@ -4,8 +4,6 @@
 #include "lib/net_device.h"
 #include "lib/interrupt.h"
 
-#include <avr/interrupt.h>
-
 /**
  * @brief Two can_net callbacks: 0 -- for non-smb messages, 1 -- for smb messages.
  */

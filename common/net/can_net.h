@@ -45,7 +45,7 @@
 #define CAN_NET_H_
 
 //#define CAN_NET_CONTIKI
-#define CAN_NET_LINUX
+//#define CAN_NET_LINUX
 //#define CAN_NET_LOWLVL_FUNCS
 
 #ifdef CAN_NET_LINUX

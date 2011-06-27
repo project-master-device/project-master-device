@@ -37,6 +37,7 @@
  * 			-more flexible mutexes				- v0.85
  * 			-config, -log						-
  * 			-CAN_err frames handling			-
+ * 			...
  * 			-BIG refactoring					- v2.00
  */
 //TODO: make comments BETTER
@@ -60,7 +61,11 @@
 typedef struct {
 	can_net_recv_callback_t callback;
 	can_net_base_range_t check;
+	void* cb_ctx;
 } can_net_recv_callback_record_t;
+
+//const can_net_base_range_t can_net_std_range = {0, -1, 0, -1, 0, 1};
+extern const can_net_recv_callback_record_t can_net_std_cb_record;
 
 /**
  * @struct can_net_recv_callbacks_arr_t
@@ -88,6 +93,7 @@ typedef struct {
 #define CAN_NET_MAX_MSG_SIZE					CAN_NET_SEGM_FNL_MAX_NUM * CAN_NET_SEGM_FNL_DATALEN_B
 
 #define CAN_NET_PORT_BROADCAST					0
+#define CAN_NET_PORT_MAX						15// 0xf
 #define CAN_NET_LVL2_VER_STD					1
 #define CAN_NET_LVL2_VER_STD_CONFIRM			2
 
@@ -114,7 +120,7 @@ int can_net_init(const uint32_t send_frame_timeout_us, const uint32_t confirmati
  * @ 2) send_callback: callback to be called after sending msg
  * without CAN_NET_QUEUING you should not send msgs too often
  */
-void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback);
+void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx);
 
 /* ----------------------------------------------------------------------------------------------*/
 //#ifdef CAN_NET_LOWLVL_FUNCS

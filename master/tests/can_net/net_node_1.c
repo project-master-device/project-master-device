@@ -4,11 +4,10 @@
 #define CAN_NET_LOWLVL_FUNCS
 #define CAN_NET_CONFIRMATION
 
-#include "common.h"
+#include "../common.h"
 
 int main(void) {
 	can_net_recv_callbacks_arr_t recv_callbacks;
-	uint8_t my_port = 1;
 	recv_callbacks.len = 0;
 	recv_callbacks.records = NULL;
 	can_net_add_callbacks(recv_callbacks);
@@ -22,6 +21,7 @@ int main(void) {
 		printf("successful initialization\n");
 
 // sender:
+	uint8_t my_port = 1;
 	uint32_t hwa = 15;
 	uint16_t id = 18;
 	int rc;

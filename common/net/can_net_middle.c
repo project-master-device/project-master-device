@@ -8,8 +8,8 @@
 /* -------------------------------------INTERFACE_STRUCTS---------------------------------------*/
 
 //and small bonus
-inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg) {
-	send_cb(rc, msg);
+inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg, void* cb_ctx) {
+	send_cb(rc, msg, cb_ctx);
 	free(msg->data.itself);
 	free(msg);
 }
@@ -25,11 +25,12 @@ inline void remove_confirm_waiter(confirm_waiter_t* waiter) {
 	free(waiter);
 }
 
-inline void add_confirm_waiter(msg_lvl2_t* msg, const uint32_t tics, const can_net_send_callback_t cb) {
+inline void add_confirm_waiter(msg_lvl2_t* msg, const uint32_t tics, const can_net_send_callback_t cb, void* cb_ctx) {
 	confirm_waiter_t* cw = (confirm_waiter_t*)malloc(sizeof(confirm_waiter_t));
 	cw->msg = msg;
 	cw->tics_left = tics;
 	cw->callback = cb;
+	cw->cb_ctx = cb_ctx;
 	list_add(confirm_waiters_g, cw);
 }
 
@@ -52,7 +53,7 @@ void check_confirm_waiters() {
 		--curr_->tics_left;
 		if (curr_->tics_left <= 0) {
 			// remove waiter if time ran out
-			call_scb(curr_->callback, CAN_NET_RC_CONF_TIMEOUT, curr_->msg);
+			call_scb(curr_->callback, CAN_NET_RC_CONF_TIMEOUT, curr_->msg, curr_->cb_ctx);
 			remove_confirm_waiter(curr_);
 		}
 		curr_ = list_item_next(curr_);

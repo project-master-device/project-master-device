@@ -27,6 +27,8 @@
 
 /* ----------------------------------------LIST_STRUCTS-----------------------------------------*/
 
+const can_net_recv_callback_record_t can_net_std_cb_record = {NULL, {0, -1, 0, -1, 0, 1}, NULL};
+
 typedef struct {
 	void* next; // to use in list
 	can_frame_data_t it;
@@ -52,8 +54,8 @@ typedef struct {
 can_net_recv_callbacks_arr_t recv_callbacks_g = CAN_NET_RECV_CALLBACKS_ARR_INITIALIZER;
 
 #ifdef CAN_NET_LINUX
-	#define CAN_NET_MUTEX_L(mutex_p) pthread_mutex_lock(mutex_p);
-	#define CAN_NET_MUTEX_U(mutex_p) pthread_mutex_unlock(mutex_p);
+	#define MUTEX_L(mutex_p) pthread_mutex_lock(mutex_p);
+	#define MUTEX_U(mutex_p) pthread_mutex_unlock(mutex_p);
 	pthread_mutex_t data_mutex = PTHREAD_MUTEX_INITIALIZER;
 	pthread_mutex_t recv_callbacks_mutex = PTHREAD_MUTEX_INITIALIZER;
 	#ifdef CAN_NET_CONFIRMATION
@@ -65,14 +67,14 @@ can_net_recv_callbacks_arr_t recv_callbacks_g = CAN_NET_RECV_CALLBACKS_ARR_INITI
     #ifdef CAN_NET_CONFIRMATION
     #include "lib/ftimer.h"
     #endif
-	#define CAN_NET_MUTEX_L(mutex_p)
-	#define CAN_NET_MUTEX_U(mutex_p)
+	#define MUTEX_L(mutex_p)
+	#define MUTEX_U(mutex_p)
 #endif
 
 /*----------------------------------------------INIT-------------------------------------------*/
 
 void can_net_add_callbacks(can_net_recv_callbacks_arr_t recv_callbacks) {
-	CAN_NET_MUTEX_L(&recv_callbacks_mutex)
+	MUTEX_L(&recv_callbacks_mutex)
 	// concatenate old and given arrays by making new one:
 	can_net_recv_callbacks_arr_t old_arr = recv_callbacks_g;
 	recv_callbacks_g.len = old_arr.len + recv_callbacks.len;
@@ -87,7 +89,7 @@ void can_net_add_callbacks(can_net_recv_callbacks_arr_t recv_callbacks) {
 	// place given arr data at the end of new array:
 	int add_len_B = sizeof(can_net_recv_callback_record_t)*recv_callbacks.len;
 	memcpy(&recv_callbacks_g.records[old_arr.len], recv_callbacks.records, add_len_B);
-	CAN_NET_MUTEX_U(&recv_callbacks_mutex)
+	MUTEX_U(&recv_callbacks_mutex)
 }
 
 #ifdef CAN_NET_CONFIRMATION
@@ -95,9 +97,9 @@ void can_net_add_callbacks(can_net_recv_callbacks_arr_t recv_callbacks) {
 	#ifdef CAN_NET_LINUX
 	void* check_confirm_waiters_cycle(void* p) {
 		while(1) {
-			CAN_NET_MUTEX_L(&confirm_waiters_mutex)
+			MUTEX_L(&confirm_waiters_mutex)
 			check_confirm_waiters();
-			CAN_NET_MUTEX_U(&confirm_waiters_mutex)
+			MUTEX_U(&confirm_waiters_mutex)
 			// sleep:
 			usleep(CAN_NET_CONFIRMATION_TIC_TIME_US);
 		}
@@ -208,12 +210,13 @@ typedef struct {
 	uint16_t base;
 	uint8_t first_iteration;
 	can_net_send_callback_t callback;
+	void* cb_ctx;
 	segmentator_num_lfb_context_t* segm_ctx;
 } send_msg_context_t;
 
 // finish Msg_Send_Handler:
 void msh_finish(const int rc_up, send_msg_context_t* ctx) {
-	CAN_NET_MUTEX_L(&data_mutex)
+	MUTEX_L(&data_mutex)
 	int call_cb = 1;
 
 	#ifdef CAN_NET_CONFIRMATION
@@ -222,8 +225,8 @@ void msh_finish(const int rc_up, send_msg_context_t* ctx) {
 	#endif
 
 	if (call_cb)
-		call_scb(ctx->callback, rc_up, ctx->msg);
-	CAN_NET_MUTEX_U(&data_mutex)
+		call_scb(ctx->callback, rc_up, ctx->msg, ctx->cb_ctx);
+	MUTEX_U(&data_mutex)
 
 	free(ctx->segm_ctx);
 	free(ctx);
@@ -274,9 +277,9 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 			#ifdef CAN_NET_CONFIRMATION
 			// register confirmation waiting before sending last frame
 			if (ctx->segm_ctx->lfb) {
-				CAN_NET_MUTEX_L(&confirm_waiters_mutex)
-				add_confirm_waiter(ctx->msg, confirmation_tics_g, ctx->callback);
-				CAN_NET_MUTEX_U(&confirm_waiters_mutex)
+				MUTEX_L(&confirm_waiters_mutex)
+				add_confirm_waiter(ctx->msg, confirmation_tics_g, ctx->callback, ctx->cb_ctx);
+				MUTEX_U(&confirm_waiters_mutex)
 			}
 			#endif
 			can_send(new_frame, ctx);
@@ -285,7 +288,7 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 			#ifdef CAN_NET_QUEUING
 			// start processing new msg if there is any:
 			int process_next = 0;
-			CAN_NET_MUTEX_L(&data_mutex)
+			MUTEX_L(&data_mutex)
 			port_descriptor_t* p_p = NULL;
 			can_node_descriptor_t* can_node_p = NULL;
 			atom_descriptor_t* atom = get_atom_wtrace(ctx->msg->meta.port, ctx->msg->meta.hw_addr, ctx->msg->meta.id, ctx->msg->meta.is_system, &can_node_p, &p_p);
@@ -302,7 +305,7 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 				}
 				// else - (impossible on linux! whole receiving is under data_mutex)
 			}
-			CAN_NET_MUTEX_U(&data_mutex)
+			MUTEX_U(&data_mutex)
 			#endif
 
 			msh_finish(CAN_NET_RC_NORM, ctx);
@@ -317,10 +320,10 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 		#ifdef CAN_NET_CONFIRMATION
 		if (ctx->segm_ctx->lfb) {
 			// err while sending last frame => remove it from confirm_waiters:
-			CAN_NET_MUTEX_L(&confirm_waiters_mutex)
+			MUTEX_L(&confirm_waiters_mutex)
 			confirm_waiter_t* waiter = find_confirm_waiter(ctx->msg->meta.port, ctx->msg->meta.hw_addr, ctx->msg->meta.is_system, ctx->msg->meta.id);
 			remove_confirm_waiter(waiter);
-			CAN_NET_MUTEX_U(&confirm_waiters_mutex)
+			MUTEX_U(&confirm_waiters_mutex)
 		}
 		#endif
 		msh_finish(CAN_NET_RC_DRIVER_ERRS_START + drv_rc, ctx);
@@ -329,9 +332,10 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 #undef FINISH
 
 // INTERFACE:
-void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback) {
+void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx) {
 	send_msg_context_t* send_ctx = (send_msg_context_t*)malloc(sizeof(send_msg_context_t));
 	send_ctx->callback = send_callback;
+	send_ctx->cb_ctx = cb_ctx;
 	send_ctx->first_iteration = 1;
 	// copy msg to context:
 	send_ctx->msg = (msg_lvl2_t*)malloc(sizeof(msg_lvl2_t));
@@ -341,7 +345,7 @@ void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_
 	memcpy(send_ctx->msg->data.itself, msg->data.itself, send_ctx->msg->data.len);
 
 	#ifdef CAN_NET_QUEUING
-	CAN_NET_MUTEX_L(&data_mutex)
+	MUTEX_L(&data_mutex)
 	// if atom is sending something at the moment - place given msg in queue:
 	can_node_descriptor_t* cn_p = NULL;
 	port_descriptor_t* p_p = NULL;
@@ -352,10 +356,10 @@ void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_
 		msgs_queue_t* msg_to_send = (msgs_queue_t*)malloc(sizeof(msgs_queue_t));
 		msg_to_send->ctx = send_ctx;
 		list_add(atom->msgs_queue, msg_to_send);
-		CAN_NET_MUTEX_U(&data_mutex)
+		MUTEX_U(&data_mutex)
 		return;
 	}
-	CAN_NET_MUTEX_U(&data_mutex)
+	MUTEX_U(&data_mutex)
 	#endif
 
 	msg_send_handler(CAN_DRV_RC_NORM, NULL, send_ctx);
@@ -410,13 +414,13 @@ int accept_frame(const lvl_segm_fnl_t* segment, atom_descriptor_t* atom, const u
 		#endif
 
 		if (!do_not_call_cb) {
-			CAN_NET_MUTEX_L(&recv_callbacks_mutex)
+			MUTEX_L(&recv_callbacks_mutex)
 			int i;
 			for (i = 0; i < recv_callbacks_g.len; i++) {
 				if ( check_base_range(recv_callbacks_g.records[i].check, port, msg->it.meta.is_system, msg->it.meta.id) )
-					recv_callbacks_g.records[i].callback(&msg->it);
+					recv_callbacks_g.records[i].callback(&msg->it, recv_callbacks_g.records[i].cb_ctx);
 			}
-			CAN_NET_MUTEX_U(&recv_callbacks_mutex)
+			MUTEX_U(&recv_callbacks_mutex)
 		}
 		free(msg);
 		return 1;
@@ -442,7 +446,7 @@ void frame_recv_handler(can_frame_t *frame) {
 	}
 	//if (frame->inf.rtr) do WTF is rtr;
 	//if (frame->inf.eff) do nothing;
-	CAN_NET_MUTEX_L(&data_mutex)
+	MUTEX_L(&data_mutex)
 	switch (frame_head.version) {
 		case CAN_NET_LVL2_VER_STD:
 			if (frame->data.len < CAN_NET_LVL2_STD_HEADLEN_B) {
@@ -499,15 +503,15 @@ void frame_recv_handler(can_frame_t *frame) {
 			}
 			lvl2_conf = lvl2_std_confirm_unpack(&frame->data);
 
-			CAN_NET_MUTEX_L(&confirm_waiters_mutex)
+			MUTEX_L(&confirm_waiters_mutex)
 			confirm_waiter_t* waiter = find_confirm_waiter(lvl2_conf.port, frame_head.hw_addr, lvl2_conf.smb, lvl2_conf.id);
 			if (waiter != NULL) {
 				// valid confirmation - call callback
-				call_scb(waiter->callback, CAN_NET_RC_NORM, waiter->msg);
+				call_scb(waiter->callback, CAN_NET_RC_NORM, waiter->msg, waiter->cb_ctx);
 				remove_confirm_waiter(waiter);
 			}
 			// else - confirmation to nonexistent waiter
-			CAN_NET_MUTEX_U(&confirm_waiters_mutex)
+			MUTEX_U(&confirm_waiters_mutex)
 
 			break;
 		#endif
@@ -516,5 +520,5 @@ void frame_recv_handler(can_frame_t *frame) {
 			//add_error(CAN_NET_RC_UNKNOWN_PROTOCOL);
 			break;
 	}
-	CAN_NET_MUTEX_U(&data_mutex)
+	MUTEX_U(&data_mutex)
 }

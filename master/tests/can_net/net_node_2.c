@@ -4,7 +4,7 @@
 #define CAN_NET_LOWLVL_FUNCS
 #define CAN_NET_CONFIRMATION
 
-#include "common.h"
+#include "../common.h"
 
 /*
 void try_receive_rand_mgs(int my_port) {
@@ -32,8 +32,9 @@ void try_receive_rand_mgs(int my_port) {
 int main(void) {
 	can_net_recv_callbacks_arr_t recv_callbacks;
 	recv_callbacks.len = 1;
-	recv_callbacks.records = (can_net_recv_callback_record_t*)malloc(sizeof(can_net_recv_callback_record_t));
+	recv_callbacks.records = (can_net_recv_callback_record_t*)malloc(sizeof(can_net_recv_callback_record_t) * recv_callbacks.len);
 	recv_callbacks.records[0].callback = test_recv_callback;
+	recv_callbacks.records[0].cb_ctx = NULL;
 	recv_callbacks.records[0].check.port_min = 0;
 	recv_callbacks.records[0].check.port_max = -1;
 	recv_callbacks.records[0].check.id_min = 0;

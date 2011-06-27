@@ -10,7 +10,6 @@
 
 /* defines:
 		CAN_NET_CONFIRMATION	- use confirmations on msg
-									(works bad when testing can_net one one machine,- only with old can_socket
 */
 #define CAN_NET_CONFIRMATION
 
@@ -41,11 +40,11 @@ typedef struct {
 	bytearr_t data;
 } msg_lvl2_t;
 
-typedef void (*can_net_send_callback_t)(const int rc, msg_lvl2_t* msg);
-typedef void (*can_net_recv_callback_t)(msg_lvl2_t* msg);
+typedef void (*can_net_send_callback_t)(const int rc, msg_lvl2_t* msg, void * context);
+typedef void (*can_net_recv_callback_t)(msg_lvl2_t* msg, void * context);
 
 //and small bonus
-inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg);
+inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg, void* cb_ctx);
 
 /*----------------------------------------------------------------------------------------------*/
 
@@ -67,11 +66,12 @@ typedef struct {
 	msg_lvl2_t* msg;
 	uint32_t tics_left; // num of timer_tics else to wait
 	can_net_send_callback_t callback;
+	void* cb_ctx;
 } confirm_waiter_t;
 
 inline void remove_confirm_waiter(confirm_waiter_t* waiter);
 
-inline void add_confirm_waiter(msg_lvl2_t* msg, const uint32_t tics, const can_net_send_callback_t cb);
+inline void add_confirm_waiter(msg_lvl2_t* msg, const uint32_t tics, const can_net_send_callback_t cb, void* cb_ctx);
 
 confirm_waiter_t* find_confirm_waiter(const uint8_t port, const uint32_t hwa, const uint8_t smb, const uint16_t id);
 

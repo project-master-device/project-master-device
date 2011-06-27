@@ -1,5 +1,5 @@
-LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c
-CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev net .}
+LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c device_layer.c 
+CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev net pmd_net .}
 CONTIKIDIRS += $(CONTIKI_LOCAL)
 
 CONTIKI_LOCAL_DRIVERS = $(CONTIKI_LOCAL)/drivers

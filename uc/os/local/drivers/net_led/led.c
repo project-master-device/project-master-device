@@ -1,6 +1,8 @@
 #include "dev/led.h"
 #include "lib/config.h"
 #include "lib/malloc.h"
+#include "pmd_net/device_layer.h"
+
 #include <stdint.h>
 #include <stddef.h>
 
@@ -16,7 +18,23 @@ int led_init(config_section_t * conf_sect) {
 }
 
 void led_net_callback(config_section_t * conf_sect, msg_lvl2_t * net_msg) {
-    led_toggle(conf_sect);
+    if(net_msg != NULL) {
+        uint8_t op = pmd_net_device_get_op(net_msg->data);
+
+        switch(op) {
+            case PMD_NET_DEVICE_LED_ON:
+                led_on(conf_sect);
+                break;
+
+            case PMD_NET_DEVICE_LED_OFF:
+                led_off(conf_sect);
+                break;
+
+            case PMD_NET_DEVICE_LED_TOGGLE:
+                led_toggle(conf_sect);
+                break;
+        }
+    }
 }
 
 

@@ -1,0 +1,6 @@
+#ifndef SYSTEM_LAYER_H_
+#define SYSTEM_LAYER_H_
+
+#define PMD_NET_SYSTEM_TROLOLO //TODO
+
+#endif /* SYSTEM_LAYER_H_ */

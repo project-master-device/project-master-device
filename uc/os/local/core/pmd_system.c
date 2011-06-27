@@ -8,9 +8,10 @@
  * @brief Two can_net callbacks: 0 -- for non-smb messages, 1 -- for smb messages.
  */
 static can_net_recv_callback_record_t cb_records[2];
+static can_net_recv_callback_record_t net_recv_cb_record;
 
 
-static void non_smb_net_cb(msg_lvl2_t * msg, const int port) {
+//static void non_smb_net_cb(msg_lvl2_t * msg, const int port) {
 //    led1_toggle();
 //    led1_blink(1, 200);
 //    if(msg == NULL) return;
@@ -23,7 +24,7 @@ static void non_smb_net_cb(msg_lvl2_t * msg, const int port) {
 //    } else {
 //        //TODO ???
 //    }
-}
+//}
 
 /*
  * SMB messages:
@@ -33,28 +34,31 @@ static void non_smb_net_cb(msg_lvl2_t * msg, const int port) {
  * 1. Init
  * 2. Normal
  */
-static void smb_net_cb(msg_lvl2_t * msg, const int port) {
-    led3_blink(1, 200);
-}
+//static void smb_net_cb(msg_lvl2_t * msg, const int port) {
+//    led3_blink(1, 200);
+//}
 
+void net_recv_cb(msg_lvl2_t * msg) {
+    led3_blink(1, 500);
+}
 
 int pmd_system_init() {
 //    config_init();
 //    if (config_open() == -1) {
 //        return 1;
 //    }
-//
-//    if(can_net_init(10000000, 100) != 0) {
-//        return 2;
-//    }
+
+    if(can_net_init(10000000, 100) != 0) {
+        return 2;
+    }
 
     interrupt_init();
 
 //    if(net_device_init() != 0) {
 //        return 3;
 //    }
-//
-//    can_net_recv_callbacks_arr_t cb_arr;
+
+    can_net_recv_callbacks_arr_t cb_arr;
 //    cb_arr.records = &cb_records;
 //    cb_arr.len = 2;
 //
@@ -75,8 +79,19 @@ int pmd_system_init() {
 //    cb_arr.records[1].check.smb_min = 1;
 //    cb_arr.records[1].check.smb_max = 1;
 //    cb_arr.records[1].callback = smb_net_cb;
-//
-//    can_net_add_callbacks(cb_arr);
+
+    cb_arr.records = &net_recv_cb_record;
+    cb_arr.len = 1;
+
+    cb_arr.records[0].check.port_min = 0;
+    cb_arr.records[0].check.port_max = -1;
+    cb_arr.records[0].check.id_min = 0;
+    cb_arr.records[0].check.id_max = -1;
+    cb_arr.records[0].check.smb_min = 0;
+    cb_arr.records[0].check.smb_max = -1;
+    cb_arr.records[0].callback = net_recv_cb;
+
+    can_net_add_callbacks(cb_arr);
 
     return 0;
 }

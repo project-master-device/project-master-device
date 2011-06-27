@@ -16,9 +16,9 @@ int main(void) {
     procinit_init();
     autostart_start(autostart_processes);
 
-//    cli();
-//    pmd_system_init();
-//    sei();
+    cli();
+    pmd_system_init();
+    sei();
 
     lowlevel_init();
 

@@ -12,7 +12,7 @@ PROCESS(can_send_process, "");
 PROCESS(init_process, "");
 PROCESS(test_process, "");
 
-AUTOSTART_PROCESSES(&init_process, &test_process, &can_send_process);
+AUTOSTART_PROCESSES(&init_process, &can_send_process);
 
 int send_busy = 0;
 
@@ -99,6 +99,22 @@ PROCESS_THREAD(init_process, ev, data) {
             led1_blink(1, 25);
             led3_blink(1, 25);
         }
+    }
+
+    PROCESS_END();
+}
+
+PROCESS_THREAD(test_process, ev, data) {
+    static struct etimer et;
+
+    PROCESS_BEGIN();
+    etimer_set(&et, CLOCK_SECOND / 10);
+
+    for(;;) {
+        PROCESS_WAIT_EVENT();
+
+        led2_toggle();
+        etimer_reset(&et);
     }
 
     PROCESS_END();

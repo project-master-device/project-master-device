@@ -59,7 +59,7 @@ void timer_func(void * p) {
 PROCESS_THREAD(init_process, ev, data) {
     PROCESS_BEGIN();
 
-    ftimer_register_func(timer_func, NULL, 100);
+//    ftimer_register_func(timer_func, NULL, 100);
 
     PROCESS_END();
 }

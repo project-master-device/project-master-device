@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#define WIEGAND_BITS 26
 
 // Clock ticks per second
 #define CLOCK_CONF_SECOND 125

@@ -74,6 +74,16 @@ static void create_config() {
 //    config_section_set_uint(sect, "pin", &PINE);
 //    config_section_set_uint(sect, "offset", PE7);
 
+    sect = config_cnf_create_section(cnf);
+    sect->id = 5;
+    config_section_set_str(sect, "type", "reader");
+    config_section_set_uint(sect, "data0_ddr", 45);
+    config_section_set_uint(sect, "data0_pin", 44);
+    config_section_set_uint(sect, "data0_offset", 4);
+    config_section_set_uint(sect, "data1_ddr", 45);
+    config_section_set_uint(sect, "data1_pin", 44);
+    config_section_set_uint(sect, "data1_offset", 5);
+
     config_save();
 }
 

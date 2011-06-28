@@ -40,7 +40,7 @@ int net_device_platform_init() {
                 return 4;
             net_device_construct(net_device, sect, NULL);
 
-        } /*else if (strcmp(type, "reader") == 0) {
+        } else if (strcmp(type, "reader") == 0) {
             if(reader_init(sect) != 0)
                 return 3;
 
@@ -48,7 +48,7 @@ int net_device_platform_init() {
             if(net_device == NULL)
                 return 4;
             net_device_construct(net_device, sect, NULL);
-        }*/
+        }
         // etc. new drivers
     }
 

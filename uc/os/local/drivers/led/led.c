@@ -1,53 +1,71 @@
 #include "dev/led.h"
 #include "lib/config.h"
 #include "lib/malloc.h"
+#include "pmd_net/pmd_led.h"
+
 #include <stdint.h>
 #include <stddef.h>
 
 
-/**
- * @struct led_t
- * It contains pointers to functions which must be realized in specific platform.
- * They must be set in initializations of devices.
- */
-typedef struct led_type {
-    config_section_t * param;
-} led_t;
+int led_init(config_section_t * conf_sect) {
+    volatile uint8_t * ddr = (uint8_t *)config_section_get_uint(conf_sect, "ddr", (config_uint_t)NULL);
+    if(ddr == NULL) return 1;
 
-
-void led_init(led_t * led_m) {
-    volatile uint8_t * ddr = config_section_get_uint(led_m->param, "ddr", 0);
-    uint8_t offset = config_section_get_uint(led_m->param, "offset", 0);
-
+    uint8_t offset = config_section_get_uint(conf_sect, "offset", 0);
     *ddr |= (1 << offset);
+
+    return 0;
+}
+
+void led_net_callback(config_section_t * conf_sect, msg_lvl2_t * net_msg) {
+    int rc;
+
+    if(net_msg != NULL) {
+        pmd_led_data_t pmd_led_data;
+        rc = pmd_led_read_data(net_msg->data, &pmd_led_data);
+
+        if(rc == 0) {
+            switch(pmd_led_data.operation) {
+                case PMD_NET_LED_ON:
+                    led_on(conf_sect);
+                    break;
+
+                case PMD_NET_LED_OFF:
+                    led_off(conf_sect);
+                    break;
+
+                case PMD_NET_LED_TOGGLE:
+                    led_toggle(conf_sect);
+                    break;
+            }
+        }
+    }
 }
 
 
-void led_on(led_t * led_m) {
-    volatile uint8_t * port = config_section_get_uint(led_m->param, "port", 0);
-    uint8_t offset = config_section_get_uint(led_m->param, "offset", 0);
+void led_on(config_section_t * conf_sect) {
+    volatile uint8_t * port = (uint8_t *)config_section_get_uint(conf_sect, "port", (config_uint_t)NULL);
+    uint8_t offset = config_section_get_uint(conf_sect, "offset", 0);
 
-    *port |= (1 << offset);
-}
-void led_off(led_t * led_m) {
-    volatile uint8_t * port = config_section_get_uint(led_m->param, "port", 0);
-    uint8_t offset = config_section_get_uint(led_m->param, "offset", 0);
-
-    *port &= ~(1 << offset);
-}
-void led_toggle(led_t * led_m) {
-    volatile uint8_t * port = config_section_get_uint(led_m->param, "port", 0);
-    uint8_t offset = config_section_get_uint(led_m->param, "offset", 0);
-
-    *port ^= (1 << offset);
+    if(port != NULL) {
+        *port |= (1 << offset);
+    }
 }
 
-void led_create(config_section_t * sect) {
-    led_t * led = (led_t *)malloc(sizeof(led_t));
+void led_off(config_section_t * conf_sect) {
+    volatile uint8_t * port = (uint8_t *)config_section_get_uint(conf_sect, "port", (config_uint_t)NULL);
+    uint8_t offset = config_section_get_uint(conf_sect, "offset", 0);
 
-    led->param = sect;
-
-    led_init(led);
+    if(port != NULL) {
+        *port &= ~(1 << offset);
+    }
 }
 
+void led_toggle(config_section_t * conf_sect) {
+    volatile uint8_t * port = (uint8_t *)config_section_get_uint(conf_sect, "port", (config_uint_t)NULL);
+    uint8_t offset = config_section_get_uint(conf_sect, "offset", 0);
 
+    if(port != NULL) {
+        *port ^= (1 << offset);
+    }
+}

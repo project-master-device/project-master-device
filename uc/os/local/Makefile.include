@@ -1,8 +1,9 @@
-LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c pmd_led.c 
+LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c pmd_reader.c pmd_led.c
 CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev net pmd_net .}
 CONTIKIDIRS += $(CONTIKI_LOCAL)
 
 CONTIKI_LOCAL_DRIVERS = $(CONTIKI_LOCAL)/drivers
 
-include $(CONTIKI_LOCAL_DRIVERS)/net_led/Makefile.led
-include $(CONTIKI_LOCAL_DRIVERS)/net_button/Makefile.button
+include $(CONTIKI_LOCAL_DRIVERS)/led/Makefile.led
+include $(CONTIKI_LOCAL_DRIVERS)/button/Makefile.button
+include $(CONTIKI_LOCAL_DRIVERS)/reader/Makefile.reader

@@ -7,11 +7,12 @@
 #include "pmd_net/pmd_reader.h"
 #include "net/can_net.h"
 #include "net/can_net_middle.h"
+#include "lowlevel.h"
 
 PROCESS(process_handle_reader, "Process for handle reader input");
 process_event_t reader_input;
 
-#define WB (WIEGAND_BITS-1)// how many bytes in wiegand_bits
+#define WB (WIEGAND_BITS-1)// for iterator
 
 typedef struct reader_type {
     config_section_t * param;
@@ -30,7 +31,7 @@ void reader_handle_data0(void * data) {
 
     reader->msg &= ~(1 << reader->it);
 
-    if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 2);
+    if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 500);
 
     if (reader->it == 0) {
         process_post(&process_handle_reader, reader_input, data);
@@ -46,7 +47,7 @@ void reader_handle_data1(void * data) {
 
     reader->msg |= (1 << reader->it);
 
-    if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 2);
+    if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 500);
 
     if (reader->it == 0) {
         process_post(&process_handle_reader, reader_input, data);
@@ -82,20 +83,6 @@ int reader_init(config_section_t * sect) {
     return 0;
 }
 
-//void reader_create(config_section_t * sect) {
-//    reader_t * reader = (reader_t *)malloc(sizeof(reader_t));
-//
-//    reader->param = sect;
-//    reader_init(reader);
-//
-//    reader->it = WB;
-//    process_start(&process_handle_reader, NULL);
-//
-//    //enable interrupts
-//    interrupt_register(config_section_get_uint(reader->param, "data0_offset", 8), INTERRUPT_FALL, reader_handle_data0, (void *)reader);
-//    interrupt_register(config_section_get_uint(reader->param, "data1_offset", 8), INTERRUPT_FALL, reader_handle_data1, (void *)reader);
-//}
-
 PROCESS_THREAD(process_handle_reader, ev, data) {
     reader_t * reader;
     bytearr_t arr;
@@ -110,13 +97,14 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
         PROCESS_WAIT_EVENT();
         if (ev == reader_input) {
             reader = (reader_t *) data;
+            msg_data = (pmd_reader_data_t *)malloc(sizeof(pmd_reader_data_t));
 
             //FIXME not using parity control bits
             reader->msg &= ~((uint64_t)1 << WB);
-            reader->msg = reader->msg >> 1;
+            reader->msg >>= 1;
 
-            msg.meta.hw_addr = 7; //FIXME
-            msg.meta.port = 1; //FIXME
+            msg.meta.hw_addr = 7; //FIXME right hw_addr
+            msg.meta.port = 1; //FIXME right port
             msg.meta.id = reader->param->id;
             msg.meta.is_system = 0;
 
@@ -129,7 +117,7 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
             pmd_reader_write_data(arr, msg_data);
             msg.data = arr;
 
-            can_net_start_sending_msg(&msg, NULL);
+//            can_net_start_sending_msg(&msg, NULL);
 
         }
     }

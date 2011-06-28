@@ -4,9 +4,9 @@
 #include "../net/can_net_middle.h"
 #include <stdint.h>
 
-#define PMD_NET_LED_ON      1
-#define PMD_NET_LED_OFF     2
-#define PMD_NET_LED_TOGGLE  3
+#define PMD_LED_ON      1
+#define PMD_LED_OFF     2
+#define PMD_LED_TOGGLE  3
 
 
 typedef struct {

@@ -4,5 +4,5 @@ CONTIKIDIRS += $(CONTIKI_LOCAL)
 
 CONTIKI_LOCAL_DRIVERS = $(CONTIKI_LOCAL)/drivers
 
-include $(CONTIKI_LOCAL_DRIVERS)/net_led/Makefile.led
-include $(CONTIKI_LOCAL_DRIVERS)/net_button/Makefile.button
+include $(CONTIKI_LOCAL_DRIVERS)/led/Makefile.led
+include $(CONTIKI_LOCAL_DRIVERS)/button/Makefile.button

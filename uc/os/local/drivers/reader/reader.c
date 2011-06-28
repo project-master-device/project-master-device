@@ -4,31 +4,31 @@
 #include "sys/process.h"
 #include "lib/ftimer.h"
 #include "contiki-conf.h"
+#include "pmd_net/pmd_reader.h"
+#include "net/can_net.h"
+#include "net/can_net_middle.h"
 
 PROCESS(process_handle_reader, "Process for handle reader input");
 process_event_t reader_input;
 
-#define WB WIEGAND_BITS-1 // for array index
+#define WB WIEGAND_BITS-1// how many bytes in wiegand_bits
 
 typedef struct reader_type {
     config_section_t * param;
-    uint8_t msg[WIEGAND_BITS];
+    uint64_t msg;
     uint8_t it;
 } reader_t;
 
 
 void reader_clean_msg(void * data) {
     reader_t * reader = (reader_t *)data;
-    //<debug>
-    ledd_toggle(5);
-    //</debug>
     reader->it = WB;
 }
 
 void reader_handle_data0(void * data) {
     reader_t * reader = (reader_t *)data;
 
-    reader->msg[reader->it] = 0;
+    reader->msg &= ~(1 << reader->it);
 
     if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 2);
 
@@ -44,7 +44,7 @@ void reader_handle_data0(void * data) {
 void reader_handle_data1(void * data) {
     reader_t * reader = (reader_t *)data;
 
-    reader->msg[reader->it] = 1;
+    reader->msg |= (1 << reader->it);
 
     if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 2);
 
@@ -85,6 +85,9 @@ void reader_create(config_section_t * sect) {
 
 PROCESS_THREAD(process_handle_reader, ev, data) {
     reader_t * reader;
+    bytearr_t arr;
+    msg_lvl2_t msg;
+    pmd_reader_data_t msg_data;
     int i;
 
     PROCESS_BEGIN();
@@ -94,23 +97,27 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
         PROCESS_WAIT_EVENT();
         if (ev == reader_input) {
             reader = (reader_t *) data;
-//<debug>
-            uint8_t res = 1;
 
-            if (reader->msg[25] == 1) {
-                res = res && 1;
-            } else {
-                res = 0;
+            //FIXME not using parity control bits
+            reader->msg &= ~(1 << WB);
+            reader->msg = reader->msg >> 1;
+
+            msg.meta.hw_addr = 7; //FIXME
+            msg.meta.port = 1; //FIXME
+            msg.meta.id = reader->param->id;
+            msg.meta.is_system = 0;
+
+            msg_data.operation = PMD_READER_SEND_MSG;
+            for (i = PMD_READER_MSG_LEN - 1; i >= 0; i--) {
+                msg_data.data[i] = (uint8_t)(reader->msg >> (i * 8));
             }
+            arr.len = PMD_READER_MSG_LEN + 1;
+            arr.itself = (uint8_t)malloc(arr.len);
+            pmd_reader_write_data(arr, msg_data);
+            msg.data = arr;
 
-            for (i = 24; i >= 0; i--) {
-                if (reader->msg[i] == 0) res = res && 1;
-                else res = 0;
-            }
+            can_net_start_sending_msg(msg, NULL);
 
-            if (res == 1) ledd_toggle(4);
-//</debug>
-            //TODO send msg to master
         }
     }
 

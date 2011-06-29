@@ -14,10 +14,8 @@ int main(void) {
 
     process_init();
     procinit_init();
-
-    pmd_system_init();
-
     lowlevel_init();
+    pmd_system_init();
 
     int i;
     for(i = 0; i < 5; ++i) {
@@ -25,6 +23,7 @@ int main(void) {
         led2_blink(1, 25);
         led3_blink(1, 25);
     }
+
     autostart_start(autostart_processes);
 
     while (1) {

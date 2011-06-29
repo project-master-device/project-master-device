@@ -9,6 +9,8 @@
 #define PMD_READER_SEND_MSG         0
 #define PMD_READER_GREEN_LED_ON     1
 #define PMD_READER_GREEN_LED_OFF    2
+#define PMD_READER_BEEP_ON          3
+#define PMD_READER_BEEP_OFF         4
 
 typedef struct {
     uint8_t operation;

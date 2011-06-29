@@ -66,13 +66,13 @@ static void create_config() {
     config_section_set_uint(sect, "port", &PORTB);
     config_section_set_uint(sect, "offset", PB6);
 
-    //create external button
-    sect = config_cnf_create_section(cnf);
-    sect->id = 4;
-    config_section_set_str(sect, "type", "button");
-    config_section_set_uint(sect, "ddr", &DDRE);
-    config_section_set_uint(sect, "pin", &PINE);
-    config_section_set_uint(sect, "offset", PE7);
+//    //create external button
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 4;
+//    config_section_set_str(sect, "type", "button");
+//    config_section_set_uint(sect, "ddr", &DDRE);
+//    config_section_set_uint(sect, "pin", &PINE);
+//    config_section_set_uint(sect, "offset", PE7);
 
     sect = config_cnf_create_section(cnf);
     sect->id = 5;
@@ -83,6 +83,12 @@ static void create_config() {
     config_section_set_uint(sect, "data1_ddr", 45);
     config_section_set_uint(sect, "data1_pin", 44);
     config_section_set_uint(sect, "data1_offset", 5);
+    config_section_set_uint(sect, "gled_ddr", &DDRA);
+    config_section_set_uint(sect, "gled_port", &PORTA);
+    config_section_set_uint(sect, "gled_offset", PA7);
+    config_section_set_uint(sect, "beep_ddr", &DDRA);
+    config_section_set_uint(sect, "beep_port", &PORTA);
+    config_section_set_uint(sect, "beep_offset", PA6);
 
     config_save();
 }

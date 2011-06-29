@@ -9,6 +9,8 @@ int pmd_reader_write_data(const bytearr_t arr, pmd_reader_data_t * data) {
     switch (data->operation) {
     case PMD_READER_GREEN_LED_ON:
     case PMD_READER_GREEN_LED_OFF:
+    case PMD_READER_BEEP_ON:
+    case PMD_READER_BEEP_OFF:
         arr.itself[0] = data->operation;
         break;
     case PMD_READER_SEND_MSG:
@@ -33,6 +35,8 @@ int pmd_reader_read_data(const bytearr_t arr, pmd_reader_data_t * data) {
     switch (arr.itself[0]) {
     case PMD_READER_GREEN_LED_ON:
     case PMD_READER_GREEN_LED_OFF:
+    case PMD_READER_BEEP_ON:
+    case PMD_READER_BEEP_OFF:
         data->operation = arr.itself[0];
         break;
     case PMD_READER_SEND_MSG:

@@ -62,6 +62,40 @@ void timer_func(void * p) {
     ftimer_register_func(timer_func, NULL, 100);
 }
 
+void music() {
+    reader_beep_on(reader_s);
+    _delay_ms(400);
+    reader_beep_off(reader_s);
+    _delay_ms(200);
+    reader_beep_on(reader_s);
+    _delay_ms(400);
+    reader_beep_off(reader_s);
+    _delay_ms(200);
+
+    reader_beep_on(reader_s);
+    _delay_ms(800);
+    reader_beep_off(reader_s);
+    _delay_ms(200);
+
+    reader_beep_on(reader_s);
+    _delay_ms(400);
+    reader_beep_off(reader_s);
+    _delay_ms(200);
+    reader_beep_on(reader_s);
+    _delay_ms(400);
+    reader_beep_off(reader_s);
+    _delay_ms(200);
+
+    reader_beep_on(reader_s);
+    _delay_ms(300);
+    reader_beep_off(reader_s);
+    _delay_ms(100);
+    reader_beep_on(reader_s);
+    _delay_ms(800);
+    reader_beep_off(reader_s);
+    _delay_ms(300);
+}
+
 PROCESS_THREAD(test_process, ev, data) {
 
     PROCESS_BEGIN();
@@ -71,5 +105,6 @@ PROCESS_THREAD(test_process, ev, data) {
     else
         ftimer_register_func(timer_func, NULL, 100);
 
+    music();
     PROCESS_END();
 }

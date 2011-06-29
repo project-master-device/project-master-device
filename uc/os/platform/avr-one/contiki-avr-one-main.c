@@ -14,11 +14,10 @@ int main(void) {
 
     process_init();
     procinit_init();
-    autostart_start(autostart_processes);
-
+    lowlevel_init();
     pmd_system_init();
 
-    lowlevel_init();
+    autostart_start(autostart_processes);
 
     int i;
     for(i = 0; i < 5; ++i) {

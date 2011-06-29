@@ -8,6 +8,8 @@
 typedef int                     config_int_t;
 typedef unsigned int            config_uint_t;
 
+#define CONFIG_EOF '~'
+
 #ifndef CONFIG_OPTION_KEY_LEN
 #define CONFIG_OPTION_KEY_LEN 32
 #endif

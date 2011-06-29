@@ -33,8 +33,7 @@
 #define CONFIG_NUM_CHARS '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9'
 #define CONFIG_SPECIAL_CHARS '_':case '-'
 
-#define CONFIG_EMIT_BUF_SIZE 128
-#define CONFIG_EOF '~'
+#define CONFIG_EMIT_BUF_SIZE 256
 
 #define CONFIG_STR_TYPE          's'
 #define CONFIG_NUM_INT_TYPE      'i'

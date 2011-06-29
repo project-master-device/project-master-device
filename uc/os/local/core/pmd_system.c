@@ -40,6 +40,8 @@ static void smb_net_cb(msg_lvl2_t * msg) {
 
 
 static void create_config() {
+    config_destruct();
+    config_construct();
     config_cnf_t * cnf = config_get();
 
     //create led 1
@@ -67,12 +69,12 @@ static void create_config() {
     config_section_set_uint(sect, "offset", PB6);
 
     //create external button
-    sect = config_cnf_create_section(cnf);
-    sect->id = 4;
-    config_section_set_str(sect, "type", "button");
-    config_section_set_uint(sect, "ddr", &DDRE);
-    config_section_set_uint(sect, "pin", &PINE);
-    config_section_set_uint(sect, "offset", PE7);
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 4;
+//    config_section_set_str(sect, "type", "button");
+//    config_section_set_uint(sect, "ddr", &DDRE);
+//    config_section_set_uint(sect, "pin", &PINE);
+//    config_section_set_uint(sect, "offset", PE7);
 
     sect = config_cnf_create_section(cnf);
     sect->id = 5;
@@ -88,9 +90,8 @@ static void create_config() {
 }
 
 int pmd_system_init() {
-    config_init();
     create_config();
-    if (config_open() == -1) {
+    if (config_open() != 0) {
         return 1;
     }
 

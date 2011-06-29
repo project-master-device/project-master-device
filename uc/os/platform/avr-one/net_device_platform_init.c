@@ -47,7 +47,7 @@ int net_device_platform_init() {
             net_device = (net_device_t *)malloc(sizeof(net_device_t));
             if(net_device == NULL)
                 return 4;
-            net_device_construct(net_device, sect, NULL);
+            net_device_construct(net_device, sect, reader_net_callback);
         }
         // etc. new drivers
     }

@@ -5,8 +5,8 @@
 //#include <stdio.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include "../../../../net/trunk/list.h"
-#include "../../../../net/trunk/can_drv.h"
+#include "../../../common/net/list.h"
+#include "../../../common/net/can_drv.h"
 #include "can_socket.h"
 
 pthread_mutex_t frames_out_mutex = PTHREAD_MUTEX_INITIALIZER;

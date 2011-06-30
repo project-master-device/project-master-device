@@ -55,7 +55,7 @@ THE SOFTWARE.
 #define CAN_FRAME_INF_PACK_VALIDATE
 
 #ifdef CANSOCKET_CANID_PACKER
-#include "../../../../net/trunk/can_drv_structs.h"
+#include "../../../common/net/can_drv_structs.h"
 #endif
 
 

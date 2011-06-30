@@ -9,7 +9,9 @@
 
 //and small bonus
 inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg) {
-	send_cb(rc, msg);
+	if(send_cb != NULL)
+	    send_cb(rc, msg);
+
 	free(msg->data.itself);
 	free(msg);
 }

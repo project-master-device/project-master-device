@@ -29,7 +29,7 @@ void reader_clean_msg(void * data) {
 void reader_handle_data0(void * data) {
     reader_t * reader = (reader_t *)data;
 
-    reader->msg &= ~(1 << reader->it);
+    reader->msg &= ~((uint64_t)1 << reader->it);
 
     if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 500);
 
@@ -45,7 +45,7 @@ void reader_handle_data0(void * data) {
 void reader_handle_data1(void * data) {
     reader_t * reader = (reader_t *)data;
 
-    reader->msg |= (1 << reader->it);
+    reader->msg |= ((uint64_t)1 << reader->it);
 
     if (reader->it == WB) ftimer_register_func(reader_clean_msg, data, 500);
 
@@ -64,6 +64,7 @@ int reader_init(config_section_t * sect) {
     reader_t * reader = (reader_t *)malloc(sizeof(reader_t));
     reader->param = sect;
     reader->it = WB;
+    reader->msg = 0;
 
     volatile uint8_t * data0_ddr = (volatile uint8_t *)config_section_get_uint(reader->param, "data0_ddr", 0);
     uint8_t data0_offset = config_section_get_uint(reader->param, "data0_offset", 0);
@@ -117,7 +118,7 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
             pmd_reader_write_data(arr, msg_data);
             msg.data = arr;
 
-//            can_net_start_sending_msg(&msg, NULL);
+            can_net_start_sending_msg(&msg, NULL);
 
         }
     }

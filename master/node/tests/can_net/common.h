@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #define CAN_NET_LINUX
-#include "../../../../../net/trunk/can_net.h"
+#include "../../../../common/net/can_net.h"
 
 //#define TEST_ERRORS
 

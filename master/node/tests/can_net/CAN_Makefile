@@ -2,10 +2,10 @@ OBJS1 = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net
 OBJS2 = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o net_node_2.o
 CC = gcc
 DEBUG = -g
-CFLAGS = -Wall -c $(DEBUG)
+CFLAGS = -Wall -c $(DEBUG) -DCAN_NET_LINUX
 LFLAGS = -Wall $(DEBUG)
 LNETPATH = ../../local_net_CAN/
-NETPATH = ../../../../../net/trunk/
+NETPATH = ../../../../common/net/
 
 all: clean net_node_1 net_node_2
 

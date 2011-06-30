@@ -15,7 +15,6 @@ void send_handler(const int rc, msg_lvl2_t * msg) {
 
 int main(int argc, char * argv[]) {
 	can_net_recv_callbacks_arr_t recv_callbacks;
-	uint8_t my_port = 1;
 	recv_callbacks.len = 0;
 	recv_callbacks.records = NULL;
 	can_net_add_callbacks(recv_callbacks);

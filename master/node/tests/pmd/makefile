@@ -1,4 +1,6 @@
-OBJS = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o led_command.o
+OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o
+OBJS_LED_COMMAND = $(OBJS_COMMON) led_command.o
+OBJS_READER = $(OBJS_COMMON) reader.o
 CC = gcc
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG) -DCAN_NET_LINUX
@@ -7,13 +9,22 @@ LNETPATH = ../../local_net_CAN/
 NETPATH = ../../../../common/net/
 PMDNETPATH = ../../../../common/pmd_net/
 
-all: led_command
+all: led_command reader
 
-led_command: $(OBJS)
-	$(CC) -lpthread $(LFLAGS) $(OBJS) -o led_command
+reader: $(OBJS_READER)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_READER) -o reader
+
+reader.o: reader.c $(NETPATH)can_net.h
+	$(CC) $(CFLAGS) reader.c
+
+led_command: $(OBJS_LED_COMMAND)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_LED_COMMAND) -o led_command
 
 led_command.o: led_command.c $(NETPATH)can_net.h
 	$(CC) $(CFLAGS) led_command.c
+
+pmd_reader.o: $(PMDNETPATH)pmd_reader.h $(PMDNETPATH)pmd_reader.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_reader.c
 
 pmd_led.o: $(PMDNETPATH)pmd_led.h $(PMDNETPATH)pmd_led.c
 	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_led.c
@@ -40,4 +51,4 @@ list.o: $(NETPATH)list.h $(NETPATH)list.c
 	$(CC) $(CFLAGS) $(NETPATH)list.c
 
 clean:
-	rm -rf *o led_command
+	rm -rf *o led_command reader

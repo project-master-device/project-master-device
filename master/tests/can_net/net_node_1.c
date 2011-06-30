@@ -7,10 +7,11 @@
 #include "../common.h"
 
 int main(void) {
-	can_net_recv_callbacks_arr_t recv_callbacks;
-	recv_callbacks.len = 0;
-	recv_callbacks.records = NULL;
-	can_net_add_callbacks(recv_callbacks);
+// no recv callbacks for sender
+//	can_net_recv_cb_record_t* callback_p = (can_net_recv_cb_record_t*)malloc(sizeof(can_net_recv_cb_record_t));
+//	callback_p->cb_ctx = NULL;
+//	callback_p->callback = NULL;
+//	can_net_add_callback(recv_callbacks);
 
 	uint32_t msg_confirm_tics = 1000; // 1000ms=1s
 	int rci = can_net_init(1000, msg_confirm_tics);
@@ -26,32 +27,31 @@ int main(void) {
 	uint16_t id = 18;
 	int rc;
 	int i;
-for (i=0; i<10; i++) {
-	rc = test_send_msg(hwa, id, 0, my_port, TEST_SHORT, test_send_callback);
-	printf("TEST_SHORT sent: rc= %d\n\n", rc);
+	for (i=0; i<10; i++) {
+		rc = test_send_msg(hwa, id, 0, my_port, TEST_SHORT, test_send_callback);
+		printf("TEST_SHORT sent: rc= %d\n\n", rc);
 
-	rc = test_send_msg(hwa, id, 0, my_port, TEST_LONG, test_send_callback);
-	printf("TEST_LONG sent: rc= %d\n\n", rc);
+		rc = test_send_msg(hwa, id, 0, my_port, TEST_LONG, test_send_callback);
+		printf("TEST_LONG sent: rc= %d\n\n", rc);
 
-	rc = test_send_msg(hwa, id, 0, my_port, TEST_LONG, test_send_callback);
-	printf("TEST_LONG 2 sent: rc= %d\n\n", rc);
+		rc = test_send_msg(hwa, id, 0, my_port, TEST_LONG, test_send_callback);
+		printf("TEST_LONG 2 sent: rc= %d\n\n", rc);
 
-	rc = test_send_msg(hwa, id+1, 1, my_port, TEST_LONG, test_send_callback);
-	printf("TEST_LONG 3 sent: rc= %d\n\n", rc);
+		rc = test_send_msg(hwa, id+1, 1, my_port, TEST_LONG, test_send_callback);
+		printf("TEST_LONG 3 sent: rc= %d\n\n", rc);
 
-	rc = test_send_msg(hwa, id+2, 0, my_port, TEST_LONG, test_send_callback);
-	printf("TEST_LONG 4 sent: rc= %d\n\n", rc);
+		rc = test_send_msg(hwa, id+2, 0, my_port, TEST_LONG, test_send_callback);
+		printf("TEST_LONG 4 sent: rc= %d\n\n", rc);
 
-	rc = test_send_msg(hwa, id+3, 1, my_port+1, TEST_LONG, test_send_callback);
-	printf("TEST_LONG 5 sent: rc= %d\n\n", rc);
+		rc = test_send_msg(hwa, id+3, 1, my_port+1, TEST_LONG, test_send_callback);
+		printf("TEST_LONG 5 sent: rc= %d\n\n", rc);
 
-	rc = test_send_msg(hwa, id+4, 0, my_port, TEST_LONG, test_send_callback);
-	printf("TEST_LONG 6 sent: rc= %d\n\n", rc);
+		rc = test_send_msg(hwa, id+4, 0, my_port, TEST_LONG, test_send_callback);
+		printf("TEST_LONG 6 sent: rc= %d\n\n", rc);
 
-	printf("----%d----\n\n", i);
-//	usleep(1000);
-
-}
+		printf("----%d----\n\n", i);
+	//	usleep(1000);
+	}
 
 #ifdef TEST_ERRORS
 	rc = test_send_msg(hwa, id, 0, my_port, TEST_ERR_UNKNOWN_PROTOCOL, test_send_callback);

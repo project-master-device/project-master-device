@@ -1,5 +1,5 @@
 // 03.03.2011
-// 20.05.2011
+// 28.06.2011
 // to be changed later:
 /*
  * Copyright (C) 2011 by <Project Master Device>
@@ -25,13 +25,14 @@
 
 /**
  * @file can_net
- * @brief CAN local network system, v0.7
+ * @brief CAN local network system, v0.75
  * fully async
  * with port (instead of apps)
  * with new std ('frame numbering') protocol
  * with err handling: return codes in callbacks
  * with confirmations (for async can_net)
  * with queues of many msgs to one hwa::port::id+smb
+ * with adding/removing callbacks
  * TODO: for next ver
  * 			-new_protocol						- v0.80
  * 			-more flexible mutexes				- v0.85
@@ -52,30 +53,46 @@
 #ifdef CAN_NET_LINUX
 #include <pthread.h>
 #include <unistd.h>
+//#include <sys/types.h>
+#include <sys/syscall.h>
 #endif
 
 #include "can_net_middle.h"
 
-/* -------------------------------------CALLBACKS-----------------------------------------------*/
 
+/* -------------------------------------STRUCTS-----------------------------------------*/
+
+// CALLBACKS:
 typedef struct {
 	can_net_recv_callback_t callback;
 	can_net_base_range_t check;
 	void* cb_ctx;
-} can_net_recv_callback_record_t;
+} can_net_recv_cb_record_t;
 
 //const can_net_base_range_t can_net_std_range = {0, -1, 0, -1, 0, 1};
-extern const can_net_recv_callback_record_t can_net_std_cb_record;
+extern const can_net_recv_cb_record_t can_net_std_cb_record;
 
 /**
- * @struct can_net_recv_callbacks_arr_t
- * @brief array of callback records
+ * @struct can_net_recv_cb_record_t_list
+ * @brief  can_net_recv_cb_record_t in list
  */
 typedef struct {
-	can_net_recv_callback_record_t* records;
-	int len;
-} can_net_recv_callbacks_arr_t;
-#define CAN_NET_RECV_CALLBACKS_ARR_INITIALIZER {NULL, 0}
+	void* next; // to use in list
+	can_net_recv_cb_record_t* it_p;
+} can_net_recv_cb_record_t_plist;
+
+// OTHER:
+typedef struct {
+	void* next; // to use in list
+	msg_lvl2_t it;
+} msg_lvl2_t_list;
+
+typedef struct {
+	void* next; // to use in list
+	msg_lvl2_t* it_p;
+} msg_lvl2_t_plist;
+
+msg_lvl2_t* msg_lvl2_make_copy(const msg_lvl2_t* src);
 
 /*----------------------------------------------------------------------------------------------*/
 
@@ -101,9 +118,17 @@ typedef struct {
 
 /**
  * can_net_app_join - add your app callbacks to can_net system
- * @ 1) recv_callbacks: array of callbacks for received msgs - can_net_recv_callbacks_arr_t
+ * @ 1) recv_callbacks: array of callbacks for received msgs - can_net_recv_cbs_arr_t
+ * @return: first of inserted callbacks (if inserted only one - this one)- can_net_recv_cb_record_t*
+ * uses your memory, doesn't make copy of callback
  */
-void can_net_add_callbacks(can_net_recv_callbacks_arr_t recv_callbacks);
+can_net_recv_cb_record_t_plist* can_net_add_callback(can_net_recv_cb_record_t* callback_p);
+
+/**
+ * can_net_del_callback_by_p - remove callback from net system (by its pointer)
+ * @ 1) callback_p: pointer (in list) to required callback - can_net_recv_cb_record_t
+ */
+void can_net_rm_callback_by_plist(can_net_recv_cb_record_t_plist* callback_plist);
 
 /**
  * can_net_start_work - initialize network system (needs interface & period => exists until config is made)
@@ -119,8 +144,9 @@ int can_net_init(const uint32_t send_frame_timeout_us, const uint32_t confirmati
  * @ 1) msg: message to send - const msg_lvl2_t*
  * @ 2) send_callback: callback to be called after sending msg
  * without CAN_NET_QUEUING you should not send msgs too often
+ * uses it's own memory, copies msg
  */
-void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx);
+void can_net_start_sending_msg(const msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx);
 
 /* ----------------------------------------------------------------------------------------------*/
 //#ifdef CAN_NET_LOWLVL_FUNCS

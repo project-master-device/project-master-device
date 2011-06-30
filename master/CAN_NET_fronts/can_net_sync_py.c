@@ -1,58 +1,74 @@
-// 08.02.2011
-// 
+/*
+ * can_net_sync_wrapper.h
+ *
+ *  Created on: Jun 29, 2011
+ *      Author: Gennady.Kalashnikov
+ */
 
 //TODO: licence - MIT
 
-#include "can_socket-python_interlayer.h"
+#include "can_net_sync_py.h"
 
-static PyObject* can_init_socket(PyObject *self, PyObject *args) {
-	char* device = NULL;
-	if(!PyArg_ParseTuple(args, "s", &device))
-		return Py_BuildValue("i", -1);
-	return Py_BuildValue("i", can_socket);
-}
-
-
-static PyObject* can_recieve_some_data(PyObject *self, PyObject *args) {
-	unsigned int can_socket = 0;
-	if(!PyArg_ParseTuple(args, "I", &can_socket))
-		return Py_BuildValue("i", -1);
-
-	int int_len = (int)frame.can_dlc;
-	return Py_BuildValue("s#", frame.data, int_len);
-
-	struct can_frame frame;
-	int recieved = can_try_recieve_frame(can_socket, frame);
-
-	if (recieved != -1) {
-		return Py_BuildValue("s#", frame.data, frame.can_dlc);
-	}
-	Py_INCREF(Py_None);
-	return Py_None;
-}
-
-
-static PyObject* can_py_send_frame(PyObject *self, PyObject *args) {
-	unsigned int can_socket = 0;
-	char* frame_data = NULL;
-	unsigned int frame_can_id = 0;
-	unsigned int frame_data_len_i = 0;
-	if(!PyArg_ParseTuple(args, "Is#I", &can_socket, &frame_data, &frame_data_len_i, &frame_can_id)
-		 || frame_data_len_i > 8) {
+static PyObject* can_net_sync_py_init(PyObject* self, PyObject* args) {
+	unsigned port;
+	int msgs_limit;
+	int timeout_cycles;
+	unsigned send_frame_timeout_us;
+	unsigned confirmation_tics;
+	if(!PyArg_ParseTuple(args, "IiiII", &port, &msgs_limit, &timeout_cycles, &send_frame_timeout_us, &confirmation_tics)) {
 		return Py_BuildValue("i", -1);
 	}
-	int bytes_sent = can_send_frame(can_socket, frame_data, frame_data_len_i, frame_can_id);
-	return Py_BuildValue("i", bytes_sent);
+	int rc = can_net_sync_init(port, msgs_limit, timeout_cycles, send_frame_timeout_us, confirmation_tics);
+	return Py_BuildValue("i", rc);
 }
 
+static PyObject* can_net_sync_py_send(PyObject* self, PyObject* args) {
+	msg_lvl2_t msg;
+	int data_len;
+	char* msg_lvl2_name;
+	char* msg_metadata_name;
 
-static PyMethodDef CANsocketMethods[] = {
-	{"init_socket", can_py_init_socket, METH_VARARGS, "initialize can socket."},
-	{"recieve_some_data", can_py_recieve_some_data, METH_VARARGS, "recieve data from recieved frame."},
-	{"send_frame", can_py_send_frame, METH_VARARGS, "send frame through socket."},
+	// ("msg_lvl2", ("msg_metadata", hw_addr -int, port -int, is_system -int, id - int), data -string)
+	if(!PyArg_ParseTuple(args, "(s(sIIII)s#)", &msg_lvl2_name, &msg_metadata_name,
+			&msg.meta.hw_addr, &msg.meta.port, &msg.meta.is_system, &msg.meta.id, &msg.data.itself, &data_len)) {
+		return Py_BuildValue("i", -1);
+	}
+	msg.data.len = data_len; // ???
+
+	int rc = can_net_sync_send(&msg);
+	return Py_BuildValue("i", rc);
+}
+
+static PyObject* can_net_sync_py_recv(PyObject* self, PyObject* args) {
+	unsigned port;
+	if(!PyArg_ParseTuple(args, "I", &port))
+		return Py_BuildValue("i", -1);
+
+	msg_lvl2_t* msg;
+	int rc = can_net_sync_recv(port, &msg);
+
+	// ("msg_lvl2", ("msg_metadata", hw_addr -int, port -int, is_system -int, id - int), data -string)
+	return Py_BuildValue("((s(sIIII)s#)i)", "msg_lvl2", "msg_metadata",
+			msg->meta.hw_addr, msg->meta.port, msg->meta.is_system, msg->meta.id, msg->data.itself, msg->data.len, rc);
+}
+
+static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args) {
+	unsigned port;
+	if(!PyArg_ParseTuple(args, "I", &port))
+		return Py_BuildValue("i", -1);
+
+	int rc = can_net_sync_close(port);
+	return Py_BuildValue("i", rc);
+}
+
+static PyMethodDef can_net_sync_methods[] = {
+	{"init", can_net_sync_py_init, METH_VARARGS, "initialize, start listening for incoming messages."},
+	{"send", can_net_sync_py_send, METH_VARARGS, "send message."},
+	{"recv", can_net_sync_py_recv, METH_VARARGS, "recv next message."},
+//	{"close", can_net_sync_py_close, METH_VARARGS, "close, stop listening for incoming messages."},
 	{NULL, NULL, 0, NULL}	/* Sentinel */
 };
 
-PyMODINIT_FUNC initcan_socket(void) {
-	(void) Py_InitModule("can_socket", CANsocketMethods);
+PyMODINIT_FUNC initcan_net_sync(void) {
+	(void) Py_InitModule("can_net_sync", can_net_sync_methods);
 }

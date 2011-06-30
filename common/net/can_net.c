@@ -1,5 +1,5 @@
 // 04.03.2011
-// 02.06.2011
+// 28.06.2011
 // to be changed later:
 /*
  * Copyright (C) 2011 by <Project Master Device>
@@ -25,9 +25,19 @@
 
 #include "can_net.h"
 
+//OTHER:
+msg_lvl2_t* msg_lvl2_make_copy(const msg_lvl2_t* src) {
+	msg_lvl2_t* dst = (msg_lvl2_t*)malloc(sizeof(msg_lvl2_t));
+	*dst = *src;
+	dst->data.len = src->data.len; // is necessary?
+	dst->data.itself = (uint8_t*)malloc(dst->data.len);
+	memcpy(dst->data.itself, src->data.itself, dst->data.len);
+	return dst;
+}
+
 /* ----------------------------------------LIST_STRUCTS-----------------------------------------*/
 
-const can_net_recv_callback_record_t can_net_std_cb_record = {NULL, {0, -1, 0, -1, 0, 1}, NULL};
+const can_net_recv_cb_record_t can_net_std_cb_record = {NULL, {0, -1, 0, -1, 0, 1}, NULL};
 
 typedef struct {
 	void* next; // to use in list
@@ -41,17 +51,13 @@ typedef struct {
 
 typedef struct {
 	void* next; // to use in list
-	msg_lvl2_t it;
-} msg_lvl2_t_list;
-
-typedef struct {
-	void* next; // to use in list
 	can_frame_t it;
 } can_frame_t_list;
 
 /* ---------------------------------------------DATA--------------------------------------------*/
 
-can_net_recv_callbacks_arr_t recv_callbacks_g = CAN_NET_RECV_CALLBACKS_ARR_INITIALIZER;
+//can_net_recv_cbs_arr_t recv_callbacks = CAN_NET_RECV_CALLBACKS_ARR_INITIALIZER;
+LIST(recv_callbacks);
 
 #ifdef CAN_NET_LINUX
 	#define MUTEX_L(mutex_p) pthread_mutex_lock(mutex_p);
@@ -61,6 +67,12 @@ can_net_recv_callbacks_arr_t recv_callbacks_g = CAN_NET_RECV_CALLBACKS_ARR_INITI
 	#ifdef CAN_NET_CONFIRMATION
 		pthread_mutex_t confirm_waiters_mutex = PTHREAD_MUTEX_INITIALIZER;
 	#endif
+
+	#ifndef __NR_gettid
+	#  define __NR_gettid	224
+	#endif
+
+	pid_t can_net_thread_id;
 #endif
 
 #ifdef CAN_NET_CONTIKI
@@ -73,22 +85,50 @@ can_net_recv_callbacks_arr_t recv_callbacks_g = CAN_NET_RECV_CALLBACKS_ARR_INITI
 
 /*----------------------------------------------INIT-------------------------------------------*/
 
-void can_net_add_callbacks(can_net_recv_callbacks_arr_t recv_callbacks) {
-	MUTEX_L(&recv_callbacks_mutex)
-	// concatenate old and given arrays by making new one:
-	can_net_recv_callbacks_arr_t old_arr = recv_callbacks_g;
-	recv_callbacks_g.len = old_arr.len + recv_callbacks.len;
-	int new_len_B = sizeof(can_net_recv_callback_record_t)*(old_arr.len + recv_callbacks.len);
-	recv_callbacks_g.records = (can_net_recv_callback_record_t*)malloc(new_len_B);
-	if (old_arr.len > 0) {
-		// place old arr data at the beginning of new array:
-		int old_len_B = sizeof(can_net_recv_callback_record_t)*old_arr.len;
-		memcpy(recv_callbacks_g.records, old_arr.records, old_len_B);
-		free(old_arr.records);
+can_net_recv_cb_record_t_plist* can_net_add_callback(can_net_recv_cb_record_t* callback_p) {
+	// safe when called from callback (can_net thread)
+	// NOT safe when called from another thread (not can_net thread)
+
+	int thread_safe = 0;
+	#ifdef CAN_NET_LINUX
+	pid_t this_thread_id = (pid_t)syscall(__NR_gettid); //gettid()
+	if (this_thread_id == can_net_thread_id) {
+		// expected only to be called from callback, make sure there is no calls from other parts of can_net
+		thread_safe = 1;
 	}
-	// place given arr data at the end of new array:
-	int add_len_B = sizeof(can_net_recv_callback_record_t)*recv_callbacks.len;
-	memcpy(&recv_callbacks_g.records[old_arr.len], recv_callbacks.records, add_len_B);
+	#endif
+	if (!thread_safe)
+		MUTEX_L(&recv_callbacks_mutex)
+
+	can_net_recv_cb_record_t_plist* new_cb = (can_net_recv_cb_record_t_plist*)malloc(sizeof(can_net_recv_cb_record_t_plist));
+	list_add(recv_callbacks, new_cb);
+	new_cb->it_p = callback_p;
+
+	if (!thread_safe)
+		MUTEX_U(&recv_callbacks_mutex)
+	return new_cb;
+}
+
+void can_net_rm_callback_by_plist(can_net_recv_cb_record_t_plist* callback_plist) {
+	// TODO: allow callback to delete itself, (and maybe someone else (question of security)) - NOT ALLOWED AT THE MOMENT
+	// NOT safe when called from another thread (not can_net thread)
+
+//	int thread_safe = 0;
+	#ifdef CAN_NET_LINUX
+	pid_t this_thread_id = (pid_t)syscall(__NR_gettid); //gettid()
+	if (this_thread_id == can_net_thread_id) {
+//		// expected only to be called from callback, make sure there is no calls from other parts of can_net
+//		thread_safe = 1;
+		return;
+	}
+	#endif
+
+//	if (!thread_safe)
+	MUTEX_L(&recv_callbacks_mutex)
+	list_remove(recv_callbacks, (void*)callback_plist);
+	free(callback_plist);
+
+//	if (!thread_safe)
 	MUTEX_U(&recv_callbacks_mutex)
 }
 
@@ -216,7 +256,7 @@ typedef struct {
 
 // finish Msg_Send_Handler:
 void msh_finish(const int rc_up, send_msg_context_t* ctx) {
-	MUTEX_L(&data_mutex)
+//	MUTEX_L(&data_mutex) - why is it here?
 	int call_cb = 1;
 
 	#ifdef CAN_NET_CONFIRMATION
@@ -226,7 +266,7 @@ void msh_finish(const int rc_up, send_msg_context_t* ctx) {
 
 	if (call_cb)
 		call_scb(ctx->callback, rc_up, ctx->msg, ctx->cb_ctx);
-	MUTEX_U(&data_mutex)
+//	MUTEX_U(&data_mutex)
 
 	free(ctx->segm_ctx);
 	free(ctx);
@@ -284,7 +324,7 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 			#endif
 			can_send(new_frame, ctx);
 		} else {
-			// last frame:
+			// last frame has already been sent:
 			#ifdef CAN_NET_QUEUING
 			// start processing new msg if there is any:
 			int process_next = 0;
@@ -332,17 +372,13 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 #undef FINISH
 
 // INTERFACE:
-void can_net_start_sending_msg(/*const*/ msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx) {
+void can_net_start_sending_msg(const msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx) {
 	send_msg_context_t* send_ctx = (send_msg_context_t*)malloc(sizeof(send_msg_context_t));
 	send_ctx->callback = send_callback;
 	send_ctx->cb_ctx = cb_ctx;
 	send_ctx->first_iteration = 1;
 	// copy msg to context:
-	send_ctx->msg = (msg_lvl2_t*)malloc(sizeof(msg_lvl2_t));
-	*send_ctx->msg = *msg;
-	send_ctx->msg->data.len = msg->data.len;
-	send_ctx->msg->data.itself = (uint8_t*)malloc(send_ctx->msg->data.len);
-	memcpy(send_ctx->msg->data.itself, msg->data.itself, send_ctx->msg->data.len);
+	send_ctx->msg = msg_lvl2_make_copy(msg);
 
 	#ifdef CAN_NET_QUEUING
 	MUTEX_L(&data_mutex)
@@ -415,11 +451,14 @@ int accept_frame(const lvl_segm_fnl_t* segment, atom_descriptor_t* atom, const u
 
 		if (!do_not_call_cb) {
 			MUTEX_L(&recv_callbacks_mutex)
-			int i;
-			for (i = 0; i < recv_callbacks_g.len; i++) {
-				if ( check_base_range(recv_callbacks_g.records[i].check, port, msg->it.meta.is_system, msg->it.meta.id) )
-					recv_callbacks_g.records[i].callback(&msg->it, recv_callbacks_g.records[i].cb_ctx);
+			MUTEX_U(&data_mutex) // - kostyil
+			can_net_recv_cb_record_t_plist* curr = list_head(recv_callbacks);
+			while(curr != NULL) {
+				if ( check_base_range(curr->it_p->check, port, msg->it.meta.is_system, msg->it.meta.id) )
+					curr->it_p->callback(&msg->it, curr->it_p->cb_ctx);
+				curr = list_item_next(curr);
 			}
+			MUTEX_L(&data_mutex)
 			MUTEX_U(&recv_callbacks_mutex)
 		}
 		free(msg);
@@ -431,6 +470,10 @@ int accept_frame(const lvl_segm_fnl_t* segment, atom_descriptor_t* atom, const u
 }
 
 void frame_recv_handler(can_frame_t *frame) {
+	#ifdef CAN_NET_LINUX
+	can_net_thread_id = (pid_t)syscall(__NR_gettid); //gettid()
+	#endif
+
 	lvl2_std_t lvl2_std;
 	port_descriptor_t* port_p = NULL;
 	can_node_descriptor_t* can_node = NULL;

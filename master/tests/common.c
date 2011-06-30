@@ -29,7 +29,13 @@ void int_msg_data(msg_lvl2_t* msg, uint32_t data) {
 	memcpy(msg->data.itself, (char*)&data, msg->data.len);
 }
 
-void test_print_msg(msg_lvl2_t* msg) {
+void set_msg_data_long(msg_lvl2_t* msg) {
+	msg->data.len = test_long_msg_len;
+	msg->data.itself = (uint8_t*)malloc(msg->data.len);
+	memcpy(msg->data.itself, test_long_msg, msg->data.len);
+}
+
+void test_print_msg(const msg_lvl2_t* msg) {
 	printf("	msg->meta.hw_addr=%d\n", msg->meta.hw_addr);
 	printf("	msg->meta.port=%d\n", msg->meta.port);
 	printf("	msg->meta.id=%d\n", msg->meta.id);
@@ -55,9 +61,7 @@ int test_send_msg(uint32_t hwa, uint16_t id, uint8_t smb, uint8_t port, int msg_
 			break;
 
 		case TEST_LONG:
-			msg.data.len = test_long_msg_len;
-			msg.data.itself = (uint8_t*)malloc(msg.data.len);
-			memcpy(msg.data.itself, test_long_msg, msg.data.len);
+			set_msg_data_long(&msg);
 			break;
 #ifdef TEST_ERRORS
 		case TEST_ERR_UNKNOWN_PROTOCOL:
@@ -167,7 +171,7 @@ void test_send_callback(const int rc, msg_lvl2_t* msg, void* context) {
 	printf("\n send_callback: rc=%d\n", rc);
 	test_print_msg(msg);
 }
-void test_recv_callback(msg_lvl2_t* msg, void* context) {
+void test_recv_callback(const msg_lvl2_t* msg, void* context) {
 	printf("\n receive_callback: \n");
 	test_print_msg(msg);
 }

@@ -40,10 +40,11 @@ typedef struct {
 	bytearr_t data;
 } msg_lvl2_t;
 
+// CONST msg_lvl2_t* msg for send_callback:
 typedef void (*can_net_send_callback_t)(const int rc, msg_lvl2_t* msg, void * context);
-typedef void (*can_net_recv_callback_t)(msg_lvl2_t* msg, void * context);
+typedef void (*can_net_recv_callback_t)(const msg_lvl2_t* msg, void * context);
 
-//and small bonus
+// and small bonus:
 inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg, void* cb_ctx);
 
 /*----------------------------------------------------------------------------------------------*/
@@ -75,7 +76,7 @@ inline void add_confirm_waiter(msg_lvl2_t* msg, const uint32_t tics, const can_n
 
 confirm_waiter_t* find_confirm_waiter(const uint8_t port, const uint32_t hwa, const uint8_t smb, const uint16_t id);
 
-void check_confirm_waiters();
+void check_confirm_waiters(void);
 
 #endif
 

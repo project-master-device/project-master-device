@@ -9,9 +9,11 @@
 
 //and small bonus
 inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg, void* cb_ctx) {
-	send_cb(rc, msg, cb_ctx);
-	free(msg->data.itself);
-	free(msg);
+	if (send_cb != NULL) {
+		send_cb(rc, msg, cb_ctx);
+		free(msg->data.itself);
+		free(msg);
+	}
 }
 
 /* -----------------------------------CONFIRMATION----------------------------------------------*/
@@ -47,7 +49,7 @@ confirm_waiter_t* find_confirm_waiter(uint8_t port, uint32_t hwa, uint8_t smb, u
 	return NULL;
 }
 
-void check_confirm_waiters() {
+void check_confirm_waiters(void) {
 	confirm_waiter_t* curr_ = list_head(confirm_waiters_g);
 	while(curr_ != NULL) {
 		--curr_->tics_left;

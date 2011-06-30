@@ -30,7 +30,26 @@ void list_free_all(list_t list) {
 	// make head NULL:
 	*list = NULL;
 }
+/*
+typedef struct {
+	void* next;
+	void* it_p;
+} abstract_plist_t;
 
+// Yet another bicycle:
+void list_free_all_p(list_t list) {
+	abstract_plist_t item = list_head(list);
+	void* next_item;
+	while(item != NULL) {
+		next_item = list_item_next(item);
+		free(item->it_p);
+		free(item);
+		item = next_item;
+	}
+	// make head NULL:
+	*list = NULL;
+}
+*/
 /* ------------------------------------------CORE_DATA------------------------------------------*/
 
 LIST(ports_g);

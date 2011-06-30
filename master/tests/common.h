@@ -55,7 +55,9 @@ extern uint32_t test_succesful_test_msg;
 
 void int_msg_data(msg_lvl2_t* msg, uint32_t data);
 
-void test_print_msg(msg_lvl2_t* msg);
+void set_msg_data_long(msg_lvl2_t* msg);
+
+void test_print_msg(const msg_lvl2_t* msg);
 
 int test_send_msg(uint32_t hwa, uint16_t id, uint8_t smb, uint8_t port, int msg_type, can_net_send_callback_t cb);
 
@@ -65,7 +67,7 @@ int test_msg(uint32_t hwa, uint8_t id, uint8_t smb, int my_port, int msg_type, m
 
 void test_send_callback(const int rc, msg_lvl2_t* msg, void* context);
 
-void test_recv_callback(msg_lvl2_t* msg, void* context);
+void test_recv_callback(const msg_lvl2_t* msg, void* context);
 
 #ifdef TEST_ERRORS
 int test_err(int my_port, int err_type);

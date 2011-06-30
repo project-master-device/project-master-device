@@ -29,19 +29,18 @@ void try_receive_rand_mgs(int my_port) {
 	}
 }
 */
+
 int main(void) {
-	can_net_recv_callbacks_arr_t recv_callbacks;
-	recv_callbacks.len = 1;
-	recv_callbacks.records = (can_net_recv_callback_record_t*)malloc(sizeof(can_net_recv_callback_record_t) * recv_callbacks.len);
-	recv_callbacks.records[0].callback = test_recv_callback;
-	recv_callbacks.records[0].cb_ctx = NULL;
-	recv_callbacks.records[0].check.port_min = 0;
-	recv_callbacks.records[0].check.port_max = -1;
-	recv_callbacks.records[0].check.id_min = 0;
-	recv_callbacks.records[0].check.id_max = -1;
-	recv_callbacks.records[0].check.smb_min = 0;
-	recv_callbacks.records[0].check.smb_max = 1;
-	can_net_add_callbacks(recv_callbacks);
+	can_net_recv_cb_record_t* cbr_p = (can_net_recv_cb_record_t*)malloc(sizeof(can_net_recv_cb_record_t));
+	cbr_p->callback = test_recv_callback;
+	cbr_p->cb_ctx = NULL;
+	cbr_p->check.port_min = 0;
+	cbr_p->check.port_max = -1;
+	cbr_p->check.id_min = 0;
+	cbr_p->check.id_max = -1;
+	cbr_p->check.smb_min = 0;
+	cbr_p->check.smb_max = 1;
+	can_net_add_callback(cbr_p);
 
 	uint32_t msg_confirm_tics = 1000; // 1000ms=1s
 	int rci = can_net_init(1000, msg_confirm_tics);

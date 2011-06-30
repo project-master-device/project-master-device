@@ -1,6 +1,7 @@
 OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o pmd_button.o
 OBJS_LED_COMMAND = $(OBJS_COMMON) led_command.o
 OBJS_READER = $(OBJS_COMMON) reader.o
+OBJS_READER_LED =  $(OBJS_COMMON) reader_led.o
 OBJS_BUTTON = $(OBJS_COMMON) button.o
 CC = gcc
 DEBUG = -g
@@ -8,9 +9,10 @@ CFLAGS = -Wall -c $(DEBUG) -DCAN_NET_LINUX
 LFLAGS = -Wall $(DEBUG)
 LNETPATH = ../../local_net_CAN/
 NETPATH = ../../../../common/net/
+LIBPATH = ../../../../common/lib/
 PMDNETPATH = ../../../../common/pmd_net/
 
-all: led_command reader button
+all: led_command reader button reader_led
 
 
 button: $(OBJS_BUTTON)
@@ -18,6 +20,12 @@ button: $(OBJS_BUTTON)
 
 button.o: button.c $(NETPATH)can_net.h
 	$(CC) $(CFLAGS) button.c
+
+reader_led: $(OBJS_READER_LED)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_READER_LED) -o reader_led
+
+reader_led.o: reader_led.c
+	$(CC) $(CFLAGS) reader_led.c
 
 reader: $(OBJS_READER)
 	$(CC) -lpthread $(LFLAGS) $(OBJS_READER) -o reader
@@ -46,20 +54,20 @@ can_net.o: $(NETPATH)can_net.h $(NETPATH)can_net.c $(NETPATH)can_net_middle.h
 can_net_middle.o: $(NETPATH)can_net_middle.h $(NETPATH)can_net_middle.c $(NETPATH)can_net_core.h
 	$(CC) $(CFLAGS) $(NETPATH)can_net_middle.c
 
-can_net_core.o: $(NETPATH)can_net_core.h $(NETPATH)can_net_core.c $(NETPATH)can_protocols.h $(NETPATH)can_drv.h $(NETPATH)list.h
+can_net_core.o: $(NETPATH)can_net_core.h $(NETPATH)can_net_core.c $(NETPATH)can_protocols.h $(NETPATH)can_drv.h $(LIBPATH)list.h
 	$(CC) $(CFLAGS) $(NETPATH)can_net_core.c
 
 can_protocols.o: $(NETPATH)can_protocols.h $(NETPATH)can_protocols.c $(NETPATH)can_drv_structs.h
 	$(CC) $(CFLAGS) $(NETPATH)can_protocols.c
 
-can_drv_lin.o: $(NETPATH)can_drv.h $(LNETPATH)can_drv_lin.c $(LNETPATH)can_socket.h $(NETPATH)list.h
+can_drv_lin.o: $(NETPATH)can_drv.h $(LNETPATH)can_drv_lin.c $(LNETPATH)can_socket.h $(LIBPATH)list.h
 	$(CC) -lpthread $(CFLAGS) $(LNETPATH)can_drv_lin.c
 
 can_socket.o: $(LNETPATH)can_socket.h $(LNETPATH)can_socket.c
 	$(CC) $(CFLAGS) $(LNETPATH)can_socket.c
 
-list.o: $(NETPATH)list.h $(NETPATH)list.c
-	$(CC) $(CFLAGS) $(NETPATH)list.c
+list.o: $(LIBPATH)list.h $(LIBPATH)list.c
+	$(CC) $(CFLAGS) $(LIBPATH)list.c
 
 clean:
-	rm -rf *o led_command reader button
+	rm -rf *o led_command reader button reader_led

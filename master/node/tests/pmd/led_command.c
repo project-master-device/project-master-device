@@ -33,11 +33,11 @@ int main(int argc, char * argv[]) {
     printf("id = %d\n", id);
 
     if(strcmp(argv[2], "on") == 0) {
-        pmd_led.operation = PMD_NET_LED_ON;
+        pmd_led.operation = PMD_LED_ON;
     } else if(strcmp(argv[2], "off") == 0) {
-        pmd_led.operation = PMD_NET_LED_OFF; 
+        pmd_led.operation = PMD_LED_OFF; 
     } else if(strcmp(argv[2], "toggle") == 0) {
-        pmd_led.operation = PMD_NET_LED_TOGGLE;
+        pmd_led.operation = PMD_LED_TOGGLE;
     }
     printf("operation code = %d\n\n", pmd_led.operation);
 

@@ -131,6 +131,7 @@ void recv_cb(const msg_lvl2_t * msg, void * context) {
     pmd_net_system_config_data_t cd;
     cd.config = NULL;
     cd.section = NULL;
+    config_cnf_t cnf;
 
     if(msg) {
         printf("received message!\n");
@@ -144,7 +145,11 @@ void recv_cb(const msg_lvl2_t * msg, void * context) {
             if(cd.operation == PMD_NET_SYSTEM_CONFIG_FULL) {
                 if(cd.config != NULL) {
                     config_print(cd.config);
+                    cnf.sections = cd.config->sections;
+                    cnf.sections_list = cd.config->sections_list;
                     free(cd.config);
+                    if(*(cnf.sections) != cnf.sections_list)
+                        printf(":(\n");
                     cd.config = NULL;
                 }
                 else

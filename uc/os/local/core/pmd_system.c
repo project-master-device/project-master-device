@@ -45,13 +45,13 @@ static void create_config() {
     config_section_t * sect;
 
 //    //create led 1
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 1;
-//    config_section_set_str(sect, "type", "led");
-//    config_section_set_uint(sect, "ddr", &DDRB);
-//    config_section_set_uint(sect, "port", &PORTB);
-//    config_section_set_uint(sect, "offset", PB4);
-//
+    sect = config_cnf_create_section(cnf);
+    sect->id = 1;
+    config_section_set_str(sect, "type", "led");
+    config_section_set_uint(sect, "ddr", &DDRB);
+    config_section_set_uint(sect, "port", &PORTB);
+    config_section_set_uint(sect, "offset", PB4);
+
 //    //create led 2
 //    sect = config_cnf_create_section(cnf);
 //    sect->id = 2;
@@ -59,7 +59,7 @@ static void create_config() {
 //    config_section_set_uint(sect, "ddr", &DDRB);
 //    config_section_set_uint(sect, "port", &PORTB);
 //    config_section_set_uint(sect, "offset", PB5);
-//
+
 //    //create led 3
 //    sect = config_cnf_create_section(cnf);
 //    sect->id = 3;

@@ -110,6 +110,7 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
             if(pmd_net_system_config_read_data(&(msg->data), &cd) == 0) {
                 switch(cd.operation) {
                 case PMD_NET_SYSTEM_CONFIG_FULL:
+                    led1_blink(1, 200);
                     config_full_handler(&cd);
                     break;
 
@@ -135,12 +136,12 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     }
 
     if(cd.config != NULL) {
-        free(cd.config);
+//        free(cd.config);
         cd.config = NULL;
     }
 
     if(cd.section != NULL) {
-        free(cd.section);
+//        free(cd.section);
         cd.section = NULL;
     }
 }

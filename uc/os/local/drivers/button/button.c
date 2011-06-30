@@ -17,7 +17,7 @@ void button_handle_irq(void * conf_sect) {
 }
 
 int button_init(config_section_t * conf_sect) {
-    volatile uint8_t * ddr = (volatile uint8_t *)config_section_get_uint(conf_sect, "ddr", NULL);
+    volatile uint8_t * ddr = (volatile uint8_t *)config_section_get_uint(conf_sect, "ddr", (config_uint_t)NULL);
     if(ddr == NULL) return 1;
 
     uint8_t offset = config_section_get_uint(conf_sect, "offset", 0);
@@ -68,7 +68,7 @@ PROCESS_THREAD(process_handle_button, ev, data) {
             rc = pmd_button_write_data(msg.data, &button_data);
 
             if(rc == 0) {
-                can_net_start_sending_msg(&msg, NULL);
+                can_net_start_sending_msg(&msg, NULL, NULL);
             }
 
             interrupt_register(config_section_get_uint((config_section_t *)data, "offset", 9), INTERRUPT_ANY, button_handle_irq, data);

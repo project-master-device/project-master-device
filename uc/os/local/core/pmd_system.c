@@ -9,11 +9,10 @@
 /**
  * @brief Two can_net callbacks: 0 -- for non-smb messages, 1 -- for smb messages.
  */
-static can_net_recv_callback_record_t cb_records[2];
-static can_net_recv_callback_record_t net_recv_cb_record;
+static can_net_recv_cb_record_t cb_records[2];
 
 
-static void non_smb_net_cb(msg_lvl2_t * msg) {
+static void non_smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     if(msg == NULL) return;
 
     net_device_t * net_device = net_device_get(msg->meta.id);
@@ -34,7 +33,7 @@ static void non_smb_net_cb(msg_lvl2_t * msg) {
  * 1. Init
  * 2. Normal
  */
-static void smb_net_cb(msg_lvl2_t * msg) {
+static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     led3_blink(1, 200);
 }
 
@@ -112,29 +111,28 @@ int pmd_system_init() {
         return 3;
     }
 
-    can_net_recv_callbacks_arr_t cb_arr;
-    cb_arr.records = &cb_records;
-    cb_arr.len = 2;
-
     //Non-smb message handler
-    cb_arr.records[0].check.port_min = 0;
-    cb_arr.records[0].check.port_max = -1;
-    cb_arr.records[0].check.id_min = 0;
-    cb_arr.records[0].check.id_max = -1;
-    cb_arr.records[0].check.smb_min = 0;
-    cb_arr.records[0].check.smb_max = 0;
-    cb_arr.records[0].callback = non_smb_net_cb;
+    cb_records[0].check.port_min = 0;
+    cb_records[0].check.port_max = -1;
+    cb_records[0].check.id_min = 0;
+    cb_records[0].check.id_max = -1;
+    cb_records[0].check.smb_min = 0;
+    cb_records[0].check.smb_max = 0;
+    cb_records[0].callback = non_smb_net_cb;
+    cb_records[0].cb_ctx = NULL;
 
     //smb message handler
-    cb_arr.records[1].check.port_min = 0;
-    cb_arr.records[1].check.port_max = -1;
-    cb_arr.records[1].check.id_min = 0;
-    cb_arr.records[1].check.id_max = -1;
-    cb_arr.records[1].check.smb_min = 1;
-    cb_arr.records[1].check.smb_max = 1;
-    cb_arr.records[1].callback = smb_net_cb;
+    cb_records[1].check.port_min = 0;
+    cb_records[1].check.port_max = -1;
+    cb_records[1].check.id_min = 0;
+    cb_records[1].check.id_max = -1;
+    cb_records[1].check.smb_min = 1;
+    cb_records[1].check.smb_max = 1;
+    cb_records[1].callback = smb_net_cb;
+    cb_records[1].cb_ctx = NULL;
 
-    can_net_add_callbacks(cb_arr);
+    can_net_add_callback( &(cb_records[0]) );
+    can_net_add_callback( &(cb_records[1]) );
 
     return 0;
 }

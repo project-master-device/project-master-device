@@ -98,14 +98,14 @@ can_net_recv_cb_record_t_plist* can_net_add_callback(can_net_recv_cb_record_t* c
 	}
 	#endif
 	if (!thread_safe)
-		MUTEX_L(&recv_callbacks_mutex)
+		MUTEX_L(&recv_callbacks_mutex);
 
 	can_net_recv_cb_record_t_plist* new_cb = (can_net_recv_cb_record_t_plist*)malloc(sizeof(can_net_recv_cb_record_t_plist));
 	list_add(recv_callbacks, new_cb);
 	new_cb->it_p = callback_p;
 
 	if (!thread_safe)
-		MUTEX_U(&recv_callbacks_mutex)
+		MUTEX_U(&recv_callbacks_mutex);
 	return new_cb;
 }
 

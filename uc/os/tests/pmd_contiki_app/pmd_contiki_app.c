@@ -15,7 +15,7 @@ AUTOSTART_PROCESSES(&init_process, &can_net_send_process);
 int app = -1;
 int send_busy = 0;
 
-void send_handler(const int rc, msg_lvl2_t * msg) {
+void send_handler(const int rc, msg_lvl2_t * msg, void * ctx) {
     if(rc == CAN_NET_RC_NORM) {
         led1_blink(1, 500);
     }
@@ -42,7 +42,7 @@ PROCESS_THREAD(can_net_send_process, ev, data) {
 
     for(;;) {
         if((button_state() == BUTTON_ON) && (send_busy == 0)) {
-            can_net_start_sending_msg(&msg, send_handler);
+            can_net_start_sending_msg(&msg, send_handler, NULL);
             send_busy = 1;
         }
         PROCESS_PAUSE();

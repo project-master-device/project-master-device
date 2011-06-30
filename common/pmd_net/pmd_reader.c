@@ -30,7 +30,7 @@ int pmd_reader_read_data(const bytearr_t arr, pmd_reader_data_t * data) {
         return 1;
     uint8_t i;
 
-    switch (data->operation) {
+    switch (arr.itself[0]) {
     case PMD_READER_GREEN_LED_ON:
     case PMD_READER_GREEN_LED_OFF:
         data->operation = arr.itself[0];

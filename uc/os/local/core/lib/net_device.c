@@ -31,8 +31,7 @@ net_device_t * net_device_get(uint16_t dev_id) {
     for (dev = (net_device_t *)list_head(net_device_list); dev != NULL;
             dev = (net_device_t *)list_item_next((void *)dev)) {
 
-        id = config_section_get_int(dev->conf_sect, "id", -1);
-        if((id != -1) && ((uint16_t)id == dev_id)) {
+        if(dev->conf_sect->id == dev_id) {
             return dev;
         }
     }

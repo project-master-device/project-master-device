@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 #include "can_protocols.h"
-#include "list.h"
+#include "../lib/list.h"
 #include "can_drv.h"
 
 /* defines:

@@ -167,7 +167,7 @@ int can_net_init(const uint32_t send_frame_timeout_us, const uint32_t confirmati
 	// start can driver:
 	can_send_callback_t send_callback = msg_send_handler;
 	can_recv_callback_t recv_callback = frame_recv_handler;
-	can_speed_t can_speed = CAN_1000;
+	can_speed_t can_speed = CAN_125;
 	int rc = can_init(can_speed, send_callback, recv_callback, send_frame_timeout_us, 0, 0);
 	if (rc)
 		return rc; // 1-cansocket, 2-pthread

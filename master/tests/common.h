@@ -12,7 +12,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdlib.h>
-#define CAN_NET_LINUX
 #include "../../common/net/can_net.h"
 
 //#define TEST_ERRORS

@@ -1,5 +1,5 @@
 #include "contiki.h"
-#include "dev/can_drv.h"
+#include "net/can_drv.h"
 #include "lib/list.h"
 #include "can_lowlevel.h"
 #include "lib/malloc.h"

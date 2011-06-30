@@ -56,8 +56,6 @@ typedef struct {
     void * next; ///< needed for list.
 
     config_section_t * conf_sect; ///< configuration section of the device.
-//    dev_type type; ///< type of the device. [это не нужно!]
-//    uint16_t id; ///< device id. [это не нужно!]
     net_callback_t net_callback;
 } net_device_t;
 

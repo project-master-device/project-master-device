@@ -5,7 +5,7 @@
 //#include <stdio.h>
 #include <unistd.h>
 #include <sys/time.h>
-#include "../../common/net/list.h"
+#include "../../common/lib/list.h"
 #include "../../common/net/can_drv.h"
 #include "can_socket.h"
 

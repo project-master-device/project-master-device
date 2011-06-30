@@ -31,7 +31,9 @@
 #define READER_H_
 
 #include "lib/config.h"
+#include "net/can_net.h"
 
 int reader_init(config_section_t * conf_sect);
+void reader_net_callback(config_section_t * conf_sect, msg_lvl2_t * net_msg);
 
 #endif /* READER_H_ */

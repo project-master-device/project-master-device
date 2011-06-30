@@ -7,6 +7,7 @@
 #include "dev/reader.h"
 
 #include <string.h>
+#include <util/delay.h>
 
 int net_device_platform_init() {
     config_section_t * sect = NULL;
@@ -39,15 +40,15 @@ int net_device_platform_init() {
                 return 4;
             net_device_construct(net_device, sect, NULL);
 
-        } /*else if (strcmp(type, "reader") == 0) {
+        } else if (strcmp(type, "reader") == 0) {
             if(reader_init(sect) != 0)
                 return 3;
 
             net_device = (net_device_t *)malloc(sizeof(net_device_t));
             if(net_device == NULL)
                 return 4;
-            net_device_construct(net_device, sect, NULL);
-        }*/
+            net_device_construct(net_device, sect, reader_net_callback);
+        }
         // etc. new drivers
     }
 

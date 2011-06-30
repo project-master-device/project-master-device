@@ -9,11 +9,12 @@
 
 //and small bonus
 inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* msg, void* cb_ctx) {
-	if (send_cb != NULL) {
-		send_cb(rc, msg, cb_ctx);
-		free(msg->data.itself);
-		free(msg);
-	}
+	if(send_cb != NULL) {
+        send_cb(rc, msg, cb_ctx);
+    }
+
+	free(msg->data.itself);
+	free(msg);
 }
 
 /* -----------------------------------CONFIRMATION----------------------------------------------*/

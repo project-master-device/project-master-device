@@ -4,27 +4,26 @@
 #include "lib/net_device.h"
 #include "lib/interrupt.h"
 
-#include <avr/interrupt.h>
+#include <avr/io.h>
 
 /**
  * @brief Two can_net callbacks: 0 -- for non-smb messages, 1 -- for smb messages.
  */
 static can_net_recv_callback_record_t cb_records[2];
+static can_net_recv_callback_record_t net_recv_cb_record;
 
 
-static void non_smb_net_cb(msg_lvl2_t * msg, const int port) {
-//    led1_toggle();
-    led1_blink(1, 200);
-//    if(msg == NULL) return;
-//
-//    net_device_t * net_device = net_device_get(msg->meta.id);
-//    if(net_device != NULL) {
-//        if(net_device->net_callback != NULL) {
-//            net_device->net_callback(net_device->conf_sect, msg);
-//        }
-//    } else {
-//        //TODO ???
-//    }
+static void non_smb_net_cb(msg_lvl2_t * msg) {
+    if(msg == NULL) return;
+
+    net_device_t * net_device = net_device_get(msg->meta.id);
+    if(net_device != NULL) {
+        if(net_device->net_callback != NULL) {
+            net_device->net_callback(net_device->conf_sect, msg);
+        }
+    } else {
+        //TODO ???
+    }
 }
 
 /*
@@ -35,14 +34,71 @@ static void non_smb_net_cb(msg_lvl2_t * msg, const int port) {
  * 1. Init
  * 2. Normal
  */
-static void smb_net_cb(msg_lvl2_t * msg, const int port) {
+static void smb_net_cb(msg_lvl2_t * msg) {
     led3_blink(1, 200);
 }
 
 
+static void create_config() {
+    config_destruct();
+    config_construct();
+    config_cnf_t * cnf = config_get();
+    config_section_t * sect;
+
+//    //create led 1
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 1;
+//    config_section_set_str(sect, "type", "led");
+//    config_section_set_uint(sect, "ddr", &DDRB);
+//    config_section_set_uint(sect, "port", &PORTB);
+//    config_section_set_uint(sect, "offset", PB4);
+//
+//    //create led 2
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 2;
+//    config_section_set_str(sect, "type", "led");
+//    config_section_set_uint(sect, "ddr", &DDRB);
+//    config_section_set_uint(sect, "port", &PORTB);
+//    config_section_set_uint(sect, "offset", PB5);
+//
+//    //create led 3
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 3;
+//    config_section_set_str(sect, "type", "led");
+//    config_section_set_uint(sect, "ddr", &DDRB);
+//    config_section_set_uint(sect, "port", &PORTB);
+//    config_section_set_uint(sect, "offset", PB6);
+
+    //create external button
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 4;
+//    config_section_set_str(sect, "type", "button");
+//    config_section_set_uint(sect, "ddr", &DDRE);
+//    config_section_set_uint(sect, "pin", &PINE);
+//    config_section_set_uint(sect, "offset", PE7);
+
+    sect = config_cnf_create_section(cnf);
+    sect->id = 5;
+    config_section_set_str(sect, "type", "reader");
+    config_section_set_uint(sect, "data0_ddr", 45);
+    config_section_set_uint(sect, "data0_pin", 44);
+    config_section_set_uint(sect, "data0_offset", 4);
+    config_section_set_uint(sect, "data1_ddr", 45);
+    config_section_set_uint(sect, "data1_pin", 44);
+    config_section_set_uint(sect, "data1_offset", 5);
+    config_section_set_uint(sect, "gled_ddr", &DDRA);
+    config_section_set_uint(sect, "gled_port", &PORTA);
+    config_section_set_uint(sect, "gled_offset", PA7);
+    config_section_set_uint(sect, "beep_ddr", &DDRA);
+    config_section_set_uint(sect, "beep_port", &PORTA);
+    config_section_set_uint(sect, "beep_offset", PA6);
+
+    config_save();
+}
+
 int pmd_system_init() {
-    config_init();
-    if (config_open() == -1) {
+    create_config();
+    if (config_open() != 0) {
         return 1;
     }
 

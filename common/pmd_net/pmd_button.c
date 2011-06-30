@@ -1,13 +1,12 @@
-#include "pmd_led.h"
+#include "pmd_button.h"
 
-int pmd_led_write_data(const bytearr_t arr, pmd_led_data_t * data) {
+int pmd_button_write_data(const bytearr_t arr, pmd_button_data_t * data) {
     if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
         return 1;
 
     switch(data->operation) {
-    case PMD_LED_ON:
-    case PMD_LED_OFF:
-    case PMD_LED_TOGGLE:
+    case PMD_BUTTON_DOWN:
+    case PMD_BUTTON_UP:
         arr.itself[0] = data->operation;
         break;
 
@@ -19,14 +18,13 @@ int pmd_led_write_data(const bytearr_t arr, pmd_led_data_t * data) {
     return 0;
 }
 
-int pmd_led_read_data(const bytearr_t arr, pmd_led_data_t * data) {
+int pmd_button_read_data(const bytearr_t arr, pmd_button_data_t * data) {
     if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
         return 1;
 
     switch(arr.itself[0]) {
-    case PMD_LED_ON:
-    case PMD_LED_OFF:
-    case PMD_LED_TOGGLE:
+    case PMD_BUTTON_DOWN:
+    case PMD_BUTTON_UP:
         data->operation = arr.itself[0];
         break;
 

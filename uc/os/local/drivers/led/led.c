@@ -26,15 +26,15 @@ void led_net_callback(config_section_t * conf_sect, msg_lvl2_t * net_msg) {
 
         if(rc == 0) {
             switch(pmd_led_data.operation) {
-                case PMD_NET_LED_ON:
+                case PMD_LED_ON:
                     led_on(conf_sect);
                     break;
 
-                case PMD_NET_LED_OFF:
+                case PMD_LED_OFF:
                     led_off(conf_sect);
                     break;
 
-                case PMD_NET_LED_TOGGLE:
+                case PMD_LED_TOGGLE:
                     led_toggle(conf_sect);
                     break;
             }

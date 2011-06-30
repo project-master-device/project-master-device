@@ -1,7 +1,7 @@
 OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o pmd_button.o
 OBJS_LED_COMMAND = $(OBJS_COMMON) led_command.o
 OBJS_READER = $(OBJS_COMMON) reader.o
-OBJS_READER_LED =  $(OBJS_COMMON) reader_led.o
+OBJS_READER_COMMAND =  $(OBJS_COMMON) reader_command.o
 OBJS_BUTTON = $(OBJS_COMMON) button.o
 CC = gcc
 DEBUG = -g
@@ -12,7 +12,7 @@ NETPATH = ../../../../common/net/
 LIBPATH = ../../../../common/lib/
 PMDNETPATH = ../../../../common/pmd_net/
 
-all: led_command reader button reader_led
+all: led_command reader button reader_command
 
 
 button: $(OBJS_BUTTON)
@@ -21,11 +21,11 @@ button: $(OBJS_BUTTON)
 button.o: button.c $(NETPATH)can_net.h
 	$(CC) $(CFLAGS) button.c
 
-reader_led: $(OBJS_READER_LED)
-	$(CC) -lpthread $(LFLAGS) $(OBJS_READER_LED) -o reader_led
+reader_command: $(OBJS_READER_COMMAND)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_READER_COMMAND) -o reader_command
 
-reader_led.o: reader_led.c
-	$(CC) $(CFLAGS) reader_led.c
+reader_command.o: reader_command.c
+	$(CC) $(CFLAGS) reader_command.c
 
 reader: $(OBJS_READER)
 	$(CC) -lpthread $(LFLAGS) $(OBJS_READER) -o reader
@@ -70,4 +70,4 @@ list.o: $(LIBPATH)list.h $(LIBPATH)list.c
 	$(CC) $(CFLAGS) $(LIBPATH)list.c
 
 clean:
-	rm -rf *o led_command reader button reader_led
+	rm -rf *o led_command reader button reader_command

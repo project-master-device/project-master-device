@@ -26,15 +26,19 @@ void send() {
     pmd_reader_write_data(msg.data, &d); 
     can_net_start_sending_msg(&msg, NULL);
 
+    sleep(1);
+
     d.operation = PMD_READER_BEEP_ON;
     pmd_reader_write_data(msg.data, &d); 
-    //can_net_start_sending_msg(&msg, NULL);
+    can_net_start_sending_msg(&msg, NULL);
 
     sleep(1);
 
     d.operation = PMD_READER_BEEP_OFF;
     pmd_reader_write_data(msg.data, &d); 
-    //can_net_start_sending_msg(&msg, NULL);
+    can_net_start_sending_msg(&msg, NULL);
+
+    sleep(1);
 
     d.operation = PMD_READER_GREEN_LED_OFF;
     pmd_reader_write_data(msg.data, &d); 

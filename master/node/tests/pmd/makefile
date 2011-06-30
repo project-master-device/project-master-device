@@ -1,4 +1,4 @@
-OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o
+OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o pmd_button.o
 OBJS_LED_COMMAND = $(OBJS_COMMON) led_command.o
 OBJS_READER = $(OBJS_COMMON) reader.o
 OBJS_BUTTON = $(OBJS_COMMON) button.o
@@ -31,6 +31,9 @@ led_command: $(OBJS_LED_COMMAND)
 led_command.o: led_command.c $(NETPATH)can_net.h
 	$(CC) $(CFLAGS) led_command.c
 
+pmd_button.o: $(PMDNETPATH)pmd_button.h $(PMDNETPATH)pmd_button.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_button.c
+
 pmd_reader.o: $(PMDNETPATH)pmd_reader.h $(PMDNETPATH)pmd_reader.c
 	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_reader.c
 
@@ -59,4 +62,4 @@ list.o: $(NETPATH)list.h $(NETPATH)list.c
 	$(CC) $(CFLAGS) $(NETPATH)list.c
 
 clean:
-	rm -rf *o led_command reader
+	rm -rf *o led_command reader button

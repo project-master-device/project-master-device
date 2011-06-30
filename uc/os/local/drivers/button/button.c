@@ -2,6 +2,7 @@
 #include "dev/button.h"
 #include "lib/ftimer.h"
 #include "lib/interrupt.h"
+#include "net/can_net.h"
 #include "pmd_net/pmd_button.h"
 
 #include <stdint.h>
@@ -56,6 +57,12 @@ PROCESS_THREAD(process_handle_button, ev, data) {
             change_state();
 
             button_data.operation = state;
+
+            msg.meta.hw_addr = 7; //FIXME right hw_addr
+            msg.meta.port = 1; //FIXME right port
+            msg.meta.id = ((config_section_t *)data)->id;
+            msg.meta.is_system = 0;
+
             msg.data.len = 1;
             msg.data.itself = &buf;
             rc = pmd_button_write_data(msg.data, &button_data);

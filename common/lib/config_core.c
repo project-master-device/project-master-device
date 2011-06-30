@@ -303,6 +303,10 @@ int config_parse(const char * src_str, config_cnf_t * dest_config) {
     char str_buf[128];
     config_parser_state_t state = CONFIG_BEGIN;
 
+    if((src_str == NULL) || (dest_config == NULL)) {
+        return 2;
+    }
+
     for(src_str_it = src_str; (src_str_it != src_str_end) && ((*src_str_it) != CONFIG_EOF); ++src_str_it) {
         ch = *src_str_it;
 
@@ -457,6 +461,10 @@ char * config_emit(config_cnf_t * src_config) {
     char * dest_str_buf_end = dest_str_buf + CONFIG_EMIT_BUF_SIZE;
     char * dest_str_buf_it = dest_str_buf;
     char * dest_str = NULL;
+
+    if(src_config == NULL) {
+        return NULL;
+    }
 
     for(sect_it = (config_section_t *) list_head(src_config->sections); sect_it != NULL; sect_it = (config_section_t *) list_item_next(sect_it)) {
         //write section id

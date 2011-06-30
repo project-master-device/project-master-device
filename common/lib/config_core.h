@@ -92,6 +92,7 @@ config_section_t * config_cnf_create_section(config_cnf_t * config);
  * @return
  *      0 -- successful parse
  *      1 -- parse failed
+ *      2 -- parameters problem (source string pointer or destination config pointer is NULL)
  */
 int config_parse(const char * src_str, config_cnf_t * dest_config);
 

@@ -1,6 +1,7 @@
 OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o
 OBJS_LED_COMMAND = $(OBJS_COMMON) led_command.o
 OBJS_READER = $(OBJS_COMMON) reader.o
+OBJS_BUTTON = $(OBJS_COMMON) button.o
 CC = gcc
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG) -DCAN_NET_LINUX
@@ -9,7 +10,14 @@ LNETPATH = ../../local_net_CAN/
 NETPATH = ../../../../common/net/
 PMDNETPATH = ../../../../common/pmd_net/
 
-all: led_command reader
+all: led_command reader button
+
+
+button: $(OBJS_BUTTON)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_BUTTON) -o button
+
+button.o: button.c $(NETPATH)can_net.h
+	$(CC) $(CFLAGS) button.c
 
 reader: $(OBJS_READER)
 	$(CC) -lpthread $(LFLAGS) $(OBJS_READER) -o reader

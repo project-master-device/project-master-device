@@ -3,6 +3,7 @@
 #include "net/can_net.h"
 #include "lib/net_device.h"
 #include "lib/interrupt.h"
+#include "pmd_net/system.h"
 
 #include <avr/io.h>
 
@@ -33,8 +34,36 @@ static void non_smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
  * 1. Init
  * 2. Normal
  */
+/*
+ * TODO: проверить сообщения:
+ * 1. Мастер -> контроллер: запрос конфига [ok]
+ * 2. Контроллер -> мастер: полный конфиг
+ * 3. Мастер -> контроллер: удалить секцию
+ * 4. Мастер -> контроллер: добавить секцию
+ */
+
+static void send_full_config() {
+    msg_lvl2_t msg;
+    msg.meta.hw_addr = 7; //FIXME: write real address here
+    msg.meta.port = 1; //FIXME: write real port here
+    msg.meta.is_system = 1;
+//    msg.meta.
+}
+
 static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
-    led3_blink(1, 200);
+    pmd_net_system_config_data_t cd;
+
+    if((msg != NULL) && (msg->meta.id == PMD_NET_SYSTEM_CONFIG_MSG)) {
+        if(pmd_net_system_config_read_data(&(msg->data), &cd) != 0) {
+            led1_blink(1, 1000); //fail
+        }
+
+        if(cd.operation == PMD_NET_SYSTEM_CONFIG_REQUEST) {
+            led2_blink(1, 200);
+        }
+    } else {
+        led3_blink(1, 1000); //fail
+    }
 }
 
 

@@ -7,11 +7,6 @@
 #include <stdint.h>
 
 
-typedef struct {
-    uint8_t msg_type;
-    void * msg_data;
-} pmd_net_system_data_t;
-
 // Message types
 #define PMD_NET_SYSTEM_CONFIG_MSG           1
 //#define PMD_NET_SYSTEM_OTHER_MSG          2
@@ -33,7 +28,6 @@ typedef struct {
 /**
  * @return
  *      0 -- successful write
- *     -1 -- unknown message type
  *      1 -- function parameters problem: source data or destination array pointer are NULL
  *      2 -- memory allocation problem
  *      3 -- config full command error: config pointer is NULL
@@ -41,18 +35,17 @@ typedef struct {
  *      5 -- config section operation command (add/del) error: section pointer is NULL
  *      6 -- config section add command error: failed to write section
  */
-int pmd_net_system_write_data(bytearr_t * dest_arr, const pmd_net_system_data_t * source_data);
+int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_config_data_t * source_data);
 
 /**
  * @return
  *      0 -- successful read
- *     -1 -- unknown message type
  *      1 -- function parameters problem: source array or destination data pointer are NULL
  *      2 -- memory allocation problem
  *      3 -- bad source data
  *      4 -- config full command error: parsing failed
  *      5 -- config section add command error: parsing failed
  */
-int pmd_net_system_read_data(const bytearr_t * source_arr, pmd_net_system_data_t * dest_data);
+int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system_config_data_t * dest_data);
 
 #endif /* PMD_NET_SYSTEM_H_ */

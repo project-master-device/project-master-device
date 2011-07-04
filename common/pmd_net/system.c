@@ -2,62 +2,6 @@
 
 #include <string.h>
 
-int pmd_net_system_config_write_data(bytearr_t *, const pmd_net_system_config_data_t *);
-int pmd_net_system_config_read_data(const bytearr_t *, pmd_net_system_config_data_t *);
-
-
-int pmd_net_system_write_data(bytearr_t * dest_arr, const pmd_net_system_data_t * source_data) {
-    if((dest_arr == NULL) || (source_data == NULL))
-        return 1;
-
-    int rc;
-
-    switch(source_data->msg_type) {
-    case PMD_NET_SYSTEM_CONFIG_MSG:
-        rc = pmd_net_system_config_write_data(dest_arr, (pmd_net_system_config_data_t *)(source_data->msg_data));
-        if(rc != 0)
-            return rc;
-
-        break;
-
-    default:
-        return -1;
-        break;
-    }
-
-    return 0;
-}
-
-int pmd_net_system_read_data(const bytearr_t * source_arr, pmd_net_system_data_t * dest_data) {
-    if((dest_data == NULL) || (source_arr == NULL))
-        return 1;
-
-    if((source_arr->itself == NULL) || (source_arr->len == 0))
-        return 3;
-
-    int rc;
-
-    switch(source_arr->itself[0]) {
-    case PMD_NET_SYSTEM_CONFIG_MSG:
-        dest_data->msg_type = PMD_NET_SYSTEM_CONFIG_MSG;
-        dest_data->msg_data = malloc(sizeof(pmd_net_system_config_data_t));
-        if(dest_data->msg_data == NULL) {
-            return 2;
-        }
-
-        rc = pmd_net_system_config_read_data(source_arr, (pmd_net_system_config_data_t *)(dest_data->msg_data));
-        if(rc != 0) {
-            return rc;
-        }
-        break;
-
-    default:
-        return -1;
-        break;
-    }
-
-    return 0;
-}
 
 int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_config_data_t * source_data) {
     if((source_data == NULL) || (dest_arr == NULL))

@@ -34,6 +34,6 @@
 #include "net/can_net.h"
 
 int led_init(config_section_t * conf_sect);
-void led_net_callback(config_section_t * conf_sect, msg_lvl2_t * net_msg);
+void led_net_callback(config_section_t * conf_sect, const msg_lvl2_t * net_msg);
 
 #endif /* LED_H_ */

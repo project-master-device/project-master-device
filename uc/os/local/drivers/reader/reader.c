@@ -49,7 +49,7 @@ void reader_beep_on(config_section_t * sect) {
 
 }
 
-void reader_net_callback(config_section_t * conf_sect, msg_lvl2_t * net_msg) {
+void reader_net_callback(config_section_t * conf_sect, const msg_lvl2_t * net_msg) {
     if ((conf_sect == NULL) || (net_msg == NULL))
         return;
     pmd_reader_data_t reader_data;

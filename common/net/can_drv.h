@@ -22,7 +22,10 @@ void can_set_mask(can_mask_t masked_id, can_mask_t mask);
 int can_set_speed(can_speed_t can_speed);
 
 #ifdef CONTIKI
+#include "process.h"
+
 PROCESS_NAME(can_drv_process);
+
 #endif
 
 #endif /* CAN_DRV_H_ */

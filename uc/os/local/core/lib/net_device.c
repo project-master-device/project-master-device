@@ -26,7 +26,6 @@ void net_device_destruct(net_device_t * net_device) {
 
 net_device_t * net_device_get(uint16_t dev_id) {
     net_device_t * dev;
-    config_int_t id;
 
     for (dev = (net_device_t *)list_head(net_device_list); dev != NULL;
             dev = (net_device_t *)list_item_next((void *)dev)) {

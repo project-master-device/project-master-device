@@ -46,7 +46,7 @@ typedef int dev_type;
  * @brief Network callback function type.
  */
 struct net_device_t;
-typedef void (*net_callback_t)(config_section_t *, msg_lvl2_t *);
+typedef void (*net_callback_t)(config_section_t *, const msg_lvl2_t *);
 
 /**
  * @struct device_t

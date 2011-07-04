@@ -10,52 +10,22 @@
 #include "../../../common/net/can_net.h"
 #include "../../../common/pmd_net/system.h"
 
-//void send() {
-//    msg_lvl2_t msg;
-//    uint8_t msg_buf[64];
-//    msg.meta.id = 5;
-//    msg.meta.hw_addr = 123;
-//    msg.meta.port = 1;
-//    msg.meta.is_system = 0;
-//    msg.data.itself = msg_buf;
-//    msg.data.len = 1;
-//
-//    pmd_reader_data_t d;
-//
-//    d.operation = PMD_READER_GREEN_LED_ON;
-//    pmd_reader_write_data(msg.data, &d);
-//    can_net_start_sending_msg(&msg, NULL, NULL);
-//
-//    sleep(1);
-//
-//    d.operation = PMD_READER_BEEP_ON;
-//    pmd_reader_write_data(msg.data, &d);
-//    can_net_start_sending_msg(&msg, NULL, NULL);
-//
-//    sleep(1);
-//
-//    d.operation = PMD_READER_BEEP_OFF;
-//    pmd_reader_write_data(msg.data, &d);
-//    can_net_start_sending_msg(&msg, NULL, NULL);
-//
-//    sleep(1);
-//
-//    d.operation = PMD_READER_GREEN_LED_OFF;
-//    pmd_reader_write_data(msg.data, &d);
-//    can_net_start_sending_msg(&msg, NULL, NULL);
-//}
-
 void send_config_request() {
     msg_lvl2_t msg;
     msg.meta.id = 5;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
+    msg.data.len = 0;
+    msg.data.itself = 0;
 
     pmd_net_system_config_data_t cd;
     cd.operation = PMD_NET_SYSTEM_CONFIG_REQUEST;
 
-    pmd_net_system_config_write_data(msg.data, &cd);
+    pmd_net_system_config_write_data(&(msg.data), &cd);
+
+    if(msg.data.itself == 0)
+        printf("pizdec\n");
     can_net_start_sending_msg(&msg, NULL, NULL);
 }
 

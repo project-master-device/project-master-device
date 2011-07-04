@@ -1,6 +1,8 @@
 #include "config.h"
 #include "cfs/cfs.h"
 
+#include <string.h>
+
 #define CONFIG_FILENAME NULL
 
 static config_cnf_t config;
@@ -55,9 +57,6 @@ void config_destruct() {
 
 int config_save() {
     int filemode = CFS_WRITE;
-    config_section_t * sect_it;
-    config_option_t * opt_it;
-    char str_buf[32];
     int fd = cfs_open(CONFIG_FILENAME, filemode);
 
     if(fd == -1) {

@@ -85,6 +85,9 @@ typedef struct  {
 
 void config_cnf_construct(config_cnf_t * config);
 void config_cnf_destruct(config_cnf_t * config);
+void config_cnf_add_section(config_cnf_t * config, config_section_t * sect);
+void config_cnf_del_section(config_cnf_t * config, config_section_t * sect);
+config_section_t * config_cnf_find_section(config_cnf_t * config, uint8_t id);
 config_section_t * config_cnf_create_section(config_cnf_t * config);
 
 /**

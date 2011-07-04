@@ -82,3 +82,10 @@ int config_save() {
 config_cnf_t * config_get() {
     return &config;
 }
+
+void config_set(config_cnf_t * cnf) {
+    if(cnf != NULL) {
+        config_destruct();
+        config = *cnf;
+    }
+}

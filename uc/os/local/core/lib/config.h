@@ -71,4 +71,10 @@ int config_save();
  */
 config_cnf_t * config_get();
 
+/**
+ * @brief Set new config.
+ *      Copies cnf struct into internal variable.
+ */
+void config_set(config_cnf_t * cnf);
+
 #endif /* CONFIG_H_ */

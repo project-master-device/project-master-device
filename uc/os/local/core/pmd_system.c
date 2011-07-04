@@ -37,12 +37,21 @@ static void non_smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
 /*
  * TODO: проверить сообщения:
  * 1. Мастер -> контроллер: запрос конфига [ok]
- * 2. Контроллер -> мастер: полный конфиг
+ * 2. Контроллер -> мастер: полный конфиг [ok]
  * 3. Мастер -> контроллер: удалить секцию
  * 4. Мастер -> контроллер: добавить секцию
  */
 
-static void send_full_config() {
+static void config_full_handler(pmd_net_system_config_data_t * cd) {
+    if((cd == NULL) || (cd->config == NULL)) {
+        return;
+    }
+
+    config_set(cd->config);
+}
+
+// Send full config
+static void config_request_handler() {
     msg_lvl2_t msg;
     msg.meta.hw_addr = 7; //FIXME: write real address here
     msg.meta.port = 1; //FIXME: write real port here
@@ -58,24 +67,71 @@ static void send_full_config() {
     if(msg.data.itself != NULL) {
         free(msg.data.itself);
         msg.data.len = 0;
+        msg.data.itself = NULL;
     }
+}
+
+static void config_section_add_handler(pmd_net_system_config_data_t * cd) {
+    if((cd == NULL) || (cd->section == NULL)) {
+        return;
+    }
+
+    config_cnf_add_section(config_get(), cd->section);
+}
+
+static void config_section_del_handler(pmd_net_system_config_data_t * cd) {
+    if((cd == NULL) || (cd->section == NULL)) {
+        return;
+    }
+
+    config_section_t * sect = config_cnf_find_section(config_get(), cd->section->id);
+    config_cnf_del_section(config_get(), sect);
 }
 
 static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     pmd_net_system_config_data_t cd;
+    cd.config = NULL;
+    cd.section = NULL;
 
-    if((msg != NULL) && (msg->meta.id == PMD_NET_SYSTEM_CONFIG_MSG)) {
-        if(pmd_net_system_config_read_data(&(msg->data), &cd) != 0) {
-            led1_blink(1, 1000); //fail
+    if(msg != NULL) {
+        led2_blink(1, 200);
+
+        switch(msg->meta.id) {
+        case PMD_NET_SYSTEM_CONFIG_MSG:
+            if(pmd_net_system_config_read_data(&(msg->data), &cd) == 0) {
+                switch(cd.operation) {
+                case PMD_NET_SYSTEM_CONFIG_FULL:
+                    config_full_handler(&cd);
+                    break;
+
+                case PMD_NET_SYSTEM_CONFIG_REQUEST:
+                    config_request_handler(&cd);
+                    break;
+
+                case PMD_NET_SYSTEM_CONFIG_SECTION_ADD:
+                    config_section_add_handler(&cd);
+                    break;
+
+                case PMD_NET_SYSTEM_CONFIG_SECTION_DEL:
+                    config_section_del_handler(&cd);
+                    break;
+                }
+            } else {
+                led1_blink(1, 1000);
+            }
+
+            break;
         }
+    }
 
-        if(cd.operation == PMD_NET_SYSTEM_CONFIG_REQUEST) {
-            led2_blink(1, 200);
-        }
+    if(cd.config != NULL) {
+        free(cd.config);
+        cd.config = NULL;
+    }
 
-        send_full_config();
-    } else {
-        led3_blink(1, 1000); //fail
+    if(cd.section != NULL) {
+        free(cd.section);
+        cd.section = NULL;
     }
 }
 
@@ -102,13 +158,13 @@ static void create_config() {
     config_section_set_uint(sect, "port", &PORTB);
     config_section_set_uint(sect, "offset", PB5);
 
-//    //create led 3
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 3;
-//    config_section_set_str(sect, "type", "led");
-//    config_section_set_uint(sect, "ddr", &DDRB);
-//    config_section_set_uint(sect, "port", &PORTB);
-//    config_section_set_uint(sect, "offset", PB6);
+    //create led 3
+    sect = config_cnf_create_section(cnf);
+    sect->id = 3;
+    config_section_set_str(sect, "type", "led");
+    config_section_set_uint(sect, "ddr", &DDRB);
+    config_section_set_uint(sect, "port", &PORTB);
+    config_section_set_uint(sect, "offset", PB6);
 
 //    //create external button
 //    sect = config_cnf_create_section(cnf);

@@ -280,12 +280,45 @@ void config_cnf_destruct(config_cnf_t * config) {
     config->sections = NULL;
 }
 
-config_section_t * config_cnf_create_section(config_cnf_t * config) {
-    config_section_t * sect = malloc(sizeof(config_section_t));
+void config_cnf_add_section(config_cnf_t * config, config_section_t * sect) {
+    if((config == NULL) || (sect == NULL)) {
+        return;
+    }
 
+    list_add(config->sections, sect);
+}
+
+void config_cnf_del_section(config_cnf_t * config, config_section_t * sect) {
+    if((config == NULL) || (sect == NULL)) {
+        return;
+    }
+
+    list_remove(config->sections, (void *)sect);
+}
+
+config_section_t * config_cnf_find_section(config_cnf_t * config, uint8_t id) {
+    config_section_t * sect = NULL;
+
+    if(config == NULL) {
+        return;
+    }
+
+    for(sect = (config_section_t *) list_head(config->sections); sect != NULL; sect = (config_section_t *) list_item_next(sect)) {
+        if(sect->id == id) {
+            return sect;
+        }
+    }
+}
+
+config_section_t * config_cnf_create_section(config_cnf_t * config) {
+    if(config == NULL) {
+        return NULL;
+    }
+
+    config_section_t * sect = malloc(sizeof(config_section_t));
     if(sect != NULL) {
         config_section_construct(sect);
-        list_add(config->sections, sect);
+        config_cnf_add_section(config, sect);
     }
 
     return sect;

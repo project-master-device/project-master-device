@@ -1,5 +1,4 @@
-// 04.03.2011
-// 28.06.2011
+// created 04.03.2011
 // to be changed later:
 /*
  * Copyright (C) 2011 by <Project Master Device>
@@ -87,7 +86,7 @@ LIST(recv_callbacks);
 
 can_net_recv_cb_record_t_plist* can_net_add_callback(can_net_recv_cb_record_t* callback_p) {
 	// safe when called from callback (can_net thread)
-	// NOT safe when called from another thread (not can_net thread)
+	// NOT safe when called from another thread (not can_net thread) - protected with mutex
 
 	int thread_safe = 0;
 	#ifdef CAN_NET_LINUX
@@ -97,6 +96,7 @@ can_net_recv_cb_record_t_plist* can_net_add_callback(can_net_recv_cb_record_t* c
 		thread_safe = 1;
 	}
 	#endif
+
 	if (!thread_safe)
 		MUTEX_L(&recv_callbacks_mutex);
 
@@ -111,7 +111,7 @@ can_net_recv_cb_record_t_plist* can_net_add_callback(can_net_recv_cb_record_t* c
 
 void can_net_rm_callback_by_plist(can_net_recv_cb_record_t_plist* callback_plist) {
 	// TODO: allow callback to delete itself, (and maybe someone else (question of security)) - NOT ALLOWED AT THE MOMENT
-	// NOT safe when called from another thread (not can_net thread)
+	// NOT safe when called from another thread (not can_net thread) - protected with mutex
 
 //	int thread_safe = 0;
 	#ifdef CAN_NET_LINUX
@@ -125,6 +125,7 @@ void can_net_rm_callback_by_plist(can_net_recv_cb_record_t_plist* callback_plist
 
 //	if (!thread_safe)
 	MUTEX_L(&recv_callbacks_mutex)
+
 	list_remove(recv_callbacks, (void*)callback_plist);
 	free(callback_plist);
 
@@ -316,10 +317,13 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 
 			#ifdef CAN_NET_CONFIRMATION
 			// register confirmation waiting before sending last frame
-			if (ctx->segm_ctx->lfb) {
-				MUTEX_L(&confirm_waiters_mutex)
-				add_confirm_waiter(ctx->msg, confirmation_tics_g, ctx->callback, ctx->cb_ctx);
-				MUTEX_U(&confirm_waiters_mutex)
+			if ( (ctx->msg->meta.is_system != 1) || (ctx->msg->meta.id != SYSMSG_HEARTBEAT_ID) ) {
+				// not heartbeat:
+				if (ctx->segm_ctx->lfb) {
+					MUTEX_L(&confirm_waiters_mutex)
+					add_confirm_waiter(ctx->msg, confirmation_tics_g, ctx->callback, ctx->cb_ctx);
+					MUTEX_U(&confirm_waiters_mutex)
+				}
 			}
 			#endif
 			can_send(new_frame, ctx);
@@ -358,12 +362,15 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 	} else {
 		// something went wrong:
 		#ifdef CAN_NET_CONFIRMATION
-		if (ctx->segm_ctx->lfb) {
-			// err while sending last frame => remove it from confirm_waiters:
-			MUTEX_L(&confirm_waiters_mutex)
-			confirm_waiter_t* waiter = find_confirm_waiter(ctx->msg->meta.port, ctx->msg->meta.hw_addr, ctx->msg->meta.is_system, ctx->msg->meta.id);
-			remove_confirm_waiter(waiter);
-			MUTEX_U(&confirm_waiters_mutex)
+		if ( (ctx->msg->meta.is_system != 1) || (ctx->msg->meta.id != SYSMSG_HEARTBEAT_ID) ) {
+			// not heartbeat:
+			if (ctx->segm_ctx->lfb) {
+				// err while sending last frame => remove it from confirm_waiters:
+				MUTEX_L(&confirm_waiters_mutex)
+				confirm_waiter_t* waiter = find_confirm_waiter(ctx->msg->meta.port, ctx->msg->meta.hw_addr, ctx->msg->meta.is_system, ctx->msg->meta.id);
+				remove_confirm_waiter(waiter);
+				MUTEX_U(&confirm_waiters_mutex)
+			}
 		}
 		#endif
 		msh_finish(CAN_NET_RC_DRIVER_ERRS_START + drv_rc, ctx);
@@ -433,18 +440,21 @@ int accept_frame(const lvl_segm_fnl_t* segment, atom_descriptor_t* atom, const u
 		// send confirmation of msg receiving:
 		int do_not_call_cb = 0;
 		#ifdef CAN_NET_CONFIRMATION
-		uint16_t base = 0;
-		can_frame_t* new_frame = (can_frame_t*)malloc(sizeof(can_frame_t));
-		if ( lvl2_acc_base_pack(&base, port, msg->it.meta.is_system, msg->it.meta.id) ) {
-			//FAILed to send confirmation:
-			do_not_call_cb = 1;
-		} else if ( lvl2_std_confirm_pack(&new_frame->data, base) ) {
-			do_not_call_cb = 1;
-		} else {
-			if ( can_frame_pack(new_frame, CAN_NET_LVL2_VER_STD_CONFIRM, msg->it.meta.hw_addr) ) {
+		if ( (msg->it.meta.is_system != 1) || (msg->it.meta.id != SYSMSG_HEARTBEAT_ID) ) {
+			// not heartbeat:
+			uint16_t base = 0;
+			can_frame_t* new_frame = (can_frame_t*)malloc(sizeof(can_frame_t));
+			if ( lvl2_acc_base_pack(&base, port, msg->it.meta.is_system, msg->it.meta.id) ) {
+				//FAILed to send confirmation:
+				do_not_call_cb = 1;
+			} else if ( lvl2_std_confirm_pack(&new_frame->data, base) ) {
 				do_not_call_cb = 1;
 			} else {
-				can_send(new_frame, NULL);
+				if ( can_frame_pack(new_frame, CAN_NET_LVL2_VER_STD_CONFIRM, msg->it.meta.hw_addr) ) {
+					do_not_call_cb = 1;
+				} else {
+					can_send(new_frame, NULL);
+				}
 			}
 		}
 		#endif

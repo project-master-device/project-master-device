@@ -1,6 +1,5 @@
-// 08.02.2011 - C
-// 12.04.2011
-//
+// created 08.02.2011 - C
+// to be changed later:
 /*
  * Copyright (C) 2011 by <Project Master Device>
  *

@@ -1,5 +1,4 @@
-// 03.03.2011
-// 28.06.2011
+// created 03.03.2011
 // to be changed later:
 /*
  * Copyright (C) 2011 by <Project Master Device>
@@ -95,6 +94,8 @@ typedef struct {
 msg_lvl2_t* msg_lvl2_make_copy(const msg_lvl2_t* src);
 
 /*----------------------------------------------------------------------------------------------*/
+// heartbeat exception - don't send confirmation on this msg, but they are handled by applications:
+#define SYSMSG_HEARTBEAT_ID					0
 
 #ifdef CAN_NET_LINUX
 #define CAN_NET_CONFIRMATION_TIC_TIME_US	1000 // 1ms

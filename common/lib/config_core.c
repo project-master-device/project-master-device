@@ -299,15 +299,13 @@ void config_cnf_del_section(config_cnf_t * config, config_section_t * sect) {
 config_section_t * config_cnf_find_section(config_cnf_t * config, uint8_t id) {
     config_section_t * sect = NULL;
 
-    if(config == NULL) {
-        return;
-    }
-
-    for(sect = (config_section_t *) list_head(config->sections); sect != NULL; sect = (config_section_t *) list_item_next(sect)) {
-        if(sect->id == id) {
-            return sect;
+    if(config != NULL) {
+        for(sect = (config_section_t *) list_head(config->sections); sect != NULL; sect = (config_section_t *) list_item_next(sect)) {
+            if(sect->id == id) break;
         }
     }
+
+    return sect;
 }
 
 config_section_t * config_cnf_create_section(config_cnf_t * config) {

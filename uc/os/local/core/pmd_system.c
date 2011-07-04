@@ -105,7 +105,7 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
                     break;
 
                 case PMD_NET_SYSTEM_CONFIG_REQUEST:
-                    config_request_handler(&cd);
+                    config_request_handler();
                     break;
 
                 case PMD_NET_SYSTEM_CONFIG_SECTION_ADD:

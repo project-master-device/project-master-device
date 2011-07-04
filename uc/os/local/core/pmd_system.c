@@ -47,7 +47,18 @@ static void send_full_config() {
     msg.meta.hw_addr = 7; //FIXME: write real address here
     msg.meta.port = 1; //FIXME: write real port here
     msg.meta.is_system = 1;
-//    msg.meta.
+    msg.meta.id = PMD_NET_SYSTEM_CONFIG_MSG;
+
+    pmd_net_system_config_data_t cd;
+    cd.config = config_get();
+    cd.operation = PMD_NET_SYSTEM_CONFIG_FULL;
+    pmd_net_system_config_write_data(&(msg.data), &cd);
+
+    can_net_start_sending_msg(&msg, NULL, NULL);
+    if(msg.data.itself != NULL) {
+        free(msg.data.itself);
+        msg.data.len = 0;
+    }
 }
 
 static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
@@ -61,6 +72,8 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
         if(cd.operation == PMD_NET_SYSTEM_CONFIG_REQUEST) {
             led2_blink(1, 200);
         }
+
+        send_full_config();
     } else {
         led3_blink(1, 1000); //fail
     }
@@ -81,13 +94,13 @@ static void create_config() {
     config_section_set_uint(sect, "port", &PORTB);
     config_section_set_uint(sect, "offset", PB4);
 
-//    //create led 2
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 2;
-//    config_section_set_str(sect, "type", "led");
-//    config_section_set_uint(sect, "ddr", &DDRB);
-//    config_section_set_uint(sect, "port", &PORTB);
-//    config_section_set_uint(sect, "offset", PB5);
+    //create led 2
+    sect = config_cnf_create_section(cnf);
+    sect->id = 2;
+    config_section_set_str(sect, "type", "led");
+    config_section_set_uint(sect, "ddr", &DDRB);
+    config_section_set_uint(sect, "port", &PORTB);
+    config_section_set_uint(sect, "offset", PB5);
 
 //    //create led 3
 //    sect = config_cnf_create_section(cnf);

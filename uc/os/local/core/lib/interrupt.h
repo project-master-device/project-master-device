@@ -43,6 +43,12 @@ typedef enum {
  */
 void interrupt_init();
 
+/**
+ * @brief Global enable/disable interrupts.
+ */
+void interrupt_enable();
+void interrupt_disable();
+
 uint8_t interrupt_register(uint8_t i, interrupt_type_t type, void (*callb)(void *), void * data);
 
 #endif /* INTERRUPT_H_ */

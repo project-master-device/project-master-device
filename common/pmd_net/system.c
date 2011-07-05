@@ -2,6 +2,7 @@
 
 #include <string.h>
 
+
 int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_config_data_t * source_data) {
     if((source_data == NULL) || (dest_arr == NULL))
         return 1;
@@ -10,11 +11,11 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
 
     switch(source_data->operation) {
     case PMD_NET_SYSTEM_CONFIG_REQUEST:
-        dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t));
+        dest_arr->len = 1;
+        dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * dest_arr->len);
         if(dest_arr->itself == NULL) {
             return 2;
         }
-        dest_arr->len = 1;
         dest_arr->itself[0] = source_data->operation;
         break;
 
@@ -63,11 +64,15 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
         break;
 
     case PMD_NET_SYSTEM_CONFIG_SECTION_DEL:
-        dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * 2);
+        if(source_data->section == NULL) {
+            return 5;
+        }
+
+        dest_arr->len = 2;
+        dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * dest_arr->len);
         if(dest_arr->itself == NULL) {
             return 2;
         }
-        dest_arr->len = 2;
         dest_arr->itself[0] = source_data->operation;
         dest_arr->itself[1] = source_data->section->id;
         break;
@@ -131,6 +136,7 @@ int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system
         if(dest_data->section == NULL) {
             return 2;
         }
+
         dest_data->operation = source_arr->itself[0];
         dest_data->section->id = source_arr->itself[1];
         break;

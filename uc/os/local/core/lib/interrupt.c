@@ -19,7 +19,7 @@ static callback_t * irq_handlers[8];
 static void interrupt_on(uint8_t num, interrupt_type_t type) {
     volatile uint8_t * cr;
 
-    cli();
+    interrupt_disable();
     EIMSK |= (1 << num);
 
     if(num < 4) {
@@ -51,7 +51,7 @@ static void interrupt_on(uint8_t num, interrupt_type_t type) {
             break;
     }
 
-    sei();
+    interrupt_enable();
 }
 
 static void interrupt_off(uint8_t num) {
@@ -64,6 +64,14 @@ void interrupt_init() {
         interrupt_off(j);
         irq_handlers[j] = NULL;
     }
+}
+
+void interrupt_enable() {
+    sei();
+}
+
+void interrupt_disable() {
+    cli();
 }
 
 //TODO зачем возвращать true-false

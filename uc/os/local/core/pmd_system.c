@@ -47,7 +47,16 @@ static void config_full_handler(pmd_net_system_config_data_t * cd) {
         return;
     }
 
+    interrupt_disable();
+
+    interrupt_init();
+
     config_set(cd->config);
+    config_save();
+    net_device_terminate();
+    net_device_init();
+
+    interrupt_enable();
 }
 
 // Send full config
@@ -57,6 +66,8 @@ static void config_request_handler() {
     msg.meta.port = 1; //FIXME: write real port here
     msg.meta.is_system = 1;
     msg.meta.id = PMD_NET_SYSTEM_CONFIG_MSG;
+    msg.data.len = 0;
+    msg.data.itself = NULL;
 
     pmd_net_system_config_data_t cd;
     cd.config = config_get();
@@ -94,8 +105,6 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     cd.section = NULL;
 
     if(msg != NULL) {
-        led2_blink(1, 200);
-
         switch(msg->meta.id) {
         case PMD_NET_SYSTEM_CONFIG_MSG:
             if(pmd_net_system_config_read_data(&(msg->data), &cd) == 0) {
@@ -105,6 +114,7 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
                     break;
 
                 case PMD_NET_SYSTEM_CONFIG_REQUEST:
+                    led2_blink(1, 200);
                     config_request_handler();
                     break;
 
@@ -150,21 +160,21 @@ static void create_config() {
     config_section_set_uint(sect, "port", &PORTB);
     config_section_set_uint(sect, "offset", PB4);
 
-    //create led 2
-    sect = config_cnf_create_section(cnf);
-    sect->id = 2;
-    config_section_set_str(sect, "type", "led");
-    config_section_set_uint(sect, "ddr", &DDRB);
-    config_section_set_uint(sect, "port", &PORTB);
-    config_section_set_uint(sect, "offset", PB5);
+//    //create led 2
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 2;
+//    config_section_set_str(sect, "type", "led");
+//    config_section_set_uint(sect, "ddr", &DDRB);
+//    config_section_set_uint(sect, "port", &PORTB);
+//    config_section_set_uint(sect, "offset", PB5);
 
-    //create led 3
-    sect = config_cnf_create_section(cnf);
-    sect->id = 3;
-    config_section_set_str(sect, "type", "led");
-    config_section_set_uint(sect, "ddr", &DDRB);
-    config_section_set_uint(sect, "port", &PORTB);
-    config_section_set_uint(sect, "offset", PB6);
+//    //create led 3
+//    sect = config_cnf_create_section(cnf);
+//    sect->id = 3;
+//    config_section_set_str(sect, "type", "led");
+//    config_section_set_uint(sect, "ddr", &DDRB);
+//    config_section_set_uint(sect, "port", &PORTB);
+//    config_section_set_uint(sect, "offset", PB6);
 
 //    //create external button
 //    sect = config_cnf_create_section(cnf);

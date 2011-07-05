@@ -73,6 +73,7 @@ int config_save() {
         cfs_write(fd, (void *)config_str, strlen(config_str));
         cfs_close(fd);
     } else {
+        cfs_close(fd);
         return 2;
     }
 
@@ -86,6 +87,7 @@ config_cnf_t * config_get() {
 void config_set(config_cnf_t * cnf) {
     if(cnf != NULL) {
         config_destruct();
-        config = *cnf;
+        config.sections = cnf->sections;
+        config.sections_list = cnf->sections_list;
     }
 }

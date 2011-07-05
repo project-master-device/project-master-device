@@ -88,9 +88,13 @@ net_device_t * net_device_get(uint16_t dev_id);
  *
  * @return: return codes:
  *      0 -- successful,
- *      Other return codes are the same as for net_device_platform_init function.
+ *      1 -- config problem,
+ *      2 -- no type option in one of the sections,
+ *      3 -- failed to initialize device driver,
+ *      4 -- failed to create net_device.
  */
 int net_device_init();
+int net_device_terminate();
 
 /**
  * @brief Initialize platform-specific network devices.
@@ -99,11 +103,9 @@ int net_device_init();
  *      and other -- for platform-specific errors.
  *
  * @return: return codes:
- *      1 -- config problem,
- *      2 -- no type option in one of the sections,
- *      3 -- failed to initialize device driver,
- *      4 -- failed to create net_device.
+ * FIXME: No need in this functions as external functions
  */
-int net_device_platform_init();
+//int net_device_platform_init();
+//int net_device_platform_terminate();
 
 #endif /* NET_DEVICE_H_ */

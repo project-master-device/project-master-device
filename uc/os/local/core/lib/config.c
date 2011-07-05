@@ -87,7 +87,6 @@ config_cnf_t * config_get() {
 void config_set(config_cnf_t * cnf) {
     if(cnf != NULL) {
         config_destruct();
-        config.sections = cnf->sections;
-        config.sections_list = cnf->sections_list;
+        config_cnf_copy(&config, cnf);
     }
 }

@@ -41,8 +41,8 @@ void read_config(bytearr_t * arr) {
         pmd_net_system_config_read_data(arr, &cd);
 
         if(cd.config) {
-            config_cnf_t cnf = *(cd.config);
-            cnf.sections = &cnf.sections_list;
+            config_cnf_t cnf;
+            config_cnf_copy(&cnf, cd.config);
             free(cd.config);
             if(cnf.sections_list == *(cnf.sections))
                 printf("GOOD\n");

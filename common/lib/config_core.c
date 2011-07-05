@@ -280,6 +280,15 @@ void config_cnf_destruct(config_cnf_t * config) {
     config->sections = NULL;
 }
 
+void config_cnf_copy(config_cnf_t * config, config_cnf_t * prototype) {
+    if((config == NULL) || (prototype == NULL)) {
+        return;
+    }
+
+    config->sections = &(config->sections_list);
+    config->sections_list = prototype->sections_list;
+}
+
 void config_cnf_add_section(config_cnf_t * config, config_section_t * sect) {
     if((config == NULL) || (sect == NULL)) {
         return;

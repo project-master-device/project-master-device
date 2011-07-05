@@ -4,6 +4,7 @@ OBJS_READER = $(OBJS_COMMON) reader.o
 OBJS_READER_COMMAND =  $(OBJS_COMMON) reader_command.o
 OBJS_BUTTON = $(OBJS_COMMON) button.o
 OBJS_CONFIG_READ = $(OBJS_COMMON) config_read.o
+OBJS_CONFIG_COMMAND = $(OBJS_COMMON) config_command.o
 CC = gcc
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG) -DCAN_NET_LINUX
@@ -13,7 +14,13 @@ NETPATH = ../../../common/net/
 LIBPATH = ../../../common/lib/
 PMDNETPATH = ../../../common/pmd_net/
 
-all: led_command reader button reader_command config_read
+all: led_command reader button reader_command config_read config_command
+
+config_command: $(OBJS_CONFIG_COMMAND)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_CONFIG_COMMAND) -o config_command
+
+config_command.o: config_command.c $(NETPATH)can_net.h
+	$(CC) $(CFLAGS) config_command.c
 
 config_read: $(OBJS_CONFIG_READ)
 	$(CC) -lpthread $(LFLAGS) $(OBJS_CONFIG_READ) -o config_read
@@ -83,4 +90,4 @@ list.o: $(LIBPATH)list.h $(LIBPATH)list.c
 	$(CC) $(CFLAGS) $(LIBPATH)list.c
 
 clean:
-	rm -rf *o led_command reader button reader_command config_read
+	rm -rf *o led_command reader button reader_command config_read config_command

@@ -3,3 +3,4 @@ reader
 button
 reader_command
 config_read
+config_command

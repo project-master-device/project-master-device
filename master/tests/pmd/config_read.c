@@ -8,7 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/system.h"
+#include "../../../common/pmd_net/system_ids.h"
+#include "../../../common/pmd_net/system_config.h"
 
 void send_config_request() {
     msg_lvl2_t msg;

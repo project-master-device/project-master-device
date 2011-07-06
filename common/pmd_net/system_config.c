@@ -1,4 +1,4 @@
-#include "system.h"
+#include "system_config.h"
 
 #include <string.h>
 

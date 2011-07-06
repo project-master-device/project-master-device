@@ -3,7 +3,8 @@
 #include "net/can_net.h"
 #include "lib/net_device.h"
 #include "lib/interrupt.h"
-#include "pmd_net/system.h"
+#include "pmd_net/system_ids.h"
+#include "pmd_net/system_config.h"
 
 #include <avr/io.h>
 
@@ -33,13 +34,6 @@ static void non_smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
  * Operation modes:
  * 1. Init
  * 2. Normal
- */
-/*
- * TODO: проверить сообщения:
- * 1. Мастер -> контроллер: запрос конфига [ok]
- * 2. Контроллер -> мастер: полный конфиг [ok]
- * 3. Мастер -> контроллер: удалить секцию
- * 4. Мастер -> контроллер: добавить секцию
  */
 
 static void config_full_handler(pmd_net_system_config_data_t * cd) {

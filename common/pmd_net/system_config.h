@@ -7,12 +7,6 @@
 #include <stdint.h>
 
 
-// Message types
-#define PMD_NET_SYSTEM_CONFIG_MSG           1
-//#define PMD_NET_SYSTEM_OTHER_MSG          2
-//etc.
-
-
 typedef struct {
     uint8_t operation;
     config_cnf_t * config;

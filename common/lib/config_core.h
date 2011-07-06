@@ -40,7 +40,7 @@ typedef struct {
     LIST_STRUCT(options); ///< options list.
 } config_section_t;
 
-void config_section_construct(config_section_t * config_section);
+void config_section_construct(config_section_t * config_section, uint8_t id);
 void config_section_destruct(config_section_t * config_section);
 config_option_t * config_section_create_option(config_section_t * config_section);
 config_option_t * config_section_find_option(config_section_t * config_section, const char * key);
@@ -86,10 +86,17 @@ typedef struct  {
 void config_cnf_construct(config_cnf_t * config);
 void config_cnf_destruct(config_cnf_t * config);
 void config_cnf_copy(config_cnf_t * config, config_cnf_t * prototype);
-void config_cnf_add_section(config_cnf_t * config, config_section_t * sect);
+/**
+ * @brief Insert new sections into config.
+ * @return
+ *      0 -- successful.
+ *      1 -- section with that id already exists in the config.
+ *      2 -- bad config or section.
+ */
+int config_cnf_add_section(config_cnf_t * config, config_section_t * sect);
 void config_cnf_del_section(config_cnf_t * config, config_section_t * sect);
 config_section_t * config_cnf_find_section(config_cnf_t * config, uint8_t id);
-config_section_t * config_cnf_create_section(config_cnf_t * config);
+config_section_t * config_cnf_create_section(config_cnf_t * config, uint8_t id);
 
 /**
  * Parse config from string to C structure representation.

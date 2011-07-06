@@ -87,7 +87,17 @@ static void config_section_add_handler(pmd_net_system_config_data_t * cd) {
         return;
     }
 
-    config_cnf_add_section(config_get(), cd->section);
+    interrupt_disable();
+
+    interrupt_init();
+
+    if(config_cnf_add_section(config_get(), cd->section) == 0) {
+        config_save();
+        net_device_terminate();
+        net_device_init();
+    }
+
+    interrupt_enable();
 }
 
 static void config_section_del_handler(pmd_net_system_config_data_t * cd) {
@@ -136,12 +146,12 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     }
 
     if(cd.config != NULL) {
-//        free(cd.config);
+        free(cd.config);
         cd.config = NULL;
     }
 
     if(cd.section != NULL) {
-//        free(cd.section);
+        free(cd.section);
         cd.section = NULL;
     }
 }
@@ -154,40 +164,35 @@ static void create_config() {
     config_section_t * sect;
 
     //create led 1
-    sect = config_cnf_create_section(cnf);
-    sect->id = 1;
+    sect = config_cnf_create_section(cnf, 1);
     config_section_set_str(sect, "type", "led");
     config_section_set_uint(sect, "ddr", &DDRB);
     config_section_set_uint(sect, "port", &PORTB);
     config_section_set_uint(sect, "offset", PB4);
 
 //    //create led 2
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 2;
+//    sect = config_cnf_create_section(cnf, 2);
 //    config_section_set_str(sect, "type", "led");
 //    config_section_set_uint(sect, "ddr", &DDRB);
 //    config_section_set_uint(sect, "port", &PORTB);
 //    config_section_set_uint(sect, "offset", PB5);
 
 //    //create led 3
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 3;
+//    sect = config_cnf_create_section(cnf, 3);
 //    config_section_set_str(sect, "type", "led");
 //    config_section_set_uint(sect, "ddr", &DDRB);
 //    config_section_set_uint(sect, "port", &PORTB);
 //    config_section_set_uint(sect, "offset", PB6);
 
 //    //create external button
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 4;
+//    sect = config_cnf_create_section(cnf, 4);
 //    config_section_set_str(sect, "type", "button");
 //    config_section_set_uint(sect, "ddr", &DDRE);
 //    config_section_set_uint(sect, "pin", &PINE);
 //    config_section_set_uint(sect, "offset", PE7);
 
 //    //create reader
-//    sect = config_cnf_create_section(cnf);
-//    sect->id = 5;
+//    sect = config_cnf_create_section(cnf, 5);
 //    config_section_set_str(sect, "type", "reader");
 //    config_section_set_uint(sect, "data0_ddr", 45);
 //    config_section_set_uint(sect, "data0_pin", 44);

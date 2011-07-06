@@ -114,8 +114,9 @@ void config_option_set_value(config_option_t * config_option, const char * value
 }
 
 
-void config_section_construct(config_section_t * config_section) {
+void config_section_construct(config_section_t * config_section, uint8_t id) {
     config_section->next = NULL;
+    config_section->id = id;
     LIST_STRUCT_INIT(config_section, options);
 }
 
@@ -289,12 +290,18 @@ void config_cnf_copy(config_cnf_t * config, config_cnf_t * prototype) {
     config->sections_list = prototype->sections_list;
 }
 
-void config_cnf_add_section(config_cnf_t * config, config_section_t * sect) {
+int config_cnf_add_section(config_cnf_t * config, config_section_t * sect) {
     if((config == NULL) || (sect == NULL)) {
-        return;
+        return 2;
     }
 
-    list_add(config->sections, sect);
+    if(config_cnf_find_section(config, sect->id) == NULL) {
+        list_add(config->sections, sect);
+    } else {
+        return 1;
+    }
+
+    return 0;
 }
 
 void config_cnf_del_section(config_cnf_t * config, config_section_t * sect) {
@@ -317,15 +324,18 @@ config_section_t * config_cnf_find_section(config_cnf_t * config, uint8_t id) {
     return sect;
 }
 
-config_section_t * config_cnf_create_section(config_cnf_t * config) {
+config_section_t * config_cnf_create_section(config_cnf_t * config, uint8_t id) {
     if(config == NULL) {
         return NULL;
     }
 
     config_section_t * sect = malloc(sizeof(config_section_t));
     if(sect != NULL) {
-        config_section_construct(sect);
-        config_cnf_add_section(config, sect);
+        config_section_construct(sect, id);
+        if(config_cnf_add_section(config, sect) != 0) {
+            free(sect);
+            sect = NULL;
+        }
     }
 
     return sect;
@@ -356,7 +366,7 @@ int config_parse(const char * src_str, config_cnf_t * dest_config) {
                     case '[':
                         state = CONFIG_SECTION;
                         str_ind = 0;
-                        cur_sect = config_cnf_create_section(dest_config);
+                        cur_sect = config_cnf_create_section(dest_config, 0);
 
                         if(cur_sect == NULL) state = CONFIG_PARSE_FAIL;
                         break;
@@ -426,7 +436,7 @@ int config_parse(const char * src_str, config_cnf_t * dest_config) {
                     case '[':
                         state = CONFIG_SECTION;
                         str_ind = 0;
-                        cur_sect = config_cnf_create_section(dest_config);
+                        cur_sect = config_cnf_create_section(dest_config, 0);
 
                         if(cur_sect == NULL) state = CONFIG_PARSE_FAIL;
                         break;

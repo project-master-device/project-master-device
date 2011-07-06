@@ -2,23 +2,31 @@
 
 #include "lowlevel.h"
 #include "lib/ftimer.h"
+#include "lib/interrupt.h"
 
-static int id = -1;
+static int enable = 0;
 
 static void identification(void * ctx) {
-    led3_toggle();
-    ftimer_register_func(identification, NULL, 1000);
+    interrupt_disable();
+
+    if(enable == 1) {
+        led3_toggle();
+        ftimer_register_func(identification, NULL, 50);
+    }
+
+    interrupt_enable();
 }
 
 void pmd_system_platform_identification_on() {
-    if(id == -1) {
-        id = ftimer_register_func(identification, NULL, 1000);
+    if(enable == 0) {
+        ftimer_register_func(identification, NULL, 50);
+        enable = 1;
     }
 }
 
 void pmd_system_platform_identification_off() {
-    if(id != -1) {
-        ftimer_unregister_func(id);
-        id = -1;
+    if(enable == 1) {
+        led3_off();
+        enable = 0;
     }
 }

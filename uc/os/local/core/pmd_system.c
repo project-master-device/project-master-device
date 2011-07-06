@@ -89,9 +89,10 @@ static void config_section_add_handler(pmd_net_system_config_data_t * cd) {
 
     interrupt_disable();
 
-    interrupt_init();
-
     if(config_cnf_add_section(config_get(), cd->section) == 0) {
+        cd->section = NULL;
+
+        interrupt_init();
         config_save();
         net_device_terminate();
         net_device_init();
@@ -105,8 +106,19 @@ static void config_section_del_handler(pmd_net_system_config_data_t * cd) {
         return;
     }
 
+    interrupt_disable();
+
     config_section_t * sect = config_cnf_find_section(config_get(), cd->section->id);
-    config_cnf_del_section(config_get(), sect);
+    if(sect != NULL) {
+        interrupt_init();
+
+        config_cnf_del_section(config_get(), sect);
+        config_save();
+        net_device_terminate();
+        net_device_init();
+    }
+
+    interrupt_enable();
 }
 
 static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
@@ -120,20 +132,22 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
             if(pmd_net_system_config_read_data(&(msg->data), &cd) == 0) {
                 switch(cd.operation) {
                 case PMD_NET_SYSTEM_CONFIG_FULL:
-                    led1_blink(1, 200);
+                    led1_blink(4, 50);
                     config_full_handler(&cd);
                     break;
 
                 case PMD_NET_SYSTEM_CONFIG_REQUEST:
-                    led2_blink(1, 200);
+                    led2_blink(1, 100);
                     config_request_handler();
                     break;
 
                 case PMD_NET_SYSTEM_CONFIG_SECTION_ADD:
+                    led1_blink(1, 50);
                     config_section_add_handler(&cd);
                     break;
 
                 case PMD_NET_SYSTEM_CONFIG_SECTION_DEL:
+                    led1_blink(2, 50);
                     config_section_del_handler(&cd);
                     break;
                 }
@@ -148,11 +162,6 @@ static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     if(cd.config != NULL) {
         free(cd.config);
         cd.config = NULL;
-    }
-
-    if(cd.section != NULL) {
-        free(cd.section);
-        cd.section = NULL;
     }
 }
 

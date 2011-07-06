@@ -48,7 +48,6 @@ static void non_smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     default:
         break;
     }
-
 }
 
 static void config_full_handler(pmd_net_system_config_data_t * cd) {
@@ -157,8 +156,6 @@ static void system_config_handler(const msg_lvl2_t * msg) {
             config_section_del_handler(&cd);
             break;
         }
-    } else {
-        led1_blink(1, 1000);
     }
 
     if(cd.config != NULL) {
@@ -172,14 +169,18 @@ static void system_set_op_handler(const msg_lvl2_t * msg) {
 
     if(pmd_net_system_set_op_read_data(&(msg->data), &opd) == 0) {
         switch(opd.operation) {
-        case OPERATION_MODE_INIT:
-        case OPERATION_MODE_NORMAL:
+        case PMD_NET_SYSTEM_SET_OP_INIT:
+            operation_mode = OPERATION_MODE_INIT;
             pmd_system_platform_identification_off();
-            operation_mode = opd.operation;
             break;
 
-        case OPERATION_MODE_CONFIGURATION:
-            operation_mode = opd.operation;
+        case PMD_NET_SYSTEM_SET_OP_NORMAL:
+            operation_mode = OPERATION_MODE_NORMAL;
+            pmd_system_platform_identification_off();
+            break;
+
+        case PMD_NET_SYSTEM_SET_OP_CONFIGURATION:
+            operation_mode = OPERATION_MODE_CONFIGURATION;
             pmd_system_platform_identification_on();
             break;
 
@@ -263,7 +264,7 @@ static void create_config() {
 static void heartbeat_msg_init(msg_lvl2_t * msg) {
     if(msg != NULL) {
         msg->meta.hw_addr = 7; //FIXME: use real address
-        msg->meta.port = 255; // broadcast port
+        msg->meta.port = 15; // broadcast port
         msg->meta.id = PMD_NET_SYSTEM_HEARTBEAT;
         msg->meta.is_system = 1;
         msg->data.itself = NULL;
@@ -275,7 +276,7 @@ static void heartbeat_msg_init(msg_lvl2_t * msg) {
 
 static void send_heartbeat(void * ctx) {
     can_net_start_sending_msg(&heartbeat_msg, NULL, NULL);
-    ftimer_register_func(send_heartbeat, NULL, 5000);
+    ftimer_register_func(send_heartbeat, NULL, 1000);
 }
 
 int pmd_system_init() {
@@ -317,10 +318,10 @@ int pmd_system_init() {
     can_net_add_callback( &(cb_records[0]) );
     can_net_add_callback( &(cb_records[1]) );
 
-    operation_mode = OPERATION_MODE_INIT;
+    operation_mode = OPERATION_MODE_NORMAL;
 
     heartbeat_msg_init(&heartbeat_msg);
-    ftimer_register_func(send_heartbeat, NULL, 5000);
+    ftimer_register_func(send_heartbeat, NULL, 1000);
 
     return 0;
 }

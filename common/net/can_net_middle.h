@@ -26,6 +26,7 @@
 #define CAN_NET_MIDDLE_H_
 
 #include "can_net_core.h"
+#include "../lib/bytearray.h"
 
 /* defines:
 		CAN_NET_CONFIRMATION	- use confirmations on msg
@@ -33,15 +34,6 @@
 #define CAN_NET_CONFIRMATION
 
 /* -------------------------------------INTERFACE_STRUCTS---------------------------------------*/
-
-/**
- * @struct bytearr_t
- * @brief simple byte array
- */
-typedef struct {
-	uint8_t* itself;
-	uint32_t len;
-} bytearr_t;
 
 /**
  * @struct msg_metadata_t

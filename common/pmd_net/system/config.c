@@ -1,16 +1,16 @@
-#include "system_config.h"
+#include "config.h"
 
 #include <string.h>
 
 
-int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_config_data_t * source_data) {
+int pmd_net_sys_config_write_data(bytearr_t * dest_arr, const pmd_net_sys_config_data_t * source_data) {
     if((source_data == NULL) || (dest_arr == NULL))
         return 1;
 
     const char * config_str = NULL;
 
     switch(source_data->operation) {
-    case PMD_NET_SYSTEM_CONFIG_REQUEST:
+    case PMD_NET_SYS_CONFIG_REQUEST:
         dest_arr->len = 1;
         dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * dest_arr->len);
         if(dest_arr->itself == NULL) {
@@ -19,7 +19,7 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
         dest_arr->itself[0] = source_data->operation;
         break;
 
-    case PMD_NET_SYSTEM_CONFIG_FULL:
+    case PMD_NET_SYS_CONFIG_FULL:
         if(source_data->config == NULL) {
             return 3;
         }
@@ -39,7 +39,7 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
         dest_arr->itself[0] = source_data->operation;
         break;
 
-    case PMD_NET_SYSTEM_CONFIG_SECTION_ADD:
+    case PMD_NET_SYS_CONFIG_SECTION_ADD:
         if(source_data->section == NULL) {
             return 5;
         }
@@ -63,7 +63,7 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
         dest_arr->itself[0] = source_data->operation;
         break;
 
-    case PMD_NET_SYSTEM_CONFIG_SECTION_DEL:
+    case PMD_NET_SYS_CONFIG_SECTION_DEL:
         if(source_data->section == NULL) {
             return 5;
         }
@@ -81,7 +81,7 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
     return 0;
 }
 
-int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system_config_data_t * dest_data) {
+int pmd_net_sys_config_read_data(const bytearr_t * source_arr, pmd_net_sys_config_data_t * dest_data) {
     if((dest_data == NULL) || (source_arr == NULL))
         return 1;
 
@@ -92,11 +92,11 @@ int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system
     char buf[source_arr->len];
 
     switch(source_arr->itself[0]) {
-    case PMD_NET_SYSTEM_CONFIG_REQUEST:
+    case PMD_NET_SYS_CONFIG_REQUEST:
         dest_data->operation = source_arr->itself[0];
         break;
 
-    case PMD_NET_SYSTEM_CONFIG_FULL:
+    case PMD_NET_SYS_CONFIG_FULL:
         dest_data->config = (config_cnf_t *)malloc(sizeof(config_cnf_t));
         if(dest_data->config == NULL) {
             return 2;
@@ -113,7 +113,7 @@ int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system
         dest_data->operation = source_arr->itself[0];
         break;
 
-    case PMD_NET_SYSTEM_CONFIG_SECTION_ADD:
+    case PMD_NET_SYS_CONFIG_SECTION_ADD:
         memcpy((void *)buf, source_arr->itself + 1, source_arr->len - 1);
         buf[source_arr->len - 1] = '\0';
 
@@ -127,7 +127,7 @@ int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system
         dest_data->operation = source_arr->itself[0];
         break;
 
-    case PMD_NET_SYSTEM_CONFIG_SECTION_DEL:
+    case PMD_NET_SYS_CONFIG_SECTION_DEL:
         if(source_arr->len < 2) {
             return 3;
         }

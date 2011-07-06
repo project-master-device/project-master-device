@@ -1,6 +1,6 @@
-#include "pmd_button.h"
+#include "button.h"
 
-int pmd_button_write_data(const bytearr_t arr, pmd_button_data_t * data) {
+int pmd_net_button_write_data(bytearr_t* arr, const pmd_net_button_data_t * data) {
     if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
         return 1;
 
@@ -18,7 +18,7 @@ int pmd_button_write_data(const bytearr_t arr, pmd_button_data_t * data) {
     return 0;
 }
 
-int pmd_button_read_data(const bytearr_t arr, pmd_button_data_t * data) {
+int pmd_net_button_read_data(const bytearr_t* arr, pmd_net_button_data_t * data) {
     if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
         return 1;
 

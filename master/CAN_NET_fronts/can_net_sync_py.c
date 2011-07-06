@@ -62,9 +62,9 @@ static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args) {
 }
 
 static PyMethodDef can_net_sync_methods[] = {
-	{"init", can_net_sync_py_init, METH_VARARGS, "initialize, start listening for incoming messages."},
-	{"send", can_net_sync_py_send, METH_VARARGS, "send message."},
-	{"recv", can_net_sync_py_recv, METH_VARARGS, "recv next message."},
+	{"init", can_net_sync_py_init, METH_VARARGS, "initialize, start listening for incoming messages.(int msgs_limit, int timeout_cycles, int send_frame_timeout_us, int confirmation_tics)."},
+	{"send", can_net_sync_py_send, METH_VARARGS, "send message.(msg_tuple msg)."},
+	{"recv", can_net_sync_py_recv, METH_VARARGS, "recv next message.(port)."},
 //	{"close", can_net_sync_py_close, METH_VARARGS, "close, stop listening for incoming messages."},
 	{NULL, NULL, 0, NULL}	/* Sentinel */
 };

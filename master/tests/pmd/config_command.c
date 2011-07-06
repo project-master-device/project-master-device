@@ -10,14 +10,67 @@
 #include "../../../common/net/can_net.h"
 #include "../../../common/pmd_net/system.h"
 
+
+void send_del_section(int id) {
+    config_section_t section;
+    config_section_construct(&section, (uint8_t)id);
+
+    msg_lvl2_t msg;
+    msg.meta.id = PMD_NET_SYSTEM_CONFIG_MSG;
+    msg.meta.hw_addr = 123;
+    msg.meta.port = 1;
+    msg.meta.is_system = 1;
+    msg.data.len = 0;
+    msg.data.itself = 0;
+
+    pmd_net_system_config_data_t cd;
+    cd.operation = PMD_NET_SYSTEM_CONFIG_SECTION_DEL;
+    cd.config = NULL;
+    cd.section = &section;
+
+    pmd_net_system_config_write_data(&(msg.data), &cd);
+    if(msg.data.itself == NULL)
+        printf("pizdec\n");
+
+    can_net_start_sending_msg(&msg, NULL, NULL);
+}
+
+void send_add_section() {
+    config_section_t section;
+    config_section_construct(&section, 2);
+
+    config_section_set_str(&section, "type", "led");
+    config_section_set_uint(&section, "ddr", 36);
+    config_section_set_uint(&section, "port", 37);
+    config_section_set_uint(&section, "offset", 5);
+
+    msg_lvl2_t msg;
+    msg.meta.id = PMD_NET_SYSTEM_CONFIG_MSG;
+    msg.meta.hw_addr = 123;
+    msg.meta.port = 1;
+    msg.meta.is_system = 1;
+    msg.data.len = 0;
+    msg.data.itself = 0;
+
+    pmd_net_system_config_data_t cd;
+    cd.operation = PMD_NET_SYSTEM_CONFIG_SECTION_ADD;
+    cd.config = NULL;
+    cd.section = &section;
+
+    pmd_net_system_config_write_data(&(msg.data), &cd);
+    if(msg.data.itself == NULL)
+        printf("pizdec\n");
+
+    can_net_start_sending_msg(&msg, NULL, NULL);
+}
+
 void send_config_full() {
     config_cnf_t cnf;
     config_section_t * sect = NULL;
     config_cnf_construct(&cnf);
 
     //create led 1
-    sect = config_cnf_create_section(&cnf);
-    sect->id = 2;
+    sect = config_cnf_create_section(&cnf, 2);
     config_section_set_str(sect, "type", "led");
     config_section_set_str(sect, "test", "trololo");
     config_section_set_uint(sect, "ddr", 36);
@@ -25,23 +78,19 @@ void send_config_full() {
     config_section_set_uint(sect, "offset", 4);
 /*
     //create led 2
-    sect = config_cnf_create_section(&cnf);
-    sect->id = 1;
+    sect = config_cnf_create_section(&cnf, 1);
     config_section_set_str(sect, "type", "led");
     config_section_set_uint(sect, "ddr", 36);
     config_section_set_uint(sect, "port", 37);
     config_section_set_uint(sect, "offset", 5);
 
     //create led 3
-    sect = config_cnf_create_section(&cnf);
-    sect->id = 1;
+    sect = config_cnf_create_section(&cnf, 3);
     config_section_set_str(sect, "type", "led");
     config_section_set_uint(sect, "ddr", 36);
     config_section_set_uint(sect, "port", 37);
     config_section_set_uint(sect, "offset", 6);
 */
-
-    printf("config was created\n");
 
     msg_lvl2_t msg;
     msg.meta.id = PMD_NET_SYSTEM_CONFIG_MSG;
@@ -61,7 +110,6 @@ void send_config_full() {
         printf("pizdec\n");
 
 
-    printf("start sending config...\n");
     can_net_start_sending_msg(&msg, NULL, NULL);
 }
 
@@ -131,7 +179,6 @@ void recv_cb(const msg_lvl2_t * msg, void * context) {
     pmd_net_system_config_data_t cd;
     cd.config = NULL;
     cd.section = NULL;
-    config_cnf_t cnf;
 
     if(msg) {
         printf("received message!\n");
@@ -145,11 +192,7 @@ void recv_cb(const msg_lvl2_t * msg, void * context) {
             if(cd.operation == PMD_NET_SYSTEM_CONFIG_FULL) {
                 if(cd.config != NULL) {
                     config_print(cd.config);
-                    cnf.sections = cd.config->sections;
-                    cnf.sections_list = cd.config->sections_list;
                     free(cd.config);
-                    if(*(cnf.sections) != cnf.sections_list)
-                        printf(":(\n");
                     cd.config = NULL;
                 }
                 else
@@ -201,12 +244,16 @@ int main(int argc, char * argv[]) {
     } else if(strcmp(argv[1], "req") == 0) {
         send_config_request();
     } else if(strcmp(argv[1], "add") == 0) {
-        //todo
+        send_add_section();
     } else if(strcmp(argv[1], "del") == 0) {
         if(argc < 3) {
             print_usage();
             return 1;
         }
+
+        int id;
+        sscanf(argv[2], "%d", &id);
+        send_del_section(id);
     }
 
 	printf("sleeping\n");

@@ -3,6 +3,7 @@
 #include "lib/ftimer.h"
 #include "lib/interrupt.h"
 #include "net/can_net.h"
+#include "pmd_system.h"
 #include "pmd_net/pmd_button.h"
 
 #include <stdint.h>
@@ -68,7 +69,7 @@ PROCESS_THREAD(process_handle_button, ev, data) {
             rc = pmd_button_write_data(msg.data, &button_data);
 
             if(rc == 0) {
-                can_net_start_sending_msg(&msg, NULL, NULL);
+                pmd_system_send_message(&msg, NULL, NULL);
             }
 
             interrupt_register(config_section_get_uint((config_section_t *)data, "offset", 9), INTERRUPT_ANY, button_handle_irq, data);

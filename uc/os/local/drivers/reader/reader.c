@@ -196,8 +196,7 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
                 pmd_reader_write_data(arr, msg_data);
                 msg.data = arr;
 
-                can_net_start_sending_msg(&msg, NULL, NULL);
-
+                pmd_system_send_message(&msg, NULL, NULL);
             }
         }
 

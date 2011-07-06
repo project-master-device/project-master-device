@@ -1,6 +1,7 @@
 #ifndef SYSTEM_IDS_H_
 #define SYSTEM_IDS_H_
 
+#define PMD_NET_SYSTEM_HEARTBEAT        0
 #define PMD_NET_SYSTEM_CONFIG           1
 #define PMD_NET_SYSTEM_SET_OP           2
 

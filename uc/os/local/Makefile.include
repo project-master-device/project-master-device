@@ -1,4 +1,4 @@
-LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c pmd_reader.c pmd_led.c pmd_button.c config_core.c list.c system_config.c
+LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c pmd_reader.c pmd_led.c pmd_button.c config_core.c list.c system_config.c system_heartbeat.c system_set_op.c
 CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev net pmd_net common_lib .}
 CONTIKIDIRS += $(CONTIKI_LOCAL)
 

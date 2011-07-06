@@ -13,7 +13,7 @@
 
 void send_config_request() {
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_CONFIG_MSG;
+    msg.meta.id = PMD_NET_SYSTEM_CONFIG;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
@@ -78,7 +78,7 @@ void recv_cb(const msg_lvl2_t * msg, void * context) {
     if(msg) {
         printf("received message!\n");
 
-        if(msg->meta.id == PMD_NET_SYSTEM_CONFIG_MSG) {
+        if(msg->meta.id == PMD_NET_SYSTEM_CONFIG) {
             if(pmd_net_system_config_read_data(&(msg->data), &cd) != 0) {
                 printf("fail: failed to read message data\n");
                 return;

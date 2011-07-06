@@ -4,3 +4,5 @@ button
 reader_command
 config_read
 config_command
+set_op
+heartbeat_receiver

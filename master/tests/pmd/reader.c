@@ -53,14 +53,10 @@ void recv_cb(const msg_lvl2_t * msg, void * context) {
     uint8_t rc;
 
     if(msg) {
-        printf("received message!\n");
-
         rc = pmd_reader_read_data(msg->data, &reader_data);    
 
         if(!rc) {
             foo(&reader_data);
-        } else {
-            printf("Smth bad happend :(\n");
         }
     }
 }

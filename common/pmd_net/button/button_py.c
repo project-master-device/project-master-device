@@ -2,6 +2,20 @@
 
 #include "button_py.h"
 
+static PyObject* pmd_net_button_write_down_py(PyObject* self, PyObject* args) {
+	bytearr_t* arr;
+	pmd_net_button_data_t data = { PMD_NET_BUTTON_DOWN };
+	int rc = pmd_net_button_write_data(arr, &data);
+	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
+}
+
+static PyObject* pmd_net_button_write_up_py(PyObject* self, PyObject* args) {
+	bytearr_t* arr;
+	pmd_net_button_data_t data = { PMD_NET_BUTTON_ON };
+	int rc = pmd_net_button_write_data(arr, &data);
+	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
+}
+/*
 static PyObject* pmd_net_button_write_data_py(PyObject* self, PyObject* args) {
 	bytearr_t* arr;
 	pmd_net_button_data_t* data;
@@ -11,7 +25,7 @@ static PyObject* pmd_net_button_write_data_py(PyObject* self, PyObject* args) {
 	int rc = pmd_net_button_write_data(arr, data);
 	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
 }
-
+*/
 static PyObject* pmd_net_button_read_data_py(PyObject* self, PyObject* args) {
 	bytearr_t* arr;
 	pmd_net_button_data_t* data;
@@ -23,8 +37,10 @@ static PyObject* pmd_net_button_read_data_py(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef pmd_net_button_methods[] = {
-	{"write", pmd_net_button_write_data_py, METH_VARARGS, "pack command for button"},
-	{"read", pmd_net_button_read_data_py, METH_VARARGS, "unpack command for button"},
+	{"down", pmd_net_button_write_down_py, METH_VARARGS, "(i)pack command: button down, return:(rc -int, packed_msg -str)"},
+	{"up", pmd_net_button_write_up_py, METH_VARARGS, "(i)pack command: button up, return:(rc -int, packed_msg -str)"},
+//	{"write", pmd_net_button_write_data_py, METH_VARARGS, "pack command for button, return:(rc -int, packed_msg -str)"},
+	{"read", pmd_net_button_read_data_py, METH_VARARGS, "unpack command for button, return:(rc -int, operation_code -int)"},
 	{NULL, NULL, 0, NULL}	/* Sentinel */
 };
 

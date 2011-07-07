@@ -7,6 +7,7 @@ OBJS_CONFIG_READ = $(OBJS_COMMON) config_read.o
 OBJS_CONFIG_COMMAND = $(OBJS_COMMON) config_command.o
 OBJS_SET_OP = $(OBJS_COMMON) set_op.o
 OBJS_HEARTBEAT_RECEIVER = $(OBJS_COMMON) heartbeat_receiver.o
+OBJS_SEND_HEARTBEAT = $(OBJS_COMMON) send_heartbeat.o
 CC = gcc
 DEBUG = -g
 CFLAGS = -Wall -c $(DEBUG) -DCAN_NET_LINUX
@@ -16,7 +17,14 @@ NETPATH = ../../../common/net/
 LIBPATH = ../../../common/lib/
 PMDNETPATH = ../../../common/pmd_net/
 
-all: led_command reader button reader_command config_read config_command set_op heartbeat_receiver
+all: led_command reader button reader_command config_read config_command set_op heartbeat_receiver send_heartbeat
+
+
+send_heartbeat: $(OBJS_SEND_HEARTBEAT)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_SEND_HEARTBEAT) -o send_heartbeat
+
+send_heartbeat.o: send_heartbeat.c $(NETPATH)can_net.h
+	$(CC) $(CFLAGS) send_heartbeat.c
 
 
 heartbeat_receiver: $(OBJS_HEARTBEAT_RECEIVER)
@@ -115,4 +123,4 @@ list.o: $(LIBPATH)list.h $(LIBPATH)list.c
 	$(CC) $(CFLAGS) $(LIBPATH)list.c
 
 clean:
-	rm -rf *o led_command reader button reader_command config_read config_command set_op heartbeat_receiver
+	rm -rf *o led_command reader button reader_command config_read config_command set_op heartbeat_receiver send_heartbeat

@@ -353,10 +353,13 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 			#endif
 
 			msh_finish(CAN_NET_RC_NORM, ctx);
-			//kostyil!
+			//<begin kostyil>
 			#ifdef CAN_NET_QUEUING
 			if (process_next)
 				msg_send_handler(CAN_DRV_RC_NORM, NULL, next_msg->ctx);
+
+			if(next_msg) free(next_msg);
+			//<close kostyil>
 			#endif
 		}
 	} else {

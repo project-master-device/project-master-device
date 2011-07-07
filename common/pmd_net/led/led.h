@@ -7,7 +7,6 @@
 #define PMD_NET_LED_OFF     2
 #define PMD_NET_LED_TOGGLE  3
 
-
 typedef struct {
     uint8_t operation;
 } pmd_net_led_data_t;

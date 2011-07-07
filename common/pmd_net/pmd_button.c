@@ -1,13 +1,19 @@
 #include "pmd_button.h"
 
-int pmd_button_write_data(const bytearr_t arr, pmd_button_data_t * data) {
-    if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
+int pmd_net_button_write_data(bytearr_t * dest_arr, const pmd_net_button_data_t * source_data) {
+    if((dest_arr == NULL) || (source_data == NULL))
         return 1;
 
-    switch(data->operation) {
-    case PMD_BUTTON_DOWN:
-    case PMD_BUTTON_UP:
-        arr.itself[0] = data->operation;
+    switch(source_data->operation) {
+    case PMD_NET_BUTTON_DOWN:
+    case PMD_NET_BUTTON_UP:
+        dest_arr->len = 1;
+        dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * dest_arr->len);
+        if(dest_arr->itself == NULL) {
+            dest_arr->len = 0;
+            return 2;
+        }
+        dest_arr->itself[0] = source_data->operation;
         break;
 
     default:
@@ -18,14 +24,17 @@ int pmd_button_write_data(const bytearr_t arr, pmd_button_data_t * data) {
     return 0;
 }
 
-int pmd_button_read_data(const bytearr_t arr, pmd_button_data_t * data) {
-    if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
+int pmd_net_button_read_data(const bytearr_t * source_arr, pmd_net_button_data_t * dest_data) {
+    if((source_arr == NULL) || (dest_data == NULL))
         return 1;
 
-    switch(arr.itself[0]) {
-    case PMD_BUTTON_DOWN:
-    case PMD_BUTTON_UP:
-        data->operation = arr.itself[0];
+    if((source_arr->itself == NULL) || (source_arr->len == 0))
+        return 4;
+
+    switch(source_arr->itself[0]) {
+    case PMD_NET_BUTTON_DOWN:
+    case PMD_NET_BUTTON_UP:
+        dest_data->operation = source_arr->itself[0];
         break;
 
     default:

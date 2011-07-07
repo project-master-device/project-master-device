@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-static uint8_t state = PMD_BUTTON_UP;
+static uint8_t state = PMD_NET_BUTTON_UP;
 static process_event_t but_click;
 PROCESS(process_handle_button, "Handler button process");
 
@@ -34,19 +34,18 @@ int button_init(config_section_t * conf_sect) {
 
 static void change_state() {
     switch(state) {
-    case PMD_BUTTON_UP:
-        state = PMD_BUTTON_DOWN;
+    case PMD_NET_BUTTON_UP:
+        state = PMD_NET_BUTTON_DOWN;
         break;
-    case PMD_BUTTON_DOWN:
-        state = PMD_BUTTON_UP;
+    case PMD_NET_BUTTON_DOWN:
+        state = PMD_NET_BUTTON_UP;
         break;
     }
 }
 
 PROCESS_THREAD(process_handle_button, ev, data) {
     int rc;
-    uint8_t buf;
-    pmd_button_data_t button_data;
+    pmd_net_button_data_t button_data;
     msg_lvl2_t msg;
 
     PROCESS_BEGIN();
@@ -63,10 +62,10 @@ PROCESS_THREAD(process_handle_button, ev, data) {
             msg.meta.port = 1; //FIXME right port
             msg.meta.id = ((config_section_t *)data)->id;
             msg.meta.is_system = 0;
+            msg.data.len = 0;
+            msg.data.itself = NULL;
 
-            msg.data.len = 1;
-            msg.data.itself = &buf;
-            rc = pmd_button_write_data(msg.data, &button_data);
+            rc = pmd_net_button_write_data(&(msg.data), &button_data);
 
             if(rc == 0) {
                 pmd_system_send_message(&msg, NULL, NULL);

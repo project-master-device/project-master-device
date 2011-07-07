@@ -1,12 +1,12 @@
 #include <stdio.h>
-#include "../../common/pmd_net/system.h"
+#include "../../common/pmd_net/system_ids.h"
+#include "../../common/pmd_net/system_config.h"
 
 
 void create_config(config_cnf_t * cnf) {
     if(cnf != NULL) {
         //create led 1
-        config_section_t * sect = config_cnf_create_section(cnf);
-        sect->id = 2;
+        config_section_t * sect = config_cnf_create_section(cnf, 2);
         config_section_set_str(sect, "type", "led");
         config_section_set_str(sect, "test", "trololo");
         config_section_set_uint(sect, "ddr", 36);

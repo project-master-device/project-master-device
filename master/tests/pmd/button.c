@@ -10,16 +10,16 @@
 #include "../../../common/pmd_net/pmd_button.h"
 
 void recv_cb(const msg_lvl2_t * msg, void * ctx) {
-    pmd_button_data_t button_data;
+    pmd_net_button_data_t button_data;
     int rc;
 
     if(msg) {
-        rc = pmd_button_read_data(msg->data, &button_data);
+        rc = pmd_net_button_read_data(&(msg->data), &button_data);
 
         if(!rc) {
-            if(button_data.operation == PMD_BUTTON_DOWN)
+            if(button_data.operation == PMD_NET_BUTTON_DOWN)
                 printf("Button down\n");
-            else if (button_data.operation == PMD_BUTTON_UP)
+            else if (button_data.operation == PMD_NET_BUTTON_UP)
                 printf("Button up\n");
 
         } else {

@@ -10,53 +10,21 @@
 #include "../../../common/net/can_net.h"
 #include "../../../common/pmd_net/pmd_reader.h"
 
-void handle() {
-    msg_lvl2_t msg;
-    uint8_t msg_buf[64];
-    msg.meta.id = 5;
-    msg.meta.hw_addr = 123;
-    msg.meta.port = 1;
-    msg.meta.is_system = 0;
-    msg.data.itself = msg_buf;
-    msg.data.len = 1;
-
-
-    pmd_reader_data_t d;
-
-    d.operation = PMD_READER_GREEN_LED_ON;
-    pmd_reader_write_data(msg.data, &d); 
-    //can_net_start_sending_msg(&msg, NULL);
-
-    d.operation = PMD_READER_BEEP_ON;
-    pmd_reader_write_data(msg.data, &d); 
-    //can_net_start_sending_msg(&msg, NULL);
-
-    //sleep(1);
-
-    d.operation = PMD_READER_BEEP_OFF;
-    pmd_reader_write_data(msg.data, &d); 
-    //can_net_start_sending_msg(&msg, NULL);
-
-    d.operation = PMD_READER_GREEN_LED_OFF;
-    pmd_reader_write_data(msg.data, &d); 
-    //can_net_start_sending_msg(&msg, NULL);
-}
-
-void foo(pmd_reader_data_t * reader_data) {
+void print_code(pmd_net_reader_data_t * reader_data) {
     uint32_t code = (reader_data->data[2] << 16) | (reader_data->data[1] << 8) | reader_data->data[0];
 
     printf("%x\n", code);
 }
 
 void recv_cb(const msg_lvl2_t * msg, void * context) {
-    pmd_reader_data_t reader_data;
+    pmd_net_reader_data_t reader_data;
     uint8_t rc;
 
     if(msg) {
-        rc = pmd_reader_read_data(msg->data, &reader_data);    
+        rc = pmd_net_reader_read_data(&(msg->data), &reader_data);
 
-        if(!rc) {
-            foo(&reader_data);
+        if((rc == 0) && (reader_data.operation == PMD_NET_READER_SEND_MSG)) {
+            print_code(&reader_data);
         }
     }
 }

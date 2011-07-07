@@ -71,6 +71,12 @@ PROCESS_THREAD(process_handle_button, ev, data) {
                 pmd_system_send_message(&msg, NULL, NULL);
             }
 
+            if(msg.data.itself != NULL) {
+                free(msg.data.itself);
+                msg.data.len = 0;
+                msg.data.itself = NULL;
+            }
+
             interrupt_register(config_section_get_uint((config_section_t *)data, "offset", 9), INTERRUPT_ANY, button_handle_irq, data);
         }
     }

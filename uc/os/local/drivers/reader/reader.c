@@ -169,6 +169,7 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
     msg_lvl2_t msg;
     pmd_net_reader_data_t * msg_data;
     int i;
+    int rc;
 
     PROCESS_BEGIN();
         reader_input = process_alloc_event();
@@ -194,10 +195,18 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
                 }
                 arr.len = 0;
                 arr.itself = NULL;
-                pmd_net_reader_write_data(&arr, msg_data);
+                rc = pmd_net_reader_write_data(&arr, msg_data);
                 msg.data = arr;
 
-                pmd_system_send_message(&msg, NULL, NULL);
+                if(rc == 0) {
+                    pmd_system_send_message(&msg, NULL, NULL);
+                }
+
+                if(msg.data.itself != NULL) {
+                    free(msg.data.itself);
+                    msg.data.len = 0;
+                    msg.data.itself = NULL;
+                }
             }
         }
 

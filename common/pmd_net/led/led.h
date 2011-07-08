@@ -2,7 +2,7 @@
 #define PMD_LED_H_
 
 #include <stdint.h>
-#include "../../lib/common/bytearray.h"
+#include "../../lib/bytearray.h"
 
 #define PMD_NET_LED_ON      1
 #define PMD_NET_LED_OFF     2

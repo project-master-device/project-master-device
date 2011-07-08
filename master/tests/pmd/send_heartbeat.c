@@ -8,7 +8,9 @@
 #include <string.h>
 #include <unistd.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/system_ids.h"
+#include "../../../common/pmd_net/system/system_ids.h"
+#include "../../../common/pmd_net/system/heartbeat.h"
+
 
 void send_handler(const int rc, msg_lvl2_t * msg, void * ctx) {
     printf("send done\n");;
@@ -24,13 +26,15 @@ int main(int argc, char * argv[]) {
 		printf("successful initialization\n");
 
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_HEARTBEAT;
+    msg.meta.id = PMD_NET_SYS_HEARTBEAT;
     //msg.meta.id = 432;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
     msg.data.itself = NULL;
     msg.data.len = 0;
+
+    pmd_net_sys_heartbeat_write_data(&(msg.data));
 
     unsigned long long i = 0;
     unsigned long long max = 1000;

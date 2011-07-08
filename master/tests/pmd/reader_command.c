@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/pmd_reader.h"
+#include "../../../common/pmd_net/reader/reader.h"
 
 void send() {
     msg_lvl2_t msg;

@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <stdlib.h>
 
 
 int pmd_net_sys_config_write_data(bytearr_t * dest_arr, const pmd_net_sys_config_data_t * source_data) {

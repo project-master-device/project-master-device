@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/system_ids.h"
-#include "../../../common/pmd_net/system_set_op.h"
+#include "../../../common/pmd_net/system/system_ids.h"
+#include "../../../common/pmd_net/system/set_op.h"
 
 void send_handler(const int rc, msg_lvl2_t * msg, void * ctx) {
     printf("send done\n");;
@@ -21,14 +21,14 @@ int main(int argc, char * argv[]) {
         return 1;
     }
 
-    pmd_net_system_set_op_data_t opd;
+    pmd_net_sys_set_op_data_t opd;
 
     if(strcmp(argv[1], "init") == 0) {
-        opd.operation = PMD_NET_SYSTEM_SET_OP_INIT;
+        opd.operation = PMD_NET_SYS_SET_OP_INIT;
     } else if(strcmp(argv[1], "norm") == 0) {
-        opd.operation = PMD_NET_SYSTEM_SET_OP_NORMAL;
+        opd.operation = PMD_NET_SYS_SET_OP_NORMAL;
     } else if(strcmp(argv[1], "conf") == 0) {
-        opd.operation = PMD_NET_SYSTEM_SET_OP_CONFIGURATION;
+        opd.operation = PMD_NET_SYS_SET_OP_CONFIGURATION;
     }
 
     uint32_t msg_confirm_tics = 1000;
@@ -40,12 +40,12 @@ int main(int argc, char * argv[]) {
 		printf("successful initialization\n");
 
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_SET_OP;
+    msg.meta.id = PMD_NET_SYS_SET_OP;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
 
-    if(pmd_net_system_set_op_write_data(&(msg.data), &opd) != 0) {
+    if(pmd_net_sys_set_op_write_data(&(msg.data), &opd) != 0) {
         printf("epic fail :(\n");
     }
 

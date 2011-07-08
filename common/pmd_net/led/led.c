@@ -1,4 +1,6 @@
 #include "led.h"
+#include <stddef.h>
+#include <stdlib.h>
 
 int pmd_net_led_write_data(bytearr_t * dest_arr, const pmd_net_led_data_t * source_data) {
     if((dest_arr == NULL) || (source_data == NULL))

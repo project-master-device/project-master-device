@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/pmd_led.h"
+#include "../../../common/pmd_net/led/led.h"
 
 void send_handler(const int rc, msg_lvl2_t * msg, void * ctx) {
     printf("send done\n");;

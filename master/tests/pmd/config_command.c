@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/system_ids.h"
-#include "../../../common/pmd_net/system_config.h"
+#include "../../../common/pmd_net/system/system_ids.h"
+#include "../../../common/pmd_net/system/config.h"
 
 
 void send_del_section(int id) {
@@ -17,19 +17,19 @@ void send_del_section(int id) {
     config_section_construct(&section, (uint8_t)id);
 
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_CONFIG;
+    msg.meta.id = PMD_NET_SYS_CONFIG;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
     msg.data.len = 0;
     msg.data.itself = 0;
 
-    pmd_net_system_config_data_t cd;
-    cd.operation = PMD_NET_SYSTEM_CONFIG_SECTION_DEL;
+    pmd_net_sys_config_data_t cd;
+    cd.operation = PMD_NET_SYS_CONFIG_SECTION_DEL;
     cd.config = NULL;
     cd.section = &section;
 
-    pmd_net_system_config_write_data(&(msg.data), &cd);
+    pmd_net_sys_config_write_data(&(msg.data), &cd);
     if(msg.data.itself == NULL)
         printf("pizdec\n");
 
@@ -46,19 +46,19 @@ void send_add_section() {
     config_section_set_uint(&section, "offset", 5);
 
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_CONFIG;
+    msg.meta.id = PMD_NET_SYS_CONFIG;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
     msg.data.len = 0;
     msg.data.itself = 0;
 
-    pmd_net_system_config_data_t cd;
-    cd.operation = PMD_NET_SYSTEM_CONFIG_SECTION_ADD;
+    pmd_net_sys_config_data_t cd;
+    cd.operation = PMD_NET_SYS_CONFIG_SECTION_ADD;
     cd.config = NULL;
     cd.section = &section;
 
-    pmd_net_system_config_write_data(&(msg.data), &cd);
+    pmd_net_sys_config_write_data(&(msg.data), &cd);
     if(msg.data.itself == NULL)
         printf("pizdec\n");
 
@@ -94,19 +94,19 @@ void send_config_full() {
 */
 
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_CONFIG;
+    msg.meta.id = PMD_NET_SYS_CONFIG;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
     msg.data.len = 0;
     msg.data.itself = 0;
 
-    pmd_net_system_config_data_t cd;
-    cd.operation = PMD_NET_SYSTEM_CONFIG_FULL;
+    pmd_net_sys_config_data_t cd;
+    cd.operation = PMD_NET_SYS_CONFIG_FULL;
     cd.config = &cnf;
     cd.section = NULL;
 
-    pmd_net_system_config_write_data(&(msg.data), &cd);
+    pmd_net_sys_config_write_data(&(msg.data), &cd);
     if(msg.data.itself == NULL)
         printf("pizdec\n");
 
@@ -116,19 +116,19 @@ void send_config_full() {
 
 void send_config_request() {
     msg_lvl2_t msg;
-    msg.meta.id = PMD_NET_SYSTEM_CONFIG;
+    msg.meta.id = PMD_NET_SYS_CONFIG;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = 1;
     msg.data.len = 0;
     msg.data.itself = 0;
 
-    pmd_net_system_config_data_t cd;
-    cd.operation = PMD_NET_SYSTEM_CONFIG_REQUEST;
+    pmd_net_sys_config_data_t cd;
+    cd.operation = PMD_NET_SYS_CONFIG_REQUEST;
     cd.config = NULL;
     cd.section = NULL;
 
-    pmd_net_system_config_write_data(&(msg.data), &cd);
+    pmd_net_sys_config_write_data(&(msg.data), &cd);
 
     if(msg.data.itself == NULL)
         printf("pizdec\n");
@@ -177,20 +177,20 @@ void config_print(config_cnf_t * cnf) {
 }
 
 void recv_cb(const msg_lvl2_t * msg, void * context) {
-    pmd_net_system_config_data_t cd;
+    pmd_net_sys_config_data_t cd;
     cd.config = NULL;
     cd.section = NULL;
 
     if(msg) {
         printf("received message!\n");
 
-        if(msg->meta.id == PMD_NET_SYSTEM_CONFIG) {
-            if(pmd_net_system_config_read_data(&(msg->data), &cd) != 0) {
+        if(msg->meta.id == PMD_NET_SYS_CONFIG) {
+            if(pmd_net_sys_config_read_data(&(msg->data), &cd) != 0) {
                 printf("fail: failed to read message data\n");
                 return;
             }
 
-            if(cd.operation == PMD_NET_SYSTEM_CONFIG_FULL) {
+            if(cd.operation == PMD_NET_SYS_CONFIG_FULL) {
                 if(cd.config != NULL) {
                     config_print(cd.config);
                     free(cd.config);

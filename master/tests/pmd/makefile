@@ -1,11 +1,10 @@
-OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o pmd_led.o pmd_reader.o pmd_button.o system_config.o config_core.o system_set_op.o
+OBJS_COMMON = list.o can_socket.o can_drv_lin.o can_protocols.o can_net_core.o can_net_middle.o can_net.o led.o reader.o button.o config.o config_core.o set_op.o heartbeat.o
 OBJS_LED_COMMAND = $(OBJS_COMMON) led_command.o
-OBJS_READER = $(OBJS_COMMON) reader.o
+OBJS_READER_LISTEN = $(OBJS_COMMON) reader_listen.o
 OBJS_READER_COMMAND =  $(OBJS_COMMON) reader_command.o
-OBJS_BUTTON = $(OBJS_COMMON) button.o
-OBJS_CONFIG_READ = $(OBJS_COMMON) config_read.o
+OBJS_BUTTON_LISTEN = $(OBJS_COMMON) button_listen.o
 OBJS_CONFIG_COMMAND = $(OBJS_COMMON) config_command.o
-OBJS_SET_OP = $(OBJS_COMMON) set_op.o
+OBJS_SET_OP_MODE = $(OBJS_COMMON) set_op_mode.o
 OBJS_HEARTBEAT_RECEIVER = $(OBJS_COMMON) heartbeat_receiver.o
 OBJS_SEND_HEARTBEAT = $(OBJS_COMMON) send_heartbeat.o
 CC = gcc
@@ -17,7 +16,7 @@ NETPATH = ../../../common/net/
 LIBPATH = ../../../common/lib/
 PMDNETPATH = ../../../common/pmd_net/
 
-all: led_command reader button reader_command config_read config_command set_op heartbeat_receiver send_heartbeat
+all: led_command reader_listen button_listen reader_command config_command set_op_mode heartbeat_receiver send_heartbeat
 
 
 send_heartbeat: $(OBJS_SEND_HEARTBEAT)
@@ -30,36 +29,29 @@ send_heartbeat.o: send_heartbeat.c $(NETPATH)can_net.h
 heartbeat_receiver: $(OBJS_HEARTBEAT_RECEIVER)
 	$(CC) -lpthread $(LFLAGS) $(OBJS_HEARTBEAT_RECEIVER) -o heartbeat_receiver
 
-heartbeat_receiver.o: heartbeat_receiver.c $(NETPATH)can_net.h $(PMDNETPATH)system_ids.h
+heartbeat_receiver.o: heartbeat_receiver.c $(NETPATH)can_net.h $(PMDNETPATH)system/system_ids.h
 	$(CC) $(CFLAGS) heartbeat_receiver.c
 
 
-set_op: $(OBJS_SET_OP)
-	$(CC) -lpthread $(LFLAGS) $(OBJS_SET_OP) -o set_op
+set_op_mode: $(OBJS_SET_OP_MODE)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_SET_OP_MODE) -o set_op_mode
 
-set_op.o: set_op.c $(NETPATH)can_net.h $(PMDNETPATH)system_ids.h
-	$(CC) $(CFLAGS) set_op.c
+set_op_mode.o: set_op_mode.c $(NETPATH)can_net.h $(PMDNETPATH)system/system_ids.h
+	$(CC) $(CFLAGS) set_op_mode.c
 
 
 config_command: $(OBJS_CONFIG_COMMAND)
 	$(CC) -lpthread $(LFLAGS) $(OBJS_CONFIG_COMMAND) -o config_command
 
-config_command.o: config_command.c $(NETPATH)can_net.h $(PMDNETPATH)system_ids.h
+config_command.o: config_command.c $(NETPATH)can_net.h $(PMDNETPATH)system/system_ids.h
 	$(CC) $(CFLAGS) config_command.c
 
 
-config_read: $(OBJS_CONFIG_READ)
-	$(CC) -lpthread $(LFLAGS) $(OBJS_CONFIG_READ) -o config_read
+button_listen: $(OBJS_BUTTON_LISTEN)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_BUTTON_LISTEN) -o button_listen
 
-config_read.o: config_read.c $(NETPATH)can_net.h $(PMDNETPATH)system_ids.h
-	$(CC) $(CFLAGS) config_read.c
-
-
-button: $(OBJS_BUTTON)
-	$(CC) -lpthread $(LFLAGS) $(OBJS_BUTTON) -o button
-
-button.o: button.c $(NETPATH)can_net.h
-	$(CC) $(CFLAGS) button.c
+button_listen.o: button_listen.c $(NETPATH)can_net.h
+	$(CC) $(CFLAGS) button_listen.c
 
 
 reader_command: $(OBJS_READER_COMMAND)
@@ -69,11 +61,11 @@ reader_command.o: reader_command.c $(NETPATH)can_net.h
 	$(CC) $(CFLAGS) reader_command.c
 
 
-reader: $(OBJS_READER)
-	$(CC) -lpthread $(LFLAGS) $(OBJS_READER) -o reader
+reader_listen: $(OBJS_READER_LISTEN)
+	$(CC) -lpthread $(LFLAGS) $(OBJS_READER_LISTEN) -o reader_listen
 
-reader.o: reader.c $(NETPATH)can_net.h
-	$(CC) $(CFLAGS) reader.c
+reader_listen.o: reader_listen.c $(NETPATH)can_net.h
+	$(CC) $(CFLAGS) reader_listen.c
 
 
 led_command: $(OBJS_LED_COMMAND)
@@ -83,23 +75,24 @@ led_command.o: led_command.c $(NETPATH)can_net.h
 	$(CC) $(CFLAGS) led_command.c
 
 
-config_core.o: $(LIBPATH)config_core.h $(LIBPATH)config_core.c
-	$(CC) $(CFLAGS) $(LIBPATH)config_core.c
+heartbeat.o: $(PMDNETPATH)system/heartbeat.h $(PMDNETPATH)system/heartbeat.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)system/heartbeat.c
 
-system_set_op.o: $(PMDNETPATH)system_set_op.h $(PMDNETPATH)system_set_op.c
-	$(CC) $(CFLAGS) $(PMDNETPATH)system_set_op.c
+set_op.o: $(PMDNETPATH)system/set_op.h $(PMDNETPATH)system/set_op.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)system/set_op.c
 
-system_config.o: $(PMDNETPATH)system_config.h $(PMDNETPATH)system_config.c
-	$(CC) $(CFLAGS) $(PMDNETPATH)system_config.c
+config.o: $(PMDNETPATH)system/config.h $(PMDNETPATH)system/config.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)system/config.c
 
-pmd_button.o: $(PMDNETPATH)pmd_button.h $(PMDNETPATH)pmd_button.c
-	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_button.c
+button.o: $(PMDNETPATH)button/button.h $(PMDNETPATH)button/button.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)button/button.c
 
-pmd_reader.o: $(PMDNETPATH)pmd_reader.h $(PMDNETPATH)pmd_reader.c
-	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_reader.c
+reader.o: $(PMDNETPATH)reader/reader.h $(PMDNETPATH)reader/reader.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)reader/reader.c
 
-pmd_led.o: $(PMDNETPATH)pmd_led.h $(PMDNETPATH)pmd_led.c
-	$(CC) $(CFLAGS) $(PMDNETPATH)pmd_led.c
+led.o: $(PMDNETPATH)led/led.h $(PMDNETPATH)led/led.c
+	$(CC) $(CFLAGS) $(PMDNETPATH)led/led.c
+
 
 can_net.o: $(NETPATH)can_net.h $(NETPATH)can_net.c $(NETPATH)can_net_middle.h
 	$(CC) $(CFLAGS) -lpthread $(NETPATH)can_net.c
@@ -119,8 +112,13 @@ can_drv_lin.o: $(NETPATH)can_drv.h $(LNETPATH)can_drv_lin.c $(LNETPATH)can_socke
 can_socket.o: $(LNETPATH)can_socket.h $(LNETPATH)can_socket.c
 	$(CC) $(CFLAGS) $(LNETPATH)can_socket.c
 
+
 list.o: $(LIBPATH)list.h $(LIBPATH)list.c
 	$(CC) $(CFLAGS) $(LIBPATH)list.c
 
+config_core.o: $(LIBPATH)config_core.h $(LIBPATH)config_core.c
+	$(CC) $(CFLAGS) $(LIBPATH)config_core.c
+
+
 clean:
-	rm -rf *o led_command reader button reader_command config_read config_command set_op heartbeat_receiver send_heartbeat
+	rm -rf *o led_command reader_listen button_listen reader_command config_read config_command set_op_mode heartbeat_receiver send_heartbeat

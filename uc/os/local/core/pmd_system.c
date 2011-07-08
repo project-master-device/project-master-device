@@ -4,10 +4,10 @@
 #include "lib/net_device.h"
 #include "lib/interrupt.h"
 #include "lib/ftimer.h"
-#include "pmd_net/system_ids.h"
-#include "pmd_net/system_heartbeat.h"
-#include "pmd_net/system_config.h"
-#include "pmd_net/system_set_op.h"
+#include "pmd_net/system/system_ids.h"
+#include "pmd_net/system/heartbeat.h"
+#include "pmd_net/system/config.h"
+#include "pmd_net/system/set_op.h"
 
 #include <avr/io.h>
 
@@ -50,7 +50,7 @@ static void non_smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     }
 }
 
-static void config_full_handler(pmd_net_system_config_data_t * cd) {
+static void config_full_handler(pmd_net_sys_config_data_t * cd) {
     if((cd == NULL) || (cd->config == NULL)) {
         return;
     }
@@ -73,14 +73,14 @@ static void config_request_handler() {
     msg.meta.hw_addr = 7; //FIXME: write real address here
     msg.meta.port = 1; //FIXME: write real port here
     msg.meta.is_system = 1;
-    msg.meta.id = PMD_NET_SYSTEM_CONFIG;
+    msg.meta.id = PMD_NET_SYS_CONFIG;
     msg.data.len = 0;
     msg.data.itself = NULL;
 
-    pmd_net_system_config_data_t cd;
+    pmd_net_sys_config_data_t cd;
     cd.config = config_get();
-    cd.operation = PMD_NET_SYSTEM_CONFIG_FULL;
-    pmd_net_system_config_write_data(&(msg.data), &cd);
+    cd.operation = PMD_NET_SYS_CONFIG_FULL;
+    pmd_net_sys_config_write_data(&(msg.data), &cd);
 
     can_net_start_sending_msg(&msg, NULL, NULL);
     if(msg.data.itself != NULL) {
@@ -90,7 +90,7 @@ static void config_request_handler() {
     }
 }
 
-static void config_section_add_handler(pmd_net_system_config_data_t * cd) {
+static void config_section_add_handler(pmd_net_sys_config_data_t * cd) {
     if((cd == NULL) || (cd->section == NULL)) {
         return;
     }
@@ -109,7 +109,7 @@ static void config_section_add_handler(pmd_net_system_config_data_t * cd) {
     interrupt_enable();
 }
 
-static void config_section_del_handler(pmd_net_system_config_data_t * cd) {
+static void config_section_del_handler(pmd_net_sys_config_data_t * cd) {
     if((cd == NULL) || (cd->section == NULL)) {
         return;
     }
@@ -130,28 +130,28 @@ static void config_section_del_handler(pmd_net_system_config_data_t * cd) {
 }
 
 static void system_config_handler(const msg_lvl2_t * msg) {
-    pmd_net_system_config_data_t cd;
+    pmd_net_sys_config_data_t cd;
     cd.config = NULL;
     cd.section = NULL;
 
-    if(pmd_net_system_config_read_data(&(msg->data), &cd) == 0) {
+    if(pmd_net_sys_config_read_data(&(msg->data), &cd) == 0) {
         switch(cd.operation) {
-        case PMD_NET_SYSTEM_CONFIG_FULL:
+        case PMD_NET_SYS_CONFIG_FULL:
             led1_blink(4, 50);
             config_full_handler(&cd);
             break;
 
-        case PMD_NET_SYSTEM_CONFIG_REQUEST:
+        case PMD_NET_SYS_CONFIG_REQUEST:
             led2_blink(1, 100);
             config_request_handler();
             break;
 
-        case PMD_NET_SYSTEM_CONFIG_SECTION_ADD:
+        case PMD_NET_SYS_CONFIG_SECTION_ADD:
             led1_blink(1, 50);
             config_section_add_handler(&cd);
             break;
 
-        case PMD_NET_SYSTEM_CONFIG_SECTION_DEL:
+        case PMD_NET_SYS_CONFIG_SECTION_DEL:
             led1_blink(2, 50);
             config_section_del_handler(&cd);
             break;
@@ -165,21 +165,21 @@ static void system_config_handler(const msg_lvl2_t * msg) {
 }
 
 static void system_set_op_handler(const msg_lvl2_t * msg) {
-    pmd_net_system_set_op_data_t opd;
+    pmd_net_sys_set_op_data_t opd;
 
-    if(pmd_net_system_set_op_read_data(&(msg->data), &opd) == 0) {
+    if(pmd_net_sys_set_op_read_data(&(msg->data), &opd) == 0) {
         switch(opd.operation) {
-        case PMD_NET_SYSTEM_SET_OP_INIT:
+        case PMD_NET_SYS_SET_OP_INIT:
             operation_mode = OPERATION_MODE_INIT;
             pmd_system_platform_identification_off();
             break;
 
-        case PMD_NET_SYSTEM_SET_OP_NORMAL:
+        case PMD_NET_SYS_SET_OP_NORMAL:
             operation_mode = OPERATION_MODE_NORMAL;
             pmd_system_platform_identification_off();
             break;
 
-        case PMD_NET_SYSTEM_SET_OP_CONFIGURATION:
+        case PMD_NET_SYS_SET_OP_CONFIGURATION:
             operation_mode = OPERATION_MODE_CONFIGURATION;
             pmd_system_platform_identification_on();
             break;
@@ -193,15 +193,15 @@ static void system_set_op_handler(const msg_lvl2_t * msg) {
 static void smb_net_cb(const msg_lvl2_t * msg, void * ctx) {
     if(msg != NULL) {
         switch(msg->meta.id) {
-        case PMD_NET_SYSTEM_CONFIG:
+        case PMD_NET_SYS_CONFIG:
             system_config_handler(msg);
             break;
 
-        case PMD_NET_SYSTEM_SET_OP:
+        case PMD_NET_SYS_SET_OP:
             system_set_op_handler(msg);
             break;
 
-        case PMD_NET_SYSTEM_HEARTBEAT:
+        case PMD_NET_SYS_HEARTBEAT:
             break;
         }
     }
@@ -265,12 +265,12 @@ static void heartbeat_msg_init(msg_lvl2_t * msg) {
     if(msg != NULL) {
         msg->meta.hw_addr = 7; //FIXME: use real address
         msg->meta.port = 15; // broadcast port
-        msg->meta.id = PMD_NET_SYSTEM_HEARTBEAT;
+        msg->meta.id = PMD_NET_SYS_HEARTBEAT;
         msg->meta.is_system = 1;
         msg->data.itself = NULL;
         msg->data.len = 0;
 
-        pmd_net_get_heartbeat_msg(&(msg->data));
+        pmd_net_sys_heartbeat_write_data(&(msg->data));
     }
 }
 

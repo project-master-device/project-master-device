@@ -4,27 +4,26 @@
 #define CAN_NET_LOWLVL_FUNCS
 #define CAN_NET_CONFIRMATION
 
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/pmd_reader.h"
+#include "../../../common/pmd_net/button/button.h"
 
-void print_code(pmd_net_reader_data_t * reader_data) {
-    uint32_t code = (reader_data->data[2] << 16) | (reader_data->data[1] << 8) | reader_data->data[0];
-
-    printf("%x\n", code);
-}
-
-void recv_cb(const msg_lvl2_t * msg, void * context) {
-    pmd_net_reader_data_t reader_data;
-    uint8_t rc;
+void recv_cb(const msg_lvl2_t * msg, void * ctx) {
+    pmd_net_button_data_t button_data;
+    int rc;
 
     if(msg) {
-        rc = pmd_net_reader_read_data(&(msg->data), &reader_data);
+        rc = pmd_net_button_read_data(&(msg->data), &button_data);
 
-        if((rc == 0) && (reader_data.operation == PMD_NET_READER_SEND_MSG)) {
-            print_code(&reader_data);
+        if(!rc) {
+            if(button_data.operation == PMD_NET_BUTTON_DOWN)
+                printf("Button down\n");
+            else if (button_data.operation == PMD_NET_BUTTON_UP)
+                printf("Button up\n");
+
+        } else {
+            printf("Smth bad happend :(\n");
         }
     }
 }
@@ -50,6 +49,7 @@ int main(int argc, char * argv[]) {
 		return 0;
 	} else
 		printf("successful initialization\n");
+
 
 	printf("sleeping\n");
 	sleep(100500);

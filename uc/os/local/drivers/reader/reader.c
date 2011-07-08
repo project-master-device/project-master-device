@@ -4,7 +4,7 @@
 #include "sys/process.h"
 #include "lib/ftimer.h"
 #include "contiki-conf.h"
-#include "pmd_net/pmd_reader.h"
+#include "pmd_net/reader/reader.h"
 #include "net/can_net_middle.h"
 #include "pmd_system.h"
 

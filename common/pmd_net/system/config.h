@@ -1,8 +1,9 @@
 #ifndef PMD_NET_SYS_CONFIG_H_
 #define PMD_NET_SYS_CONFIG_H_
 
-#include "../lib/config_core.h"
+#include "../../lib/config_core.h"
 #include "../../lib/bytearray.h"
+
 
 typedef struct {
     uint8_t operation;

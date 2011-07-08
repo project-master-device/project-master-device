@@ -4,7 +4,7 @@
 #include "lib/interrupt.h"
 #include "net/can_net.h"
 #include "pmd_system.h"
-#include "pmd_net/pmd_button.h"
+#include "pmd_net/button/button.h"
 
 #include <stdint.h>
 

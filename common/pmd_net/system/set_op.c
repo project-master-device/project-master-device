@@ -1,13 +1,15 @@
-#include "system_set_op.h"
+#include "set_op.h"
+#include <stddef.h>
+#include <stdlib.h>
 
-int pmd_net_system_set_op_write_data(bytearr_t * dest_arr, const pmd_net_system_set_op_data_t * source_data) {
+int pmd_net_sys_set_op_write_data(bytearr_t * dest_arr, const pmd_net_sys_set_op_data_t * source_data) {
     if((dest_arr == NULL) || (source_data == NULL))
         return 1;
 
     switch(source_data->operation) {
-    case PMD_NET_SYSTEM_SET_OP_INIT:
-    case PMD_NET_SYSTEM_SET_OP_NORMAL:
-    case PMD_NET_SYSTEM_SET_OP_CONFIGURATION:
+    case PMD_NET_SYS_SET_OP_INIT:
+    case PMD_NET_SYS_SET_OP_NORMAL:
+    case PMD_NET_SYS_SET_OP_CONFIGURATION:
         dest_arr->len = 1;
         dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * dest_arr->len);
         if(dest_arr->itself == NULL) {
@@ -25,7 +27,7 @@ int pmd_net_system_set_op_write_data(bytearr_t * dest_arr, const pmd_net_system_
     return 0;
 }
 
-int pmd_net_system_set_op_read_data(const bytearr_t * source_arr, pmd_net_system_set_op_data_t * dest_data) {
+int pmd_net_sys_set_op_read_data(const bytearr_t * source_arr, pmd_net_sys_set_op_data_t * dest_data) {
     if((source_arr == NULL) || (dest_data == NULL))
         return 1;
 
@@ -33,9 +35,9 @@ int pmd_net_system_set_op_read_data(const bytearr_t * source_arr, pmd_net_system
         return 4;
 
     switch(source_arr->itself[0]) {
-    case PMD_NET_SYSTEM_SET_OP_INIT:
-    case PMD_NET_SYSTEM_SET_OP_NORMAL:
-    case PMD_NET_SYSTEM_SET_OP_CONFIGURATION:
+    case PMD_NET_SYS_SET_OP_INIT:
+    case PMD_NET_SYS_SET_OP_NORMAL:
+    case PMD_NET_SYS_SET_OP_CONFIGURATION:
         dest_data->operation = source_arr->itself[0];
         break;
 

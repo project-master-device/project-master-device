@@ -8,12 +8,12 @@
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/system_ids.h"
+#include "../../../common/pmd_net/system/system_ids.h"
 
 
 void recv_cb(const msg_lvl2_t * msg, void * context) {
     if(msg) {
-        if((msg->meta.is_system == 1) && (msg->meta.id == PMD_NET_SYSTEM_HEARTBEAT))
+        if((msg->meta.is_system == 1) && (msg->meta.id == PMD_NET_SYS_HEARTBEAT))
             printf("BOOOOOM!\n");
     }
 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include "../../common/pmd_net/system_ids.h"
-#include "../../common/pmd_net/system_config.h"
+#include <stdlib.h>
+#include "../../common/pmd_net/system/system_ids.h"
+#include "../../common/pmd_net/system/config.h"
 
 
 void create_config(config_cnf_t * cnf) {
@@ -19,26 +20,26 @@ void write_config(bytearr_t * arr) {
     if(arr) {
         arr->len = 0;
         arr->itself = NULL;
-        pmd_net_system_config_data_t cd;
+        pmd_net_sys_config_data_t cd;
 
         config_cnf_t cnf;
         config_cnf_construct(&cnf);
         create_config(&cnf);
 
-        cd.operation = PMD_NET_SYSTEM_CONFIG_FULL;
+        cd.operation = PMD_NET_SYS_CONFIG_FULL;
         cd.config = &cnf;
         cd.section = NULL;
 
-        pmd_net_system_config_write_data(arr, &cd);
+        pmd_net_sys_config_write_data(arr, &cd);
     }
 }
 
 void read_config(bytearr_t * arr) {
     if(arr) {
-        pmd_net_system_config_data_t cd;
+        pmd_net_sys_config_data_t cd;
         cd.config = NULL;
         cd.section = NULL;
-        pmd_net_system_config_read_data(arr, &cd);
+        pmd_net_sys_config_read_data(arr, &cd);
 
         if(cd.config) {
             config_cnf_t cnf;

@@ -1,7 +1,7 @@
 #include "pmd_reader.h"
 #include <stddef.h>
 
-int pmd_reader_write_data(const bytearr_t arr, pmd_reader_data_t * data) {
+int pmd_net_reader_write_data(bytearr_t* arr, const pmd_net_reader_data_t * data) {
     if ((arr.len == 0) || (arr.itself == NULL) || (data == NULL))
         return 1;
     uint8_t i;
@@ -27,7 +27,7 @@ int pmd_reader_write_data(const bytearr_t arr, pmd_reader_data_t * data) {
     return 0;
 }
 
-int pmd_reader_read_data(const bytearr_t arr, pmd_reader_data_t * data) {
+int pmd_net_reader_read_data(const bytearr_t* arr, pmd_net_reader_data_t * data) {
     if ((arr.len == 0) || (arr.itself == NULL) || (data == NULL))
         return 1;
     uint8_t i;

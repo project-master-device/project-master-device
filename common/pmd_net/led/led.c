@@ -1,6 +1,6 @@
-#include "pmd_led.h"
+#include "led.h"
 
-int pmd_led_write_data(const bytearr_t arr, pmd_led_data_t * data) {
+int pmd_net_led_write_data(bytearr_t* arr, const pmd_net_led_data_t * data) {
     if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
         return 1;
 
@@ -19,7 +19,7 @@ int pmd_led_write_data(const bytearr_t arr, pmd_led_data_t * data) {
     return 0;
 }
 
-int pmd_led_read_data(const bytearr_t arr, pmd_led_data_t * data) {
+int pmd_net_led_read_data(const bytearr_t* arr, pmd_net_led_data_t * data) {
     if((data == NULL) || (arr.len == 0) || (arr.itself == NULL))
         return 1;
 

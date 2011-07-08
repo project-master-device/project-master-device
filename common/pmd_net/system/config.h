@@ -1,23 +1,22 @@
-#ifndef PMD_NET_SYSTEM_H_
-#define PMD_NET_SYSTEM_H_
+#ifndef PMD_NET_SYS_CONFIG_H_
+#define PMD_NET_SYS_CONFIG_H_
 
-#include "../net/can_net_middle.h"
 #include "../lib/config_core.h"
 
-#include <stdint.h>
-
+#include "../../lib/bytearray.h"
+//#include "../net/can_net_middle.h"
 
 typedef struct {
     uint8_t operation;
     config_cnf_t * config;
     config_section_t * section;
-} pmd_net_system_config_data_t;
+} pmd_net_sys_config_data_t;
 
 // Config message operations
-#define PMD_NET_SYSTEM_CONFIG_REQUEST       1
-#define PMD_NET_SYSTEM_CONFIG_FULL          2
-#define PMD_NET_SYSTEM_CONFIG_SECTION_ADD   3
-#define PMD_NET_SYSTEM_CONFIG_SECTION_DEL   4
+#define PMD_NET_SYS_CONFIG_REQUEST       1
+#define PMD_NET_SYS_CONFIG_FULL          2
+#define PMD_NET_SYS_CONFIG_SECTION_ADD   3
+#define PMD_NET_SYS_CONFIG_SECTION_DEL   4
 
 /**
  * @return
@@ -29,7 +28,7 @@ typedef struct {
  *      5 -- config section operation command (add/del) error: section pointer is NULL
  *      6 -- config section add command error: failed to write section
  */
-int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_config_data_t * source_data);
+int pmd_net_sys_config_write_data(bytearr_t * dest_arr, const pmd_net_sys_config_data_t * source_data);
 
 /**
  * @return
@@ -40,6 +39,6 @@ int pmd_net_system_config_write_data(bytearr_t * dest_arr, const pmd_net_system_
  *      4 -- config full command error: parsing failed
  *      5 -- config section add command error: parsing failed
  */
-int pmd_net_system_config_read_data(const bytearr_t * source_arr, pmd_net_system_config_data_t * dest_data);
+int pmd_net_sys_config_read_data(const bytearr_t * source_arr, pmd_net_sys_config_data_t * dest_data);
 
-#endif /* PMD_NET_SYSTEM_H_ */
+#endif /* PMD_NET_SYS_CONFIG_H_ */

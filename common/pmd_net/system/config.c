@@ -14,6 +14,7 @@ int pmd_net_sys_config_write_data(bytearr_t * dest_arr, const pmd_net_sys_config
         dest_arr->len = 1;
         dest_arr->itself = (uint8_t *)malloc(sizeof(uint8_t) * dest_arr->len);
         if(dest_arr->itself == NULL) {
+            dest_arr->len = 0;
             return 2;
         }
         dest_arr->itself[0] = source_data->operation;

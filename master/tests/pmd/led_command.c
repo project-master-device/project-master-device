@@ -16,7 +16,7 @@ void send_handler(const int rc, msg_lvl2_t * msg, void * ctx) {
 int main(int argc, char * argv[]) {
     uint8_t smb = 0;
     uint32_t id;
-    pmd_led_data_t pmd_led;
+    pmd_net_led_data_t pmd_led;
 
     if(argc < 3) {
         printf("Usage: led_command <id> <command>\n");
@@ -28,11 +28,11 @@ int main(int argc, char * argv[]) {
     printf("id = %d\n", id);
 
     if(strcmp(argv[2], "on") == 0) {
-        pmd_led.operation = PMD_LED_ON;
+        pmd_led.operation = PMD_NET_LED_ON;
     } else if(strcmp(argv[2], "off") == 0) {
-        pmd_led.operation = PMD_LED_OFF; 
+        pmd_led.operation = PMD_NET_LED_OFF;
     } else if(strcmp(argv[2], "toggle") == 0) {
-        pmd_led.operation = PMD_LED_TOGGLE;
+        pmd_led.operation = PMD_NET_LED_TOGGLE;
     }
     printf("operation code = %d\n\n", pmd_led.operation);
 
@@ -45,15 +45,14 @@ int main(int argc, char * argv[]) {
 		printf("successful initialization\n");
 
     msg_lvl2_t msg;
-    uint8_t msg_buf[64];
     msg.meta.id = id;
     msg.meta.hw_addr = 123;
     msg.meta.port = 1;
     msg.meta.is_system = smb;
-    msg.data.itself = msg_buf;
-    msg.data.len = 1;
+    msg.data.itself = NULL;
+    msg.data.len = 0;
 
-    pmd_led_write_data(msg.data, &pmd_led);
+    pmd_net_led_write_data(&(msg.data), &pmd_led);
 
     can_net_start_sending_msg(&msg, send_handler, NULL);
 

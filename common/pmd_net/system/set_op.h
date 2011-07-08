@@ -1,9 +1,9 @@
 #ifndef SYSTEM_SET_OP_H_
 #define SYSTEM_SET_OP_H_
 
-#include "../net/can_net_middle.h"
-
 #include <stdint.h>
+#include "../../lib/bytearray.h"
+
 
 typedef struct {
     uint8_t operation;
@@ -16,7 +16,7 @@ typedef struct {
 
 /**
  * @return
- *      0 -- successful write
+ *      0 -- successful
  *      1 -- function parameters problem: source data or destination array pointer are NULL
  *      2 -- memory allocation problem
  *      3 -- unknown operation
@@ -25,7 +25,7 @@ int pmd_net_system_set_op_write_data(bytearr_t * dest_arr, const pmd_net_system_
 
 /**
  * @return
- *      0 -- successful write
+ *      0 -- successful
  *      1 -- function parameters problem: source data or destination array pointer are NULL
  *      3 -- unknown operation
  *      4 -- bad source data

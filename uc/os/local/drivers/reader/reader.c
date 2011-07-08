@@ -6,6 +6,7 @@
 #include "contiki-conf.h"
 #include "pmd_net/pmd_reader.h"
 #include "net/can_net_middle.h"
+#include "pmd_system.h"
 
 PROCESS(process_handle_reader, "Process for handle reader input");
 process_event_t reader_input;
@@ -52,22 +53,22 @@ void reader_beep_on(config_section_t * sect) {
 void reader_net_callback(config_section_t * conf_sect, const msg_lvl2_t * net_msg) {
     if ((conf_sect == NULL) || (net_msg == NULL))
         return;
-    pmd_reader_data_t reader_data;
+    pmd_net_reader_data_t reader_data;
     int rc;
-    rc = pmd_reader_read_data(net_msg->data, &reader_data);
+    rc = pmd_net_reader_read_data(&(net_msg->data), &reader_data);
 
     if (rc == 0) {
         switch (reader_data.operation) {
-        case PMD_READER_GREEN_LED_ON:
+        case PMD_NET_READER_GREEN_LED_ON:
             reader_green_led_on(conf_sect);
             break;
-        case PMD_READER_GREEN_LED_OFF:
+        case PMD_NET_READER_GREEN_LED_OFF:
             reader_green_led_off(conf_sect);
             break;
-        case PMD_READER_BEEP_ON:
+        case PMD_NET_READER_BEEP_ON:
             reader_beep_on(conf_sect);
             break;
-        case PMD_READER_BEEP_OFF:
+        case PMD_NET_READER_BEEP_OFF:
             reader_beep_off(conf_sect);
             break;
         default:
@@ -166,8 +167,9 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
     reader_t * reader;
     bytearr_t arr;
     msg_lvl2_t msg;
-    pmd_reader_data_t * msg_data;
+    pmd_net_reader_data_t * msg_data;
     int i;
+    int rc;
 
     PROCESS_BEGIN();
         reader_input = process_alloc_event();
@@ -176,7 +178,7 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
             PROCESS_WAIT_EVENT();
             if (ev == reader_input) {
                 reader = (reader_t *) data;
-                msg_data = (pmd_reader_data_t *)malloc(sizeof(pmd_reader_data_t));
+                msg_data = (pmd_net_reader_data_t *)malloc(sizeof(pmd_net_reader_data_t));
 
                 //FIXME not using parity control bits
                 reader->msg &= ~((uint64_t)1 << WB);
@@ -187,17 +189,24 @@ PROCESS_THREAD(process_handle_reader, ev, data) {
                 msg.meta.id = reader->param->id;
                 msg.meta.is_system = 0;
 
-                msg_data->operation = PMD_READER_SEND_MSG;
-                for (i = PMD_READER_MSG_LEN - 1; i >= 0; i--) {
+                msg_data->operation = PMD_NET_READER_SEND_MSG;
+                for (i = PMD_NET_READER_MSG_LEN - 1; i >= 0; i--) {
                     msg_data->data[i] = (uint8_t)(reader->msg >> (i * 8));
                 }
-                arr.len = PMD_READER_MSG_LEN + 1;
-                arr.itself = (uint8_t *)malloc(arr.len);
-                pmd_reader_write_data(arr, msg_data);
+                arr.len = 0;
+                arr.itself = NULL;
+                rc = pmd_net_reader_write_data(&arr, msg_data);
                 msg.data = arr;
 
-                can_net_start_sending_msg(&msg, NULL, NULL);
+                if(rc == 0) {
+                    pmd_system_send_message(&msg, NULL, NULL);
+                }
 
+                if(msg.data.itself != NULL) {
+                    free(msg.data.itself);
+                    msg.data.len = 0;
+                    msg.data.itself = NULL;
+                }
             }
         }
 

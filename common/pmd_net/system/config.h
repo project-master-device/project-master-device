@@ -2,9 +2,7 @@
 #define PMD_NET_SYS_CONFIG_H_
 
 #include "../lib/config_core.h"
-
 #include "../../lib/bytearray.h"
-//#include "../net/can_net_middle.h"
 
 typedef struct {
     uint8_t operation;
@@ -20,7 +18,7 @@ typedef struct {
 
 /**
  * @return
- *      0 -- successful write
+ *      0 -- successful
  *      1 -- function parameters problem: source data or destination array pointer are NULL
  *      2 -- memory allocation problem
  *      3 -- config full command error: config pointer is NULL
@@ -32,7 +30,7 @@ int pmd_net_sys_config_write_data(bytearr_t * dest_arr, const pmd_net_sys_config
 
 /**
  * @return
- *      0 -- successful read
+ *      0 -- successful
  *      1 -- function parameters problem: source array or destination data pointer are NULL
  *      2 -- memory allocation problem
  *      3 -- bad source data

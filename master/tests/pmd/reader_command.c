@@ -20,28 +20,28 @@ void send() {
     msg.data.itself = msg_buf;
     msg.data.len = 1;
 
-    pmd_reader_data_t d;
+    pmd_net_reader_data_t d;
 
-    d.operation = PMD_READER_GREEN_LED_ON;
-    pmd_reader_write_data(msg.data, &d);
+    d.operation = PMD_NET_READER_GREEN_LED_ON;
+    pmd_net_reader_write_data(&(msg.data), &d);
     can_net_start_sending_msg(&msg, NULL, NULL);
 
     sleep(1);
 
-    d.operation = PMD_READER_BEEP_ON;
-    pmd_reader_write_data(msg.data, &d);
+    d.operation = PMD_NET_READER_BEEP_ON;
+    pmd_net_reader_write_data(&(msg.data), &d);
     can_net_start_sending_msg(&msg, NULL, NULL);
 
     sleep(1);
 
-    d.operation = PMD_READER_BEEP_OFF;
-    pmd_reader_write_data(msg.data, &d);
+    d.operation = PMD_NET_READER_BEEP_OFF;
+    pmd_net_reader_write_data(&(msg.data), &d);
     can_net_start_sending_msg(&msg, NULL, NULL);
 
     sleep(1);
 
-    d.operation = PMD_READER_GREEN_LED_OFF;
-    pmd_reader_write_data(msg.data, &d);
+    d.operation = PMD_NET_READER_GREEN_LED_OFF;
+    pmd_net_reader_write_data(&(msg.data), &d);
     can_net_start_sending_msg(&msg, NULL, NULL);
 }
 

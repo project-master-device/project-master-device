@@ -32,6 +32,8 @@
 
 #include "contiki-conf.h"
 
+#include "net/can_net.h"
+
 /**
  * @brief Initialize whole pmd system.
  * Initializes config, interrupts, network, network devices.
@@ -42,5 +44,16 @@
  *      3 -- network devices initialization failed.
  */
 int pmd_system_init();
+
+/**
+ * @brief Send message over network.
+ */
+void pmd_system_send_message(const msg_lvl2_t* msg, can_net_send_callback_t send_callback, void* cb_ctx);
+
+/**
+ * @brief Platform specific functions to turn on/off controller board identification.
+ */
+void pmd_system_platform_identification_on();
+void pmd_system_platform_identification_off();
 
 #endif /* PMD_SYSTEM_H_ */

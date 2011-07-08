@@ -4,27 +4,17 @@
 #define CAN_NET_LOWLVL_FUNCS
 #define CAN_NET_CONFIRMATION
 
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include "../../../common/net/can_net.h"
-#include "../../../common/pmd_net/pmd_button.h"
+#include "../../../common/pmd_net/system_ids.h"
 
-void recv_cb(const msg_lvl2_t * msg, void * ctx) {
-    pmd_net_button_data_t button_data;
-    int rc;
 
+void recv_cb(const msg_lvl2_t * msg, void * context) {
     if(msg) {
-        rc = pmd_net_button_read_data(&(msg->data), &button_data);
-
-        if(!rc) {
-            if(button_data.operation == PMD_NET_BUTTON_DOWN)
-                printf("Button down\n");
-            else if (button_data.operation == PMD_NET_BUTTON_UP)
-                printf("Button up\n");
-
-        } else {
-            printf("Smth bad happend :(\n");
-        }
+        if((msg->meta.is_system == 1) && (msg->meta.id == PMD_NET_SYSTEM_HEARTBEAT))
+            printf("BOOOOOM!\n");
     }
 }
 
@@ -32,7 +22,7 @@ can_net_recv_cb_record_t recv_cb_record;
 
 int main(int argc, char * argv[]) {
     recv_cb_record.check.port_min = 0;
-    recv_cb_record.check.port_max = -1;
+    recv_cb_record.check.port_max = 15;
     recv_cb_record.check.id_min = 0;
     recv_cb_record.check.id_max = -1;
     recv_cb_record.check.smb_min = 0;
@@ -49,7 +39,6 @@ int main(int argc, char * argv[]) {
 		return 0;
 	} else
 		printf("successful initialization\n");
-
 
 	printf("sleeping\n");
 	sleep(100500);

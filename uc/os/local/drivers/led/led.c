@@ -1,7 +1,7 @@
 #include "dev/led.h"
 #include "lib/config.h"
 #include "lib/malloc.h"
-#include "pmd_net/pmd_led.h"
+#include "pmd_net/led/led.h"
 
 #include <stdint.h>
 #include <stddef.h>

@@ -3,7 +3,7 @@
 #ifndef PMD_NET_BUTTON_PY_H
 #define PMD_NET_BUTTON_PY_H
 
-#include <Python.h>
+#include "../pmd_net_py_common.h"
 #include "button.h"
 
 static PyObject* pmd_net_button_w_down_py(PyObject* self, PyObject* args);

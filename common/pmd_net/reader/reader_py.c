@@ -8,10 +8,7 @@ inline static PyObject* call_reader_write(uint8_t operation) {
 	pmd_net_reader_data_t data;
 	data.operation = operation;
 	int rc = pmd_net_reader_write_data(arr, &data);
-	if (rc)
-		return Py_BuildValue("(is)", rc, NULL);
-	else
-		return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
+	return pmd_net_return_arr(rc, arr);
 }
 
 static PyObject* pmd_net_reader_w_send_msg_py(PyObject* self, PyObject* args) {
@@ -32,23 +29,21 @@ static PyObject* pmd_net_reader_w_beep_off_py(PyObject* self, PyObject* args) {
 
 /*
 static PyObject* pmd_net_reader_w_py(PyObject* self, PyObject* args) {
-	bytearr_t* arr;
-	pmd_net_reader_data_t* data;
-	if(!PyArg_ParseTuple(args, "s#(sI)", &arr->itself, &arr->len, "pmd_net_reader_data", &data->operation)) {
-		return Py_BuildValue("i", -1);
+	pmd_net_reader_data_t data;
+	if(!PyArg_ParseTuple(args, "I", &data.operation)) {
+		return Py_BuildValue("(is)", rc, NULL);
 	}
-	int rc = pmd_net_reader_write_data(arr, data);
-	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
+	return call_reader_write(data.operation);
 }
 */
 static PyObject* pmd_net_reader_r_py(PyObject* self, PyObject* args) {
 	bytearr_t arr;
-	pmd_net_reader_data_t* data = NULL;
+	pmd_net_reader_data_t data;
 	if(!PyArg_ParseTuple(args, "s#", &arr.itself, &arr.len)) {
-		return Py_BuildValue("i", -1);
+		return Py_BuildValue("(is)", -1, NULL);
 	}
-	int rc = pmd_net_reader_read_data(&arr, data);
-	return Py_BuildValue("(iI)", rc, "pmd_net_reader_data", data->operation);
+	int rc = pmd_net_reader_read_data(&arr, &data);
+	return pmd_net_return_op(rc, data.operation);
 }
 
 static PyMethodDef pmd_net_reader_methods[] = {

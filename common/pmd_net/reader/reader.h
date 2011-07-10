@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "../../lib/bytearray.h"
 
-#define PMD_NET_READER_MSG_LEN 3
+#define PMD_NET_READER_MSG_LEN			3
 //commands
 #define PMD_NET_READER_SEND_MSG         0
 #define PMD_NET_READER_GREEN_LED_ON     1

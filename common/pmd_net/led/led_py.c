@@ -2,53 +2,47 @@
 
 #include "led_py.h"
 
-static PyObject* pmd_net_led_write_on_py(PyObject* self, PyObject* args) {
-	bytearr_t* arr;
-	pmd_net_led_data_t data = { PMD_NET_LED_ON };
+inline static PyObject* call_led_write(uint8_t operation) {
+	bytearr_t* arr = NULL;
+	pmd_net_led_data_t data;
+	data.operation = operation;
 	int rc = pmd_net_led_write_data(arr, &data);
-	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
+	return pmd_net_return_arr(rc, arr);
+}
+static PyObject* pmd_net_led_w_on_py(PyObject* self, PyObject* args) {
+	return call_led_write(PMD_NET_LED_ON);
+}
+static PyObject* pmd_net_led_w_off_py(PyObject* self, PyObject* args) {
+	return call_led_write(PMD_NET_LED_OFF);
+}
+static PyObject* pmd_net_led_w_toggle_py(PyObject* self, PyObject* args) {
+	return call_led_write(PMD_NET_LED_TOGGLE);
 }
 
-static PyObject* pmd_net_led_write_off_py(PyObject* self, PyObject* args) {
-	bytearr_t* arr;
-	pmd_net_led_data_t data = { PMD_NET_LED_OFF };
-	int rc = pmd_net_led_write_data(arr, &data);
-	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
-}
-
-static PyObject* pmd_net_led_write_toggle_py(PyObject* self, PyObject* args) {
-	bytearr_t* arr;
-	pmd_net_led_data_t data = { PMD_NET_LED_TOGGLE };
-	int rc = pmd_net_led_write_data(arr, &data);
-	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
-}
-
-/*static PyObject* pmd_net_led_write_data_py(PyObject* self, PyObject* args) {
-	bytearr_t* arr;
-	pmd_net_led_data_t* data;
-	if(!PyArg_ParseTuple(args, "s#(sI)", &arr->itself, &arr->len, "pmd_net_led_data", &data->operation)) {
-		return Py_BuildValue("i", -1);
+/*static PyObject* pmd_net_led_w_py(PyObject* self, PyObject* args) {
+	pmd_net_led_data_t data;
+	if(!PyArg_ParseTuple(args, "I", &data.operation)) {
+		return Py_BuildValue("(is)", rc, NULL);
 	}
-	int rc = pmd_net_led_write_data(arr, data);
-	return Py_BuildValue("(is#)", rc, arr->itself, arr->len);
+	return call_led_write(data.operation);
 }*/
 
-static PyObject* pmd_net_led_read_data_py(PyObject* self, PyObject* args) {
-	bytearr_t* arr;
-	pmd_net_led_data_t* data;
-	if(!PyArg_ParseTuple(args, "s#(sI)", &arr->itself, &arr->len, "pmd_net_led_data", &data->operation)) {
-		return Py_BuildValue("i", -1);
+static PyObject* pmd_net_led_r_py(PyObject* self, PyObject* args) {
+	bytearr_t arr;
+	pmd_net_led_data_t data;
+	if(!PyArg_ParseTuple(args, "s#", &arr.itself, &arr.len)) {
+		return Py_BuildValue("(is)", -1, NULL);
 	}
-	int rc = pmd_net_led_read_data(arr, data);
-	return Py_BuildValue("(iI)", rc, data->operation);
+	int rc = pmd_net_led_read_data(&arr, &data);
+	return pmd_net_return_op(rc, data.operation);
 }
 
 static PyMethodDef pmd_net_led_methods[] = {
-	{"on", pmd_net_led_write_on_py, METH_VARARGS, "(o)pack command: turn LED on, return:(rc -int, packed_msg -str)"},
-	{"off", pmd_net_led_write_off_py, METH_VARARGS, "(o)pack command: turn LED off, return:(rc -int, packed_msg -str)"},
-	{"toggle", pmd_net_led_write_toggle_py, METH_VARARGS, "(o)pack command: toggle LED state, return:(rc -int, packed_msg -str)"},
-//	{"write", pmd_net_led_write_data_py, METH_VARARGS, "pack command for LED, return:(rc -int, packed_msg -str)"},
-	{"read", pmd_net_led_read_data_py, METH_VARARGS, "unpack command for LED, return:(rc -int, operation_code -int)"},
+	{"on", pmd_net_led_w_on_py, METH_VARARGS, "(o)pack command: turn LED on| args: - | return:(rc -int, packed_msg -str)"},
+	{"off", pmd_net_led_w_off_py, METH_VARARGS, "(o)pack command: turn LED off| args: - | return:(rc -int, packed_msg -str)"},
+	{"toggle", pmd_net_led_w_toggle_py, METH_VARARGS, "(o)pack command: toggle LED state| args: - |return:(rc -int, packed_msg -str)"},
+//	{"write", pmd_net_led_w_py, METH_VARARGS, "pack command for LED, return:(rc -int, packed_msg -str)"},
+	{"read", pmd_net_led_r_py, METH_VARARGS, "unpack command for LED| args: packed_msg -str| return:(rc -int, operation_code -int)"},
 	{NULL, NULL, 0, NULL}	/* Sentinel */
 };
 

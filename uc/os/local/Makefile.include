@@ -1,9 +1,14 @@
-LIBS += config.c net_device.c pmd_system.c interrupt.c ftimer.c can_net_core.c can_net_middle.c can_net.c can_protocols.c pmd_reader.c pmd_led.c pmd_button.c config_core.c list.c system_config.c system_heartbeat.c system_set_op.c
-CONTIKIDIRS += ${addprefix $(CONTIKI_LOCAL)/core/,lib dev net pmd_net common_lib .}
-CONTIKIDIRS += $(CONTIKI_LOCAL)
+COMMON_LIB = ${addprefix local/core/common_lib/, config_core.c list.c}
+LIB = ${addprefix local/core/lib/, config.c device.c ftimer.c interrupt.c net_device.c}
+NET = ${addprefix local/core/net/, can_net_core.c can_net_middle.c can_net.c can_protocols.c}
+PMD_NET = ${addprefix local/core/pmd_net/, pmd_button.c pmd_led.c pmd_reader.c system_config.c system_heartbeat.c system_set_op.c}
 
-CONTIKI_LOCAL_DRIVERS = $(CONTIKI_LOCAL)/drivers
+CORE = local/core/pmd_system.c $(COMMON_LIB) $(LIB) $(NET) $(PMD_NET)
+CONTIKI_SOURCEFILES += $(CORE)
+CONTIKIDIRS += $(CONTIKI_LOCAL)/.. $(CONTIKI_LOCAL) $(CONTIKI_LOCAL)/core
 
-include $(CONTIKI_LOCAL_DRIVERS)/led/Makefile.led
-include $(CONTIKI_LOCAL_DRIVERS)/button/Makefile.button
-include $(CONTIKI_LOCAL_DRIVERS)/reader/Makefile.reader
+CONTIKI_LOCAL_DRIVERS_PREFIX = local/drivers
+
+include $(CONTIKI_LOCAL)/drivers/led/Makefile.led
+include $(CONTIKI_LOCAL)/drivers/button/Makefile.button
+include $(CONTIKI_LOCAL)/drivers/reader/Makefile.reader

@@ -229,5 +229,25 @@ static PyMethodDef pmd_net_system_methods[] = {
 };
 
 PyMODINIT_FUNC initpmd_net_system(void) {
-	(void) Py_InitModule("pmd_net_system", pmd_net_system_methods);
+	PyObject * m = Py_InitModule("pmd_net_system", pmd_net_system_methods);
+
+	PyObject * config_dict;
+	PyObject * config_dict_value;
+
+	config_dict = PyDict_New();
+	Py_INCREF(config_dict);
+
+	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_FULL);
+	PyDict_SetItemString(config_dict, "FULL", config_dict_value);
+
+	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_REQUEST);
+	PyDict_SetItemString(config_dict, "REQUEST", config_dict_value);
+
+	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_SECTION_ADD);
+	PyDict_SetItemString(config_dict, "SECTION_ADD", config_dict_value);
+
+	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_SECTION_DEL);
+	PyDict_SetItemString(config_dict, "SECTION_DEL", config_dict_value);
+
+	PyModule_AddObject(m, "ConfigOperations", config_dict);
 }

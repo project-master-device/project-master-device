@@ -45,33 +45,14 @@ UPPERCASE = _ABCDEFGHIJKLMNOPQRSTUVWXYZ
 TARGET_UPPERCASE := ${shell echo $(TARGET) | sed 'y!$(LOWERCASE)!$(UPPERCASE)!'}
 CFLAGS += -DCONTIKI=1 -DCONTIKI_TARGET_$(TARGET_UPPERCASE)=1
 
-include $(CONTIKI)/core/net/rime/Makefile.rime
-include $(CONTIKI)/core/net/mac/Makefile.mac
-SYSTEM  = process.c procinit.c autostart.c elfloader.c profile.c \
-          timetable.c timetable-aggregate.c compower.c serial-line.c
-THREADS = mt.c
-LIBS    = memb.c mmem.c timer.c etimer.c ctimer.c energest.c rtimer.c stimer.c \
-          print-stats.c ifft.c crc16.c random.c checkpoint.c ringbuf.c
-DEV     = nullradio.c
-NET     = netstack.c uip-debug.c packetbuf.c queuebuf.c packetqueue.c
+#SYSTEM  = ${addprefix core/sys/, process.c procinit.c autostart.c elfloader.c profile.c \
+#          timetable.c timetable-aggregate.c compower.c serial-line.c}
 
-ifdef UIP_CONF_IPV6
-  CFLAGS += -DUIP_CONF_IPV6=1
-  UIP   = uip6.c tcpip.c psock.c uip-udp-packet.c uip-split.c \
-          resolv.c tcpdump.c uiplib.c
-  NET   += $(UIP) uip-icmp6.c uip-nd6.c uip-packetqueue.c \
-          sicslowpan.c neighbor-attr.c neighbor-info.c uip-ds6.c
-  include $(CONTIKI)/core/net/rpl/Makefile.rpl
-else # UIP_CONF_IPV6
-  UIP   = uip.c uiplib.c resolv.c tcpip.c psock.c hc.c uip-split.c uip-fw.c \
-          uip-fw-drv.c uip_arp.c tcpdump.c uip-neighbor.c uip-udp-packet.c \
-          uip-over-mesh.c dhcpc.c #rawpacket-udp.c
-  NET   += $(UIP) uaodv.c uaodv-rt.c
-endif # UIP_CONF_IPV6
-
-CTK     = ctk.c
-CTKVNC  = $(CTK) ctk-vncserver.c libconio.c vnc-server.c vnc-out.c ctk-vncfont.c
-
+SYSTEM  = ${addprefix core/sys/, process.c procinit.c autostart.c profile.c \
+          timetable.c timetable-aggregate.c compower.c} core/dev/serial-line.c
+THREADS = ${addprefix core/sys/, mt.c}
+LIBS    = ${addprefix core/sys/, timer.c etimer.c ctimer.c energest.c rtimer.c stimer.c} \
+          ${addprefix core/lib/, memb.c mmem.c print-stats.c ifft.c crc16.c random.c checkpoint.c ringbuf.c}
 
 CONTIKI_BACKYARD = $(CONTIKI)/backyard
 CONTIKI_LOCAL = $(CONTIKI)/local
@@ -84,38 +65,14 @@ ifdef CONTIKI_LOCAL_TREE
   include $(CONTIKI_LOCAL)/Makefile.include
 endif
 
-ifndef CONTIKI_NO_NET
-  CONTIKIFILES = $(SYSTEM) $(LIBS) $(NET) $(THREADS) $(DHCP) $(DEV)
-else
-  CONTIKIFILES = $(SYSTEM) $(LIBS) $(THREADS) $(DEV) sicslowpan.c fakeuip.c
-endif
-
+CONTIKIFILES = $(SYSTEM) $(THREADS) $(LIBS)
 CONTIKI_SOURCEFILES += $(CONTIKIFILES)
-
-CONTIKIDIRS += ${addprefix $(CONTIKI)/core/,dev lib net net/mac net/rime \
-                 net/rpl sys cfs ctk lib/ctk loader . }
+CONTIKIDIRS += ${addprefix $(CONTIKI)/core/, sys lib cfs loader . }
 
 oname = ${patsubst %.c,%.o,${patsubst %.S,%.o,$(1)}}
 
 CONTIKI_OBJECTFILES = ${addprefix $(OBJECTDIR)/,${call oname, $(CONTIKI_SOURCEFILES)}}
-
 PROJECT_OBJECTFILES = ${addprefix $(OBJECTDIR)/,${call oname, $(PROJECT_SOURCEFILES)}}
-
-### Include application makefiles
-
-ifdef APPS
-  APPDIRS += ${wildcard ${addprefix $(CONTIKI)/apps/, $(APPS)} \
-                ${addprefix $(CONTIKI)/platform/$(TARGET)/apps/, $(APPS)} \
-		${addprefix , $(APPS)}}
-  APPINCLUDES = ${foreach APP, $(APPS), ${wildcard \
-                 $(CONTIKI)/apps/$(APP)/Makefile.$(APP) \
-                 $(CONTIKI)/platform/$(TARGET)/apps/$(APP)/Makefile.$(APP) \
-	         $(APP)/Makefile.$(APP)}}
-  -include $(APPINCLUDES)
-  APP_SOURCES = ${foreach APP, $(APPS), $($(APP)_src)}
-  DSC_SOURCES = ${foreach APP, $(APPS), $($(APP)_dsc)}
-  CONTIKI_SOURCEFILES += $(APP_SOURCES) $(DSC_SOURCES)
-endif
 
 ### Include target makefile (TODO Unsafe?)
 
@@ -170,6 +127,9 @@ clean:
         *.cprg *.bin *.data contiki*.a *.firmware core-labels.S *.ihex *.ini \
         *.ce *.co $(CLEAN)
 	-rm -rf $(OBJECTDIR)
+
+# Create objects directories tree
+R := ${foreach file, $(CONTIKI_OBJECTFILES), ${shell mkdir -p ${shell dirname $(file)}}}
 
 ifndef CUSTOM_RULE_C_TO_CE
 %.ce: %.c

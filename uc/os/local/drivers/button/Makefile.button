@@ -1,2 +1,1 @@
-LIBS += button.c
-CONTIKIDIRS += $(CONTIKI_LOCAL_DRIVERS)/button
+LIBS += $(CONTIKI_LOCAL_DRIVERS_PREFIX)/button/button.c

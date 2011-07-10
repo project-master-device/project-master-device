@@ -23,9 +23,9 @@ CONTIKI_CPU=$(CONTIKI)/cpu/avr
 ### These directories will be searched for the specified source files
 ### TARGETLIBS are platform-specific routines in the contiki library path
 CONTIKI_CPU_DIRS            = . dev
-AVR        = clock.c mtarch.c eeprom.c flash.c rs232.c leds-arch.c watchdog.c rtimer-arch.c bootloader.c settings.c
-ELFLOADER  = elfloader.c elfloader-avr.c symtab-avr.c
-TARGETLIBS = random.c leds.c
+AVR        = cpu/avr/dev/clock.c cpu/avr/mtarch.c cpu/avr/dev/eeprom.c cpu/avr/watchdog.c \
+			   cpu/avr/rtimer-arch.c cpu/avr/bootloader.c cpu/avr/settings.c
+ELFLOADER  = core/loader/elfloader.c core/loader/elfloader-avr.c core/loader/symtab-avr.c
 
 ifdef USB
 ### Add the directories for the USB stick and remove the default rs232 driver

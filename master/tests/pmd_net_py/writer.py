@@ -16,7 +16,10 @@ reader_1_id = 5
 reader_2_id = 6
 
 def test_write():
-	lnet.init(1, 10, -1, 1000, 1000)
+	sync_timeout = 1500 # *1000us = 1.5s
+	drv_send_timeout = 500000 # *1us = 0.5s
+	net_confirm_timeout = 1000 # *1000us = 1s
+	lnet.init(1, 10, sync_timeout, drv_send_timeout, net_confirm_timeout)
 	lnet.send( ("msg_lvl2", ("msg_metadata", 15, 1, 0, 18), "STARTING_TEST") )
 	
 	hwa = 15

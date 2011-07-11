@@ -1,8 +1,15 @@
 CONTIKI_TARGET_DIRS = . dev
 CONTIKI_CORE = contiki-avr-one-main
 CONTIKI_TARGET_MAIN = ${CONTIKI_CORE}.o
+CONTIKI_TARGET_SOURCE_PREFIX = platform/$(TARGET)
 
-CONTIKI_TARGET_SOURCEFILES += ${CONTIKI_CORE}.c cfs-eeprom.c can_drv.c can_lowlevel.c lowlevel.c pmd_system_platform.c
+CONTIKI_TARGET_SOURCEFILES += \
+	core/cfs/cfs-eeprom.c \
+	$(CONTIKI_TARGET_SOURCE_PREFIX)/${CONTIKI_CORE}.c \
+	$(CONTIKI_TARGET_SOURCE_PREFIX)/dev/can_drv.c \
+	$(CONTIKI_TARGET_SOURCE_PREFIX)/dev/can_lowlevel.c \
+	$(CONTIKI_TARGET_SOURCE_PREFIX)/lowlevel.c \
+	$(CONTIKI_TARGET_SOURCE_PREFIX)/pmd_system_platform.c
 
 CONTIKI_SOURCEFILES += $(CONTIKI_TARGET_SOURCEFILES) 
 

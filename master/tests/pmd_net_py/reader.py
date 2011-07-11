@@ -100,7 +100,7 @@ def test_read():
 			print "lnet.recv(port) FAIL: rc= ", rc
 		else:
 			print msg
-			handle_msg(msg)		
+			handle_msg(msg)	
 
 
 test_read()

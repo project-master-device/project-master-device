@@ -29,7 +29,7 @@ static PyObject* pmd_net_sys_config_r_py(PyObject* self, PyObject* args);
 static PyObject* pmd_net_setop_w_init_py(PyObject* self, PyObject* args);
 static PyObject* pmd_net_setop_w_normal_py(PyObject* self, PyObject* args);
 static PyObject* pmd_net_setop_w_configuration_py(PyObject* self, PyObject* args);
-//static PyObject* pmd_net_sys_setop_w_py(PyObject* self, PyObject* args);
-static PyObject* pmd_net_sys_setop_r_py(PyObject* self, PyObject* args);
+//static PyObject* pmd_net_sys_set_op_w_py(PyObject* self, PyObject* args);
+static PyObject* pmd_net_sys_set_op_r_py(PyObject* self, PyObject* args);
 
 #endif // PMD_NET_SYS_PY_H

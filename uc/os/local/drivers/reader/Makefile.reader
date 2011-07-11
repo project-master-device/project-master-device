@@ -1,2 +1,1 @@
-LIBS += reader.c
-CONTIKIDIRS += $(CONTIKI_LOCAL_DRIVERS)/reader
+LIBS += $(CONTIKI_LOCAL_DRIVERS_PREFIX)/reader/reader.c

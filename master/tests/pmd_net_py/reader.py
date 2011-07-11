@@ -5,6 +5,7 @@ import pmd_net_button as button
 import pmd_net_led as led
 import pmd_net_reader as reader
 import can_net_sync as lnet
+import time
 
 led_1_id = 1
 led_2_id = 2
@@ -99,8 +100,9 @@ def test_read():
 		if (rc != 0):
 			print "lnet.recv(port) FAIL: rc= ", rc
 		else:
-			print msg
-			handle_msg(msg)	
+			print "msg=", msg
+			handle_msg(msg)
+		time.sleep(0.01) #ms
 
 
 test_read()

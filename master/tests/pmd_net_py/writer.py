@@ -9,7 +9,7 @@ import can_net_sync as lnet
 # ("msg_lvl2", ("msg_metadata", hw_addr -int, port -int, is_system -int, id - int), data -string)
 
 led_1_id = 1
-led_1_id = 2
+led_2_id = 2
 button_1_id = 3
 button_2_id = 4
 reader_1_id = 5
@@ -23,31 +23,23 @@ def test_write():
 	port = 2
 	n = 0
 	s = 1
-	r = button.w_up()
-	if (r[0]):
-		print "fail button.w_up, rc = ", r[0]
+	rc, lvl3_msg = button.w_up()
+	if (rc):
+		print "fail button.w_up, rc = ", rc
 		return
 	else:
-		print "senfing button.w_up"
-		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, button_1_id), r[1])
+		print "sending button.w_up"
+		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, button_1_id), lvl3_msg)
 		lnet.send(msg)
 
-	r = button.w_down()
-	if (r[0]):
-		print "fail button.w_down, rc = ", r[0]
+	rc, lvl3_msg = button.w_down()
+	if (rc):
+		print "fail button.w_down, rc = ", rc
 		return
 	else:
-		print "senfing button.w_down"
-		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, button_2_id), r[1])
+		print "sending button.w_down"
+		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, button_2_id), lvl3_msg)
 		lnet.send(msg)
 
-	r = button.w_down()
-	if (r[0]):
-		print "fail button.w_down, rc = ", r[0]
-		return
-	else:
-		print "senfing button.w_down"
-		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, 18), r[1])
-		lnet.send(msg)
 
-test_sending()
+test_write()

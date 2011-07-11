@@ -3,11 +3,11 @@
 #include "button_py.h"
 
 inline static PyObject* call_button_write(uint8_t operation) {
-	bytearr_t* arr = NULL;
+	bytearr_t arr;
 	pmd_net_button_data_t data;
 	data.operation = operation;
-	int rc = pmd_net_button_write_data(arr, &data);
-	return pmd_net_return_arr(rc, arr);
+	int rc = pmd_net_button_write_data(&arr, &data);
+	return pmd_net_return_arr(rc, &arr);
 }
 
 static PyObject* pmd_net_button_w_down_py(PyObject* self, PyObject* args) {

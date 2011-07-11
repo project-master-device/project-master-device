@@ -1,9 +1,9 @@
 led_command
-reader
-button
+reader_listen
+button_listen
 reader_command
 config_read
 config_command
-set_op
+set_op_mode
 heartbeat_receiver
 send_heartbeat

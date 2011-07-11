@@ -3,11 +3,11 @@
 #include "led_py.h"
 
 inline static PyObject* call_led_write(uint8_t operation) {
-	bytearr_t* arr = NULL;
+	bytearr_t arr;
 	pmd_net_led_data_t data;
 	data.operation = operation;
-	int rc = pmd_net_led_write_data(arr, &data);
-	return pmd_net_return_arr(rc, arr);
+	int rc = pmd_net_led_write_data(&arr, &data);
+	return pmd_net_return_arr(rc, &arr);
 }
 static PyObject* pmd_net_led_w_on_py(PyObject* self, PyObject* args) {
 	return call_led_write(PMD_NET_LED_ON);

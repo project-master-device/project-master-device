@@ -173,11 +173,11 @@ static PyObject* pmd_net_sys_config_r_py(PyObject* self, PyObject* args) {
 /* ----------------------------------------SET_OP-----------------------------------------------*/
 
 inline static PyObject* call_setop_write(uint8_t operation) {
-	bytearr_t* arr = NULL;
+	bytearr_t arr;
 	pmd_net_sys_set_op_data_t data;
 	data.operation = operation;
-	int rc = pmd_net_sys_set_op_write_data(arr, &data);
-	return pmd_net_return_arr(rc, arr);
+	int rc = pmd_net_sys_set_op_write_data(&arr, &data);
+	return pmd_net_return_arr(rc, &arr);
 }
 static PyObject* pmd_net_setop_w_init_py(PyObject* self, PyObject* args) {
 	return call_setop_write(PMD_NET_SYS_SET_OP_INIT);

@@ -13,7 +13,7 @@
 
 /* ----------------------------------------	HEARTBEAT--------------------------------------------*/
 
-static PyObject* pmd_net_heartbeat_w_py(PyObject* self, PyObject* args);
+static PyObject* pmd_net_sys_heartbeat_w_py(PyObject* self, PyObject* args);
 
 /* ----------------------------------------CONFIG-----------------------------------------------*/
 

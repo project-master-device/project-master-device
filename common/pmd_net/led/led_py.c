@@ -31,6 +31,7 @@ static PyObject* pmd_net_led_r_py(PyObject* self, PyObject* args) {
 	bytearr_t arr;
 	pmd_net_led_data_t data;
 	if(!PyArg_ParseTuple(args, "s#", &arr.itself, &arr.len)) {
+		PyErr_Format(PyExc_TypeError, "pmd_net_led.read expected string");
 		return Py_BuildValue("(is)", -1, NULL);
 	}
 	int rc = pmd_net_led_read_data(&arr, &data);
@@ -38,9 +39,9 @@ static PyObject* pmd_net_led_r_py(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef pmd_net_led_methods[] = {
-	{"on", pmd_net_led_w_on_py, METH_VARARGS, "(o)pack command: turn LED on| args: - | return:(rc -int, packed_msg -str)"},
-	{"off", pmd_net_led_w_off_py, METH_VARARGS, "(o)pack command: turn LED off| args: - | return:(rc -int, packed_msg -str)"},
-	{"toggle", pmd_net_led_w_toggle_py, METH_VARARGS, "(o)pack command: toggle LED state| args: - |return:(rc -int, packed_msg -str)"},
+	{"w_on", pmd_net_led_w_on_py, METH_VARARGS, "(o)pack command: turn LED on| args: - | return:(rc -int, packed_msg -str)"},
+	{"w_off", pmd_net_led_w_off_py, METH_VARARGS, "(o)pack command: turn LED off| args: - | return:(rc -int, packed_msg -str)"},
+	{"w_toggle", pmd_net_led_w_toggle_py, METH_VARARGS, "(o)pack command: toggle LED state| args: - |return:(rc -int, packed_msg -str)"},
 //	{"write", pmd_net_led_w_py, METH_VARARGS, "pack command for LED, return:(rc -int, packed_msg -str)"},
 	{"read", pmd_net_led_r_py, METH_VARARGS, "unpack command for LED| args: packed_msg -str| return:(rc -int, operation_code -int)"},
 	{NULL, NULL, 0, NULL}	/* Sentinel */

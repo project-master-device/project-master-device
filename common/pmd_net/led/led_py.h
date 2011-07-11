@@ -3,7 +3,7 @@
 #ifndef PMD_NET_LED_PY_H
 #define PMD_NET_LED_PY_H
 
-#include <Python.h>
+#include "../pmd_net_py_common.h"
 #include "led.h"
 
 //return:(rc -int, packed_msg -string)

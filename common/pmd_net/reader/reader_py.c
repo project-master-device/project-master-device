@@ -2,29 +2,36 @@
 
 #include "reader_py.h"
 
-//TODO: do it on with macros for all simple lvl3 protocols: 'PMD_NET_WRITE_FUNK(reader, send_msg, READER_SEND_MSG)'
-inline static PyObject* call_reader_write(uint8_t operation) {
+//TODO: do it with macros for all simple lvl3 protocols: 'PMD_NET_WRITE_FUNK(reader, send_msg, READER_SEND_MSG)'
+inline static PyObject* call_reader_write(uint8_t operation, unsigned int code) {
 	bytearr_t arr;
 	pmd_net_reader_data_t data;
 	data.operation = operation;
+	if (code)
+		memcpy(&data.data, (uint8_t*)&code, PMD_NET_READER_MSG_LEN);
 	int rc = pmd_net_reader_write_data(&arr, &data);
 	return pmd_net_return_arr(rc, &arr);
 }
 
 static PyObject* pmd_net_reader_w_send_msg_py(PyObject* self, PyObject* args) {
-	return call_reader_write(PMD_NET_READER_SEND_MSG);
+	unsigned int code;
+	if(!PyArg_ParseTuple(args, "I", &code)) {
+		PyErr_Format(PyExc_TypeError, "pmd_net_reader.w_send_msg expected uint");
+		return Py_BuildValue("(is)", -1, NULL);
+	}
+	return call_reader_write(PMD_NET_READER_SEND_MSG, code);
 }
 static PyObject* pmd_net_reader_w_green_led_on_py(PyObject* self, PyObject* args) {
-	return call_reader_write(PMD_NET_READER_GREEN_LED_ON);
+	return call_reader_write(PMD_NET_READER_GREEN_LED_ON, 0);
 }
 static PyObject* pmd_net_reader_w_green_led_off_py(PyObject* self, PyObject* args) {
-	return call_reader_write(PMD_NET_READER_GREEN_LED_OFF);
+	return call_reader_write(PMD_NET_READER_GREEN_LED_OFF, 0);
 }
 static PyObject* pmd_net_reader_w_beep_on_py(PyObject* self, PyObject* args) {
-	return call_reader_write(PMD_NET_READER_BEEP_ON);
+	return call_reader_write(PMD_NET_READER_BEEP_ON, 0);
 }
 static PyObject* pmd_net_reader_w_beep_off_py(PyObject* self, PyObject* args) {
-	return call_reader_write(PMD_NET_READER_BEEP_OFF);
+	return call_reader_write(PMD_NET_READER_BEEP_OFF, 0);
 }
 
 /*
@@ -55,7 +62,7 @@ static PyObject* pmd_net_reader_r_py(PyObject* self, PyObject* args) {
 }
 
 static PyMethodDef pmd_net_reader_methods[] = {
-	{"w_send_msg", pmd_net_reader_w_send_msg_py, METH_VARARGS, "(i)pack command: the read code| args: - | return:(rc -int, packed_msg -str)"},
+	{"w_send_msg", pmd_net_reader_w_send_msg_py, METH_VARARGS, "(i)pack command: the read code| args: code -uint| return:(rc -int, packed_msg -str)"},
 	{"w_green_led_off", pmd_net_reader_w_green_led_off_py, METH_VARARGS, "(o)pack command: turn green led off| args: - | return:(rc -int, packed_msg -str)"},
 	{"w_green_led_on", pmd_net_reader_w_green_led_on_py, METH_VARARGS, "(o)pack command: turn green led on| args: - | return:(rc -int, packed_msg -str)"},
 	{"w_beep_on", pmd_net_reader_w_beep_on_py, METH_VARARGS, "(o)pack command: turn beeper on| args: - | return:(rc -int, packed_msg -str)"},

@@ -29,12 +29,14 @@ static PyObject* can_net_sync_py_send(PyObject* self, PyObject* args) {
 	char* msg_lvl2_name;
 	char* msg_metadata_name;
 
+	uint32_t id;
 	// ("msg_lvl2", ("msg_metadata", hw_addr -int, port -int, is_system -int, id - int), data -string)
 	if(!PyArg_ParseTuple(args, "(s(sIIII)s#)", &msg_lvl2_name, &msg_metadata_name,
-			&msg.meta.hw_addr, &msg.meta.port, &msg.meta.is_system, &msg.meta.id, &msg.data.itself, &data_len)) {
+			&msg.meta.hw_addr, &msg.meta.port, &msg.meta.is_system, &id, &msg.data.itself, &data_len)) {
 		PyErr_Format(PyExc_TypeError, "can_net_sync.send - expected ('',('',uint,uint,uint),str)");
 		return Py_BuildValue("i", -1);
 	}
+	msg.meta.id = (uint16_t)id;
 	msg.data.len = data_len; // ???
 
 	int rc = can_net_sync_send(&msg);

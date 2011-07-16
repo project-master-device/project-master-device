@@ -1,7 +1,7 @@
 import can_net_sync as cn
 import pmd_net_system as sys
 
-section = ("config_section", 42, ["options"])
+section = ("config_section", 1, ["options"])
 
 data = sys.config_w_section_del(section)
 if(data[0] == 0):

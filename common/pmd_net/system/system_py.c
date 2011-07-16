@@ -78,8 +78,8 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
                         PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option:value expected uint");
                         rc = -1; //TOBEFIXED
                     } else {
-                        value_int = (config_uint_t)PyInt_AsLong(value_py);
-                        rc = config_section_set_uint(section, option_tmp.key, value_int);
+                        value_uint = (config_uint_t)PyInt_AsLong(value_py);
+                        rc = config_section_set_uint(section, option_tmp.key, value_uint);
                     }
 					break;
 			}

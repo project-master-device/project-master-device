@@ -229,13 +229,13 @@ inline static PyObject* call_setop_write(uint8_t operation) {
 	int rc = pmd_net_sys_set_op_write_data(&arr, &data);
 	return pmd_net_return_arr(rc, &arr);
 }
-static PyObject* pmd_net_setop_w_init_py(PyObject* self, PyObject* args) {
+static PyObject* pmd_net_set_op_w_init_py(PyObject* self, PyObject* args) {
 	return call_setop_write(PMD_NET_SYS_SET_OP_INIT);
 }
-static PyObject* pmd_net_setop_w_normal_py(PyObject* self, PyObject* args) {
+static PyObject* pmd_net_set_op_w_normal_py(PyObject* self, PyObject* args) {
 	return call_setop_write(PMD_NET_SYS_SET_OP_NORMAL);
 }
-static PyObject* pmd_net_setop_w_configuration_py(PyObject* self, PyObject* args) {
+static PyObject* pmd_net_set_op_w_configuration_py(PyObject* self, PyObject* args) {
 	return call_setop_write(PMD_NET_SYS_SET_OP_CONFIGURATION);
 }
 
@@ -249,7 +249,7 @@ static PyObject* pmd_net_sys_setop_w_py(PyObject* self, PyObject* args) {
 }
 */
 
-static PyObject* pmd_net_sys_setop_r_py(PyObject *self, PyObject *args) {
+static PyObject* pmd_net_sys_set_op_r_py(PyObject *self, PyObject *args) {
 	bytearr_t arr;
 	pmd_net_sys_set_op_data_t data;
 	if(!PyArg_ParseTuple(args, "s#", &arr.itself, &arr.len)) {
@@ -270,11 +270,11 @@ static PyMethodDef pmd_net_system_methods[] = {
 	{"config_w_section_del", pmd_net_sys_config_w_section_del_py, METH_VARARGS, "(o)pack command for config: del config section| args: section -tuple| return:(rc -int, packed_msg -str)"},
 //	{"config_write", pmd_net_sys_config_w_py, METH_VARARGS, "pack command for config, return:(rc -int, packed_msg -str)"},
 	{"config_read", pmd_net_sys_config_r_py, METH_VARARGS, "unpack command for config| args: packed_msg -str| return:(rc -int, operation_code -int)"},
-	{"setop_w_init", pmd_net_setop_w_init_py, METH_VARARGS, "pack command: set mode <ititialization> | args: - | return:(rc -int, packed_msg -str)"},
-	{"setop_w_normal", pmd_net_setop_w_normal_py, METH_VARARGS, "pack command: set mode <normal> | args: - | return:(rc -int, packed_msg -str)"},
-	{"setop_w_configuration", pmd_net_setop_w_configuration_py, METH_VARARGS, "pack command: set mode <configuration> | args: - | return:(rc -int, packed_msg -str)"},
+	{"set_op_w_init", pmd_net_set_op_w_init_py, METH_VARARGS, "pack command: set mode <ititialization> | args: - | return:(rc -int, packed_msg -str)"},
+	{"set_op_w_normal", pmd_net_set_op_w_normal_py, METH_VARARGS, "pack command: set mode <normal> | args: - | return:(rc -int, packed_msg -str)"},
+	{"set_op_w_configuration", pmd_net_set_op_w_configuration_py, METH_VARARGS, "pack command: set mode <configuration> | args: - | return:(rc -int, packed_msg -str)"},
 //	{"setop_write", pmd_net_sys_setop_w_py, METH_VARARGS, "pack command for set_op, return:(rc -int, packed_msg -str)"},
-	{"setop_read", pmd_net_sys_setop_r_py, METH_VARARGS, "unpack command for set_op| args: packed_msg -str| return:(rc -int, operation_code -int)"},
+	{"set_op_read", pmd_net_sys_set_op_r_py, METH_VARARGS, "unpack command for set_op| args: packed_msg -str| return:(rc -int, operation_code -int)"},
 	{NULL, NULL, 0, NULL}	/* Sentinel */
 };
 
@@ -286,6 +286,9 @@ PyMODINIT_FUNC initpmd_net_system(void) {
 
 	PyObject * option_type_dict;
 	PyObject * option_type_dict_value;
+
+	PyObject * ids_dict;
+	PyObject * ids_dict_value;
 
 	config_dict = PyDict_New();
 	Py_INCREF(config_dict);
@@ -307,6 +310,16 @@ PyMODINIT_FUNC initpmd_net_system(void) {
 	option_type_dict_value = PyInt_FromLong(CONFIG_OPTION_NUM_UINT_TYPE);
 	PyDict_SetItemString(option_type_dict, "UINT", option_type_dict_value);
 
+	ids_dict = PyDict_New();
+	Py_INCREF(ids_dict);
+	ids_dict_value = PyInt_FromLong(PMD_NET_SYS_HEARTBEAT);
+	PyDict_SetItemString(ids_dict, "HEARTBEAT", ids_dict_value);
+	ids_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG);
+	PyDict_SetItemString(ids_dict, "CONFIG", ids_dict_value);
+	ids_dict_value = PyInt_FromLong(PMD_NET_SYS_SET_OP);
+	PyDict_SetItemString(ids_dict, "SET_OP", ids_dict_value);
+
 	PyModule_AddObject(m, "ConfigOperations", config_dict);
 	PyModule_AddObject(m, "ConfigOptionTypes", option_type_dict);
+	PyModule_AddObject(m, "Ids", ids_dict);
 }

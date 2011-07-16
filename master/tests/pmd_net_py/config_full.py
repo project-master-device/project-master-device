@@ -7,9 +7,7 @@ section2 = ("config_section", 24, ["options", ("option", "option", 321, sys.Conf
 
 config = ["config_cnf", section1, section2]
 
-print '1'
 data = sys.config_w_full(config)
-print '2'
 if(data[0] == 0):
     msg = ("msg_lvl2", ("msg_metadata", 123, 1, 1, 1), data[1])
     print msg

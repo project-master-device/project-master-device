@@ -49,6 +49,10 @@ typedef enum {
 
 
 void config_option_construct(config_option_t * config_option) {
+    if(config_option == NULL) {
+        return;
+    }
+
     config_option->next = NULL;
     strcpy(config_option->key, "");
     config_option->value = NULL;
@@ -110,6 +114,10 @@ void config_option_set_value(config_option_t * config_option, const char * value
 
 
 void config_section_construct(config_section_t * config_section, uint8_t id) {
+    if(config_section == NULL) {
+        return;
+    }
+
     config_section->next = NULL;
     config_section->id = id;
     LIST_STRUCT_INIT(config_section, options);
@@ -258,10 +266,18 @@ int config_section_set_str(config_section_t * config_section, const char * key, 
 
 
 void config_cnf_construct(config_cnf_t * config) {
+    if(config == NULL) {
+        return;
+    }
+
     LIST_STRUCT_INIT(config, sections);
 }
 
 void config_cnf_destruct(config_cnf_t * config) {
+    if(config == NULL) {
+        return;
+    }
+
     config_section_t * it = NULL;
     config_section_t * next = NULL;
 

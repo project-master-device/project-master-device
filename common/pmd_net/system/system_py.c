@@ -15,6 +15,9 @@ static PyObject* pmd_net_sys_heartbeat_w_py(PyObject* self, PyObject* args) {
 // ["config_cnf", ("config_section", id -int, ["options", ("option", key -str, value -str/int?, type -str/int?), ...]), ...]
 // type: [0;255]
 int convert_section_from_py(PyObject *section_py, config_section_t* section) {
+    if((section_py == NULL) || (section == NULL))
+        return 1;
+
 	config_section_t section_tmp;
 	PyObject* options_list_py;
 	config_option_t option_tmp;
@@ -32,7 +35,7 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section expected (str,uint,PyObject)");
 		return 1;
 	}
-	config_section_construct(section, section_tmp.id);
+	section->id = section_tmp.id;
 
 	// parse options_list_py: python list of tuples - options:
 //	type_name = PyList_GetItem(options_list_py, 0); == "options"
@@ -94,7 +97,6 @@ int convert_cnf_from_py(PyObject *cnf_py, config_cnf_t* cnf) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf expected list, got %s", cnf_py->ob_type->tp_name);
 		return 1;
 	}
-	config_cnf_construct(cnf);
 
 	int i;
 	PyObject* section_py;
@@ -104,13 +106,12 @@ int convert_cnf_from_py(PyObject *cnf_py, config_cnf_t* cnf) {
 //	type_name = PyList_GetItem(config_cnf_py, 0); == "config_cnf"
 	for (i = 1; i < PyList_GET_SIZE(cnf_py); i++) {
 		section_py = PyList_GetItem(cnf_py, i);
+
+		section = config_cnf_create_section(cnf, 0);
 		rc = convert_section_from_py(section_py, section);
-		if (!rc)
-			rc = config_cnf_add_section(cnf, section);
 
 		if (rc) {
-			config_cnf_destruct(cnf);
-			return 1;
+		    return 1;
 		}
 	}
 	return 0;
@@ -129,21 +130,41 @@ static PyObject* pmd_net_sys_config_w_request_py(PyObject* self, PyObject* args)
 }
 
 static PyObject* pmd_net_sys_config_w_full_py(PyObject* self, PyObject* args) {
-		pmd_net_sys_config_data_t data;
-		data.section = NULL;
-		data.operation = PMD_NET_SYS_CONFIG_FULL;
-		PyObject* cnf_py;
-		if(!PyArg_ParseTuple(args, "O", &cnf_py)) {
-			PyErr_Format(PyExc_TypeError, "pmd_net_system.pmd_net_system.full -- wtf? it's impossible");
-			return Py_BuildValue("(is)", -1, NULL);
-		}
+    pmd_net_sys_config_data_t data;
+    PyObject* cnf_py = NULL;
+    PyObject* res = NULL;
 
-		int rc = convert_cnf_from_py(cnf_py, data.config);
-		if (rc) {
-			return Py_BuildValue("(is)", rc, NULL);
-		} else {
-			return call_config_write_py(&data);
-		}
+    if(!PyArg_ParseTuple(args, "O", &cnf_py)) {
+        PyErr_Format(PyExc_TypeError, "pmd_net_system.pmd_net_system.full -- wtf? it's impossible");
+        return Py_BuildValue("(is)", -1, NULL);
+    }
+
+    data.section = NULL;
+    data.operation = PMD_NET_SYS_CONFIG_FULL;
+    data.config = (config_cnf_t *)malloc(sizeof(config_cnf_t));
+    if(data.config == NULL) {
+        return Py_BuildValue("(is)", -1, NULL);
+    }
+    config_cnf_construct(data.config);
+
+    int rc = convert_cnf_from_py(cnf_py, data.config);
+    if (rc) {
+        if(data.config != NULL) {
+            config_cnf_destruct(data.config);
+            free(data.config);
+        }
+
+        return Py_BuildValue("(is)", rc, NULL);
+    }
+
+    res = call_config_write_py(&data);
+
+    if(data.config != NULL) {
+        config_cnf_destruct(data.config);
+        free(data.config);
+    }
+
+    return res;
 }
 
 inline static PyObject* call_config_write_with_section(PyObject* arg, uint8_t operation) {
@@ -151,17 +172,33 @@ inline static PyObject* call_config_write_with_section(PyObject* arg, uint8_t op
 	data.operation = operation;
 	data.config = NULL;
 	PyObject* section_py;
+	PyObject* res;
 
 	if(!PyArg_ParseTuple(arg, "O", &section_py)) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write_section -- wtf? it's impossible");
 		return Py_BuildValue("(is)", -1, NULL);
 	}
 
+	data.section = (config_section_t *)malloc(sizeof(config_section_t));
+	config_section_construct(data.section, 0);
+
 	if ( convert_section_from_py(section_py, data.section) ) {
-		return Py_BuildValue("(is)", -1, NULL);
+	    if(data.section != NULL) {
+	        config_section_destruct(data.section);
+	        free(data.section);
+	    }
+
+	    return Py_BuildValue("(is)", -1, NULL);
 	}
 
-	return call_config_write_py(&data);
+	res = call_config_write_py(&data);
+
+	if(data.section != NULL) {
+	    config_section_destruct(data.section);
+	    free(data.section);
+	}
+
+	return res;
 }
 
 static PyObject* pmd_net_sys_config_w_section_add_py(PyObject* self, PyObject* args) {

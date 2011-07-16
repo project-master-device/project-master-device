@@ -24,9 +24,11 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
 	config_int_t value_int;
 	config_uint_t value_uint;
 	int rc = 0;
+	char * buf = NULL;
+	char * key_buf = NULL;
 
 	// parse config_section_py: python tuple (str - "typename", int - id, python list - options):
-	if( !PyArg_ParseTuple(section_py, "(sIO)", "config_section", &section_tmp.id, &options_list_py) || !PyList_Check(options_list_py) ) {
+	if( !PyArg_ParseTuple(section_py, "sIO", &buf, &(section_tmp.id), &options_list_py) || !PyList_Check(options_list_py) ) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section expected (str,uint,PyObject)");
 		return 1;
 	}
@@ -37,35 +39,45 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
 	int i;
 	for (i = 1; i < PyList_GET_SIZE(options_list_py); i++) {
 		option_py = PyList_GetItem(options_list_py, i);
-		// parse option_py: python tuple (str - "typename", str - key, ? - value, int - type):
-		if(!PyArg_ParseTuple(option_py, "(ssOI)", "option", &option_tmp.key, &value_py, &option_tmp.type)) {
+		// parse option_py: python tuple (str - "typename", str - key, ? - value, int - type):q
+		if(!PyArg_ParseTuple(option_py, "ssOI", &buf, &key_buf, &value_py, &(option_tmp.type))) {
+		    printf("convert_section_from_py fail #2\n");
 			PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option expected (str,str,PyObject,uint)");
 			rc = -1; //TOBEFIXED
 		} else {
+		    if((strlen(key_buf) + 1) > CONFIG_OPTION_KEY_LEN) {
+		        PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option key len too long");
+		        return 1;
+		    }
+		    memcpy(option_tmp.key, key_buf, strlen(key_buf) + 1);
+
 			switch (option_tmp.type) {
-				case 's':
-					if(!PyArg_ParseTuple(value_py, "s", &value_char)) {
+				case CONFIG_OPTION_STR_TYPE:
+					if(!PyString_Check(value_py)) {
 						PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option:value expected str");
 						rc = -1; //TOBEFIXED
 					} else {
-						rc = config_section_set_str(section, (char*)&option_tmp.key, value_char);
+					    value_char = PyString_AsString(value_py);
+						rc = config_section_set_str(section, option_tmp.key, value_char);
 					}
 					break;
-				case 'i':
-					if(!PyArg_ParseTuple(value_py, "i", &value_int)) {
+				case CONFIG_OPTION_NUM_INT_TYPE:
+				    if(!PyInt_Check(value_py)) {
 						PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option:value expected int");
 						rc = -1; //TOBEFIXED
 					} else {
-						rc = config_section_set_int(section, (char*)&option_tmp.key, value_int);
+					    value_int = (config_int_t)PyInt_AsLong(value_py);
+						rc = config_section_set_int(section, option_tmp.key, value_int);
 					}
 					break;
-				case 'I':
-					if(!PyArg_ParseTuple(value_py, "I", &value_uint)) {
-						PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option:value expected uint");
-						rc = -1; //TOBEFIXED
-					} else {
-						rc = config_section_set_uint(section, (char*)&option_tmp.key, value_uint);
-					}
+				case CONFIG_OPTION_NUM_UINT_TYPE:
+                    if(!PyInt_Check(value_py)) {
+                        PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option:value expected uint");
+                        rc = -1; //TOBEFIXED
+                    } else {
+                        value_int = (config_uint_t)PyInt_AsLong(value_py);
+                        rc = config_section_set_uint(section, option_tmp.key, value_int);
+                    }
 					break;
 			}
 		}
@@ -139,6 +151,7 @@ inline static PyObject* call_config_write_with_section(PyObject* arg, uint8_t op
 	data.operation = operation;
 	data.config = NULL;
 	PyObject* section_py;
+
 	if(!PyArg_ParseTuple(arg, "O", &section_py)) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write_section -- wtf? it's impossible");
 		return Py_BuildValue("(is)", -1, NULL);
@@ -156,7 +169,7 @@ static PyObject* pmd_net_sys_config_w_section_add_py(PyObject* self, PyObject* a
 }
 
 static PyObject* pmd_net_sys_config_w_section_del_py(PyObject* self, PyObject* args) {
-	return call_config_write_with_section(args, PMD_NET_SYS_CONFIG_SECTION_ADD);
+	return call_config_write_with_section(args, PMD_NET_SYS_CONFIG_SECTION_DEL);
 }
 
 static PyObject* pmd_net_sys_config_r_py(PyObject* self, PyObject* args) {
@@ -234,20 +247,29 @@ PyMODINIT_FUNC initpmd_net_system(void) {
 	PyObject * config_dict;
 	PyObject * config_dict_value;
 
+	PyObject * option_type_dict;
+	PyObject * option_type_dict_value;
+
 	config_dict = PyDict_New();
 	Py_INCREF(config_dict);
-
 	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_FULL);
 	PyDict_SetItemString(config_dict, "FULL", config_dict_value);
-
 	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_REQUEST);
 	PyDict_SetItemString(config_dict, "REQUEST", config_dict_value);
-
 	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_SECTION_ADD);
 	PyDict_SetItemString(config_dict, "SECTION_ADD", config_dict_value);
-
 	config_dict_value = PyInt_FromLong(PMD_NET_SYS_CONFIG_SECTION_DEL);
 	PyDict_SetItemString(config_dict, "SECTION_DEL", config_dict_value);
 
+	option_type_dict = PyDict_New();
+	Py_INCREF(option_type_dict);
+	option_type_dict_value = PyInt_FromLong(CONFIG_OPTION_STR_TYPE);
+	PyDict_SetItemString(option_type_dict, "STRING", option_type_dict_value);
+	option_type_dict_value = PyInt_FromLong(CONFIG_OPTION_NUM_INT_TYPE);
+	PyDict_SetItemString(option_type_dict, "INT", option_type_dict_value);
+	option_type_dict_value = PyInt_FromLong(CONFIG_OPTION_NUM_UINT_TYPE);
+	PyDict_SetItemString(option_type_dict, "UINT", option_type_dict_value);
+
 	PyModule_AddObject(m, "ConfigOperations", config_dict);
+	PyModule_AddObject(m, "ConfigOptionTypes", option_type_dict);
 }

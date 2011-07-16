@@ -8,6 +8,10 @@
 typedef int                     config_int_t;
 typedef unsigned int            config_uint_t;
 
+#define CONFIG_OPTION_STR_TYPE          's'
+#define CONFIG_OPTION_NUM_INT_TYPE      'i'
+#define CONFIG_OPTION_NUM_UINT_TYPE     'I'
+
 #define CONFIG_EOF '~'
 
 #ifndef CONFIG_OPTION_KEY_LEN

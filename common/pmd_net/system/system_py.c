@@ -44,7 +44,6 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
 		option_py = PyList_GetItem(options_list_py, i);
 		// parse option_py: python tuple (str - "typename", str - key, ? - value, int - type):q
 		if(!PyArg_ParseTuple(option_py, "ssOI", &buf, &key_buf, &value_py, &(option_tmp.type))) {
-		    printf("convert_section_from_py fail #2\n");
 			PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option expected (str,str,PyObject,uint)");
 			rc = -1; //TOBEFIXED
 		} else {

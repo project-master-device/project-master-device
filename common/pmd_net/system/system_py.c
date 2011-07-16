@@ -12,9 +12,8 @@ static PyObject* pmd_net_sys_heartbeat_w_py(PyObject* self, PyObject* args) {
 
 /* ----------------------------------------CONFIG-----------------------------------------------*/
 
-// ["config_cnf", ("config_section", id -int, ["options", ("option", key -str, value -str/int?, type -str/int?), ...]), ...]
-// type: [0;255]
-int convert_section_from_py(PyObject *section_py, config_section_t* section) {
+// ("config_section", id -uint, ["options", ("option", key -str, value -str/int/uint?, type -uint?), ...]) // type: [0;255]
+int convert_section_from_py(PyObject* section_py, config_section_t* section) {
 	config_section_t section_tmp;
 	PyObject* options_list_py;
 	config_option_t option_tmp;
@@ -67,6 +66,10 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
 						rc = config_section_set_uint(section, (char*)&option_tmp.key, value_uint);
 					}
 					break;
+				default:
+					PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf:section:option:type - unexpected value");
+					rc = -1;
+					break;
 			}
 		}
 		if (rc < 0) { //TOBEFIXED
@@ -76,7 +79,8 @@ int convert_section_from_py(PyObject *section_py, config_section_t* section) {
 	}
 	return 0;
 }
-int convert_cnf_from_py(PyObject *cnf_py, config_cnf_t* cnf) {
+// ["config_cnf", config_section_0, ...]
+int convert_cnf_from_py(PyObject* cnf_py, config_cnf_t* cnf) {
 	// parse config_cnf_py: python list of tuples - config sections:
 	if(!PyList_Check(cnf_py)) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write:cnf expected list, got %s", cnf_py->ob_type->tp_name);
@@ -134,10 +138,12 @@ static PyObject* pmd_net_sys_config_w_full_py(PyObject* self, PyObject* args) {
 		}
 }
 
-inline static PyObject* call_config_write_with_section(PyObject* arg, uint8_t operation) {
+inline static PyObject* call_config_write_with_section(PyObject* arg, uint8_t operation, uint8_t id) {
 	pmd_net_sys_config_data_t data;
 	data.operation = operation;
 	data.config = NULL;
+	data.section = (config_section_t*)malloc(sizeof(config_section_t));
+	data.section->id = id;
 	PyObject* section_py;
 	if(!PyArg_ParseTuple(arg, "O", &section_py)) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write_section -- wtf? it's impossible");
@@ -147,27 +153,107 @@ inline static PyObject* call_config_write_with_section(PyObject* arg, uint8_t op
 	if ( convert_section_from_py(section_py, data.section) ) {
 		return Py_BuildValue("(is)", -1, NULL);
 	}
-
-	return call_config_write_py(&data);
+	PyObject* res = call_config_write_py(&data);
+	free(data.section);
+	return res;
 }
 
 static PyObject* pmd_net_sys_config_w_section_add_py(PyObject* self, PyObject* args) {
-	return call_config_write_with_section(args, PMD_NET_SYS_CONFIG_SECTION_ADD);
+	return call_config_write_with_section(args, PMD_NET_SYS_CONFIG_SECTION_ADD, 0);
 }
 
 static PyObject* pmd_net_sys_config_w_section_del_py(PyObject* self, PyObject* args) {
-	return call_config_write_with_section(args, PMD_NET_SYS_CONFIG_SECTION_ADD);
+	uint8_t id;
+	if(!PyArg_ParseTuple(args, "I", &id)) {
+		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_write_del_section - expexted uint");
+		return Py_BuildValue("(is)", -1, NULL);
+	}
+	return call_config_write_with_section(args, PMD_NET_SYS_CONFIG_SECTION_DEL, id);
+}
+
+// ("config_section", id -uint, ["options", ("option", key -str, value -str/int/uint?, type -uint?), ...]) // type: [0;255]
+int convert_section_to_py(PyObject* section_py, config_section_t* section) {
+	//Py_ssize_t len = 0;
+	PyObject* options_list_py = PyList_New(0);
+	if ( PyList_Append(options_list_py, PyString_FromString("option")) )
+		return 1;
+	PyObject* new_option = NULL;
+	config_option_t* curr = list_head(section->options);
+	while(curr != NULL) {
+		switch (curr->type) {
+			case 's':
+				new_option = Py_BuildValue("(sss#I)", "option", curr->key, curr->value, curr->size, curr->type);
+				break;
+			case 'i':
+				new_option = Py_BuildValue("(ssiI)", "option", curr->key, *((config_int_t*)curr->value), curr->type);
+				break;
+			case 'I':
+				new_option = Py_BuildValue("(ssII)", "option", curr->key, *((config_uint_t*)curr->value), curr->type);
+				break;
+		}
+		if ( PyList_Append(options_list_py, new_option) )
+			return 1;
+		curr = list_item_next(curr);
+	}
+	section_py = Py_BuildValue("(sIO)", "config_section", section->id, options_list_py);
+	return 0;
+}
+
+// ["config_cnf", config_section_0, ...]
+int convert_cnf_to_py(PyObject* cnf_py, config_cnf_t* cnf) {
+	//Py_ssize_t len = 0;
+	cnf_py = PyList_New(0);
+	if ( PyList_Append(cnf_py, PyString_FromString("config_cnf")) )
+		return 1;
+	PyObject* new_section = NULL;
+	config_section_t* curr = list_head(cnf->sections);
+	while(curr != NULL) {
+		if ( convert_section_to_py(new_section, curr) )
+			return 1;
+		else if ( PyList_Append(cnf_py, new_section) )
+			return 2;
+		curr = list_item_next(curr);
+	}
+	return 0;
 }
 
 static PyObject* pmd_net_sys_config_r_py(PyObject* self, PyObject* args) {
 	bytearr_t arr;
-	pmd_net_sys_config_data_t* data = NULL;
+	pmd_net_sys_config_data_t data;
 	if(!PyArg_ParseTuple(args, "s#", &arr.itself, &arr.len)) {
 		PyErr_Format(PyExc_TypeError, "pmd_net_system.config_read - expected string");
-		return Py_BuildValue("(is)", -1, NULL);
+		return Py_BuildValue("(iss)", -1, NULL, NULL);
 	}
-	int rc = pmd_net_sys_config_read_data(&arr, data);
-	return pmd_net_return_op(rc, data->operation);
+	int rc = pmd_net_sys_config_read_data(&arr, &data);
+	if (rc) {
+		return Py_BuildValue("(iss)", rc, NULL, NULL);
+	} else {
+		int rc = -1;
+		PyObject* return_object = NULL;
+		switch (data.operation) {
+			case PMD_NET_SYS_CONFIG_REQUEST:
+				return Py_BuildValue("(iIs)", rc, data.operation, NULL);
+
+			case PMD_NET_SYS_CONFIG_FULL:
+				if ( convert_cnf_to_py(return_object, data.config) )
+					return Py_BuildValue("(iss)", -1, NULL, NULL);
+				else
+					return Py_BuildValue("(iIs)", rc, data.operation, return_object);
+				break;
+
+			case PMD_NET_SYS_CONFIG_SECTION_ADD:
+				if ( convert_section_to_py(return_object, data.section) )
+					return Py_BuildValue("(iss)", -1, NULL, NULL);
+				else
+					return Py_BuildValue("(iIs)", -1, data.operation, return_object);
+				break;
+
+			case PMD_NET_SYS_CONFIG_SECTION_DEL:
+				return Py_BuildValue("(iII)", rc, data.operation, data.section->id);
+				break;
+		}
+	}
+	return Py_BuildValue("(iss)", -15, NULL, NULL);
 }
 
 /* ----------------------------------------SET_OP-----------------------------------------------*/
@@ -219,8 +305,8 @@ static PyMethodDef pmd_net_system_methods[] = {
 	{"config_w_section_add", pmd_net_sys_config_w_section_add_py, METH_VARARGS, "(o)pack command for config: add config section| args: section -tuple| return:(rc -int, packed_msg -str)"},
 	{"config_w_section_del", pmd_net_sys_config_w_section_del_py, METH_VARARGS, "(o)pack command for config: del config section| args: section -tuple| return:(rc -int, packed_msg -str)"},
 //	{"config_write", pmd_net_sys_config_w_py, METH_VARARGS, "pack command for config, return:(rc -int, packed_msg -str)"},
-	{"config_read", pmd_net_sys_config_r_py, METH_VARARGS, "unpack command for config| args: packed_msg -str| return:(rc -int, operation_code -int)"},
-	{"setop_w_init", pmd_net_setop_w_init_py, METH_VARARGS, "pack command: set mode <ititialization> | args: - | return:(rc -int, packed_msg -str)"},
+	{"config_read", pmd_net_sys_config_r_py, METH_VARARGS, "unpack command for config| args: packed_msg -str| return:(rc -int, operation_code -int, data -uint/None/config-tuple/section-tuple)"},
+	{"setop_w_init", pmd_net_setop_w_init_py, METH_VARARGS, "pack command: set mode <initialization> | args: - | return:(rc -int, packed_msg -str)"},
 	{"setop_w_normal", pmd_net_setop_w_normal_py, METH_VARARGS, "pack command: set mode <normal> | args: - | return:(rc -int, packed_msg -str)"},
 	{"setop_w_configuration", pmd_net_setop_w_configuration_py, METH_VARARGS, "pack command: set mode <configuration> | args: - | return:(rc -int, packed_msg -str)"},
 //	{"setop_write", pmd_net_sys_setop_w_py, METH_VARARGS, "pack command for set_op, return:(rc -int, packed_msg -str)"},

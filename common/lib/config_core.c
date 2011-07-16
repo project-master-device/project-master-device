@@ -187,14 +187,13 @@ config_uint_t config_section_get_uint(config_section_t * config_section, const c
     return res;
 }
 
-//TODO: use strncpy
 void config_section_get_str(config_section_t * config_section, const char * key, const char * default_val, char * dest, unsigned int dest_size) {
     config_option_t * opt = config_section_find_option(config_section, key);
 
     if(opt->type != CONFIG_OPTION_STR_TYPE) {
-        strcpy(dest, default_val/*, dest_size*/);
+        strncpy(dest, default_val, dest_size);
     } else {
-        strcpy(dest, (char *)(opt->value)/*, dest_size*/);
+        strncpy(dest, (char *)(opt->value), dest_size);
     }
 }
 

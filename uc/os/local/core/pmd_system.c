@@ -264,7 +264,7 @@ static void create_config() {
 static void heartbeat_msg_init(msg_lvl2_t * msg) {
     if(msg != NULL) {
         msg->meta.hw_addr = 7; //FIXME: use real address
-        msg->meta.port = 15; // broadcast port
+        msg->meta.port = 14; // broadcast port
         msg->meta.id = PMD_NET_SYS_HEARTBEAT;
         msg->meta.is_system = 1;
         msg->data.itself = NULL;

@@ -258,38 +258,38 @@ static PyObject* pmd_net_sys_config_r_py(PyObject* self, PyObject* args) {
 
 /* ----------------------------------------SET_OP-----------------------------------------------*/
 
-inline static PyObject* call_setop_write(uint8_t operation) {
+inline static PyObject* call_set_op_write(uint8_t operation) {
 	bytearr_t arr;
 	pmd_net_sys_set_op_data_t data;
 	data.operation = operation;
 	int rc = pmd_net_sys_set_op_write_data(&arr, &data);
 	return pmd_net_return_arr(rc, &arr);
 }
-static PyObject* pmd_net_setop_w_init_py(PyObject* self, PyObject* args) {
-	return call_setop_write(PMD_NET_SYS_SET_OP_INIT);
+static PyObject* pmd_net_set_op_w_init_py(PyObject* self, PyObject* args) {
+	return call_set_op_write(PMD_NET_SYS_SET_OP_INIT);
 }
-static PyObject* pmd_net_setop_w_normal_py(PyObject* self, PyObject* args) {
-	return call_setop_write(PMD_NET_SYS_SET_OP_NORMAL);
+static PyObject* pmd_net_set_op_w_normal_py(PyObject* self, PyObject* args) {
+	return call_set_op_write(PMD_NET_SYS_SET_OP_NORMAL);
 }
-static PyObject* pmd_net_setop_w_configuration_py(PyObject* self, PyObject* args) {
-	return call_setop_write(PMD_NET_SYS_SET_OP_CONFIGURATION);
+static PyObject* pmd_net_set_op_w_configuration_py(PyObject* self, PyObject* args) {
+	return call_set_op_write(PMD_NET_SYS_SET_OP_CONFIGURATION);
 }
 
 /*
-static PyObject* pmd_net_sys_setop_w_py(PyObject* self, PyObject* args) {
+static PyObject* pmd_net_sys_set_op_w_py(PyObject* self, PyObject* args) {
 	pmd_net_sys_set_op_data_t data;
 	if(!PyArg_ParseTuple(args, "I", &data.operation)) {
 		return Py_BuildValue("i", -1);
 	}
-	return call_setop_write(data.operation);
+	return call_set_op_write(data.operation);
 }
 */
 
-static PyObject* pmd_net_sys_setop_r_py(PyObject *self, PyObject *args) {
+static PyObject* pmd_net_sys_set_op_r_py(PyObject *self, PyObject *args) {
 	bytearr_t arr;
 	pmd_net_sys_set_op_data_t data;
 	if(!PyArg_ParseTuple(args, "s#", &arr.itself, &arr.len)) {
-		PyErr_Format(PyExc_TypeError, "pmd_net_system.setop_read - expected string");
+		PyErr_Format(PyExc_TypeError, "pmd_net_system.set_op_read - expected string");
 		return Py_BuildValue("(is)", -1, NULL);
 	}
 	int rc = pmd_net_sys_set_op_read_data(&arr, &data);
@@ -306,11 +306,11 @@ static PyMethodDef pmd_net_system_methods[] = {
 	{"config_w_section_del", pmd_net_sys_config_w_section_del_py, METH_VARARGS, "(o)pack command for config: del config section| args: section -tuple| return:(rc -int, packed_msg -str)"},
 //	{"config_write", pmd_net_sys_config_w_py, METH_VARARGS, "pack command for config, return:(rc -int, packed_msg -str)"},
 	{"config_read", pmd_net_sys_config_r_py, METH_VARARGS, "unpack command for config| args: packed_msg -str| return:(rc -int, operation_code -int, data -uint/None/config-tuple/section-tuple)"},
-	{"setop_w_init", pmd_net_setop_w_init_py, METH_VARARGS, "pack command: set mode <initialization> | args: - | return:(rc -int, packed_msg -str)"},
-	{"setop_w_normal", pmd_net_setop_w_normal_py, METH_VARARGS, "pack command: set mode <normal> | args: - | return:(rc -int, packed_msg -str)"},
-	{"setop_w_configuration", pmd_net_setop_w_configuration_py, METH_VARARGS, "pack command: set mode <configuration> | args: - | return:(rc -int, packed_msg -str)"},
-//	{"setop_write", pmd_net_sys_setop_w_py, METH_VARARGS, "pack command for set_op, return:(rc -int, packed_msg -str)"},
-	{"setop_read", pmd_net_sys_setop_r_py, METH_VARARGS, "unpack command for set_op| args: packed_msg -str| return:(rc -int, operation_code -int)"},
+	{"set_op_w_init", pmd_net_set_op_w_init_py, METH_VARARGS, "pack command: set mode <initialization> | args: - | return:(rc -int, packed_msg -str)"},
+	{"set_op_w_normal", pmd_net_set_op_w_normal_py, METH_VARARGS, "pack command: set mode <normal> | args: - | return:(rc -int, packed_msg -str)"},
+	{"set_op_w_configuration", pmd_net_set_op_w_configuration_py, METH_VARARGS, "pack command: set mode <configuration> | args: - | return:(rc -int, packed_msg -str)"},
+//	{"set_op_write", pmd_net_sys_set_op_w_py, METH_VARARGS, "pack command for set_op, return:(rc -int, packed_msg -str)"},
+	{"set_op_read", pmd_net_sys_set_op_r_py, METH_VARARGS, "unpack command for set_op| args: packed_msg -str| return:(rc -int, operation_code -int)"},
 	{NULL, NULL, 0, NULL}	/* Sentinel */
 };
 

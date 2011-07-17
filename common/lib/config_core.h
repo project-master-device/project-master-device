@@ -44,6 +44,8 @@ typedef struct {
     LIST_STRUCT(options); ///< options list.
 } config_section_t;
 
+config_section_t * config_section_new(uint8_t id);
+void config_section_delete(config_section_t * config_section);
 void config_section_construct(config_section_t * config_section, uint8_t id);
 void config_section_destruct(config_section_t * config_section);
 config_option_t * config_section_create_option(config_section_t * config_section);
@@ -87,6 +89,8 @@ typedef struct  {
     LIST_STRUCT(sections); ///< list of sections.
 } config_cnf_t;
 
+config_cnf_t * config_cnf_new();
+void config_cnf_delete(config_cnf_t * config);
 void config_cnf_construct(config_cnf_t * config);
 void config_cnf_destruct(config_cnf_t * config);
 void config_cnf_copy(config_cnf_t * config, config_cnf_t * prototype);

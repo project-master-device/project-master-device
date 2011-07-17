@@ -113,6 +113,20 @@ void config_option_set_value(config_option_t * config_option, const char * value
 }
 
 
+config_section_t * config_section_new(uint8_t id) {
+    config_section_t * sect = (config_section_t *)malloc(sizeof(config_section_t));
+    config_section_construct(sect, id);
+
+    return sect;
+}
+
+void config_section_delete(config_section_t * config_section) {
+    if(config_section != NULL) {
+        config_section_destruct(config_section);
+        free(config_section);
+    }
+}
+
 void config_section_construct(config_section_t * config_section, uint8_t id) {
     if(config_section == NULL) {
         return;
@@ -264,6 +278,20 @@ int config_section_set_str(config_section_t * config_section, const char * key, 
 }
 
 
+config_cnf_t * config_cnf_new() {
+    config_cnf_t * cnf = (config_cnf_t *)malloc(sizeof(config_cnf_t));
+    config_cnf_construct(cnf);
+
+    return cnf;
+}
+
+void config_cnf_delete(config_cnf_t * config) {
+    if(config != NULL) {
+        config_cnf_destruct(config);
+        free(config);
+    }
+}
+
 void config_cnf_construct(config_cnf_t * config) {
     if(config == NULL) {
         return;
@@ -339,13 +367,10 @@ config_section_t * config_cnf_create_section(config_cnf_t * config, uint8_t id) 
         return NULL;
     }
 
-    config_section_t * sect = malloc(sizeof(config_section_t));
-    if(sect != NULL) {
-        config_section_construct(sect, id);
-        if(config_cnf_add_section(config, sect) != 0) {
-            free(sect);
-            sect = NULL;
-        }
+    config_section_t * sect = config_section_new(id);
+    if((sect != NULL) && (config_cnf_add_section(config, sect) != 0)) {
+        config_section_delete(sect);
+        sect = NULL;
     }
 
     return sect;

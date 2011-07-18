@@ -38,15 +38,6 @@
 
 /* -------------------------------------BICYCLES------------------------------------------------*/
 
-typedef struct {
-	uint8_t port_min, port_max;
-	uint16_t id_min, id_max;
-	uint8_t smb_min, smb_max; // trash
-} can_net_base_range_t;
-
-// bicycle, 1=TRUE, 0=FALSE
-int check_base_range(can_net_base_range_t ranges, uint8_t port, uint8_t smb, uint16_t id);
-
 // Yet another bicycle:
 void list_free_all(list_t list);
 

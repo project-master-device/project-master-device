@@ -47,6 +47,6 @@ static PyObject* can_net_sync_py_recv(PyObject *self, PyObject *args);
  * @return: return codes: 0: ok, else: smth wrong happend
  * if called while other (recv, send, init) funcs are working they will segfault (most probably)
  */
-static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args);
+//static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args);
 
 #endif // CAN_NET_SYNC_PY_H

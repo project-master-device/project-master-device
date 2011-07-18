@@ -26,17 +26,6 @@
 
 /* -------------------------------------BICYCLES------------------------------------------------*/
 
-// bicycle, 1=TRUE, 0=FALSE
-int check_base_range(can_net_base_range_t ranges, uint8_t port, uint8_t smb, uint16_t id) {
-	if ( (port > ranges.port_max) || (port < ranges.port_min) )
-		return 0;
-	if ( (id > ranges.id_max) || (id < ranges.id_min) )
-		return 0;
-	if ( (smb > ranges.smb_max) || (smb < ranges.smb_min) )
-		return 0;
-	return 1;
-}
-
 // Yet another bicycle:
 void list_free_all(list_t list) {
 	void* item = list_head(list);

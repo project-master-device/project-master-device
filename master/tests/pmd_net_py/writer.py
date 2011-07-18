@@ -15,6 +15,16 @@ button_2_id = 4
 reader_1_id = 5
 reader_2_id = 6
 
+def send_msg(hwa, port, descr_str, d_id, writer_func, smb = 0):
+	rc, lvl3_msg = writer_func()
+	if (rc != 0):
+		print "fail ", descr_str, ", rc = ", rc
+		return
+	else:
+		print "sending ", descr_str
+		msg = ("msg_lvl2", ("msg_metadata", hwa, port, smb, d_id), lvl3_msg)
+		lnet.send(msg)
+
 def test_write():
 	sync_timeout = 1500 # *1000us = 1.5s
 	drv_send_timeout = 500000 # *1us = 0.5s
@@ -24,25 +34,11 @@ def test_write():
 	
 	hwa = 15
 	port = 2
-	n = 0
 	s = 1
-	rc, lvl3_msg = button.w_up()
-	if (rc):
-		print "fail button.w_up, rc = ", rc
-		return
-	else:
-		print "sending button.w_up"
-		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, button_1_id), lvl3_msg)
-		lnet.send(msg)
-
-	rc, lvl3_msg = button.w_down()
-	if (rc):
-		print "fail button.w_down, rc = ", rc
-		return
-	else:
-		print "sending button.w_down"
-		msg = ("msg_lvl2", ("msg_metadata", hwa, port, n, button_2_id), lvl3_msg)
-		lnet.send(msg)
-
+	send_msg(hwa, port, "button.w_up", button_1_id, button.w_up)
+	send_msg(hwa, port, "button.w_down", button_2_id, button.w_down)
+	send_msg(hwa, port, "led.w_on", led_1_id, led.w_on)
+	send_msg(hwa, port, "led.w_off", led_2_id, led.w_off)
+	send_msg(hwa, port, "led.w_toggle", led_2_id, led.w_toggle)
 
 test_write()

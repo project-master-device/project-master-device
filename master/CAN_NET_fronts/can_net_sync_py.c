@@ -59,7 +59,7 @@ static PyObject* can_net_sync_py_recv(PyObject* self, PyObject* args) {
 				msg->meta.hw_addr, msg->meta.port, msg->meta.is_system, msg->meta.id, msg->data.itself, msg->data.len);
 	}
 }
-
+/*
 static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args) {
 	unsigned port;
 	if(!PyArg_ParseTuple(args, "I", &port)) {
@@ -70,7 +70,7 @@ static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args) {
 	int rc = can_net_sync_close(port);
 	return Py_BuildValue("i", rc);
 }
-
+*/
 static PyMethodDef can_net_sync_methods[] = {
 	{"init", can_net_sync_py_init, METH_VARARGS, "initialize, start listening for incoming messages | args: msgs_limit -int, timeout_cycles -int, send_frame_timeout_us -int, confirmation_tics -int | return: rc -int"},
 	{"send", can_net_sync_py_send, METH_VARARGS, "send message | args: ('msg_lvl2', ('msg_metadata', hw_addr -int, port -int, is_system -int, id - int), data -string)| return: rc -int"},

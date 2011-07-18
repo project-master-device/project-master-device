@@ -51,6 +51,16 @@ typedef struct {
 	bytearr_t data;
 } msg_lvl2_t;
 
+typedef struct {
+	uint8_t port_min, port_max;
+	uint16_t id_min, id_max;
+	uint8_t smb_min, smb_max; // trash
+} can_net_base_range_t;
+
+// bicycle, 1=TRUE, 0=FALSE
+int check_base_range(can_net_base_range_t range, uint8_t port, uint8_t smb, uint16_t id);
+inline int check_base_range_meta(can_net_base_range_t range, msg_metadata_t* meta);
+
 // CONST msg_lvl2_t* msg for send_callback:
 typedef void (*can_net_send_callback_t)(const int rc, msg_lvl2_t* msg, void * context);
 typedef void (*can_net_recv_callback_t)(const msg_lvl2_t* msg, void * context);

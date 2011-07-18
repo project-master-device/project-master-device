@@ -19,11 +19,11 @@
 
 int main(void) {
 	uint8_t port = 1;
-	uint32_t send_frame_timeout_us = 1000; // = 1ms
-	uint32_t confirmation_tics = 1000; // *1ms = 1s
+	int sync_timeout = 1500; // *1000us = 1.5s
+	uint32_t send_frame_timeout_us = 500000; // *1us = 0.5s
+	uint32_t net_confirm_timeout = 1000; // *1000us = 1s
 	int msgs_limit = 10;
-	int timeout_cycles = -1;
-	int rci = can_net_sync_init(port, msgs_limit, timeout_cycles, send_frame_timeout_us, confirmation_tics);
+	int rci = can_net_sync_init(port, msgs_limit, sync_timeout, send_frame_timeout_us, net_confirm_timeout);
 	if (rci) {
 		printf("initialization return code: %d\n", rci);
 		return 0;

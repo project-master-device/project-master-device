@@ -33,10 +33,12 @@
  * with queues of many msgs to one hwa::port::id+smb
  * with adding/removing callbacks
  * TODO: for next ver
+ * 			-better queuing(not recursive send)	- v0.77
  * 			-new_protocol						- v0.80
  * 			-more flexible mutexes				- v0.85
  * 			-config, -log						-
  * 			-CAN_err frames handling			-
+ * 			-better hearbeat handling			-
  * 			...
  * 			-BIG refactoring					- v2.00
  */

@@ -34,6 +34,8 @@ msg_lvl2_t* msg_lvl2_make_copy(const msg_lvl2_t* src) {
 	return dst;
 }
 
+can_net_base_range_t heartbeat_range = {0, -1, SYSMSG_HEARTBEAT_ID, SYSMSG_HEARTBEAT_ID, 1, 1};
+
 /* ----------------------------------------LIST_STRUCTS-----------------------------------------*/
 
 const can_net_recv_cb_record_t can_net_std_cb_record = {NULL, {0, -1, 0, -1, 0, 1}, NULL};
@@ -174,7 +176,7 @@ int can_net_init(const uint32_t send_frame_timeout_us, const uint32_t confirmati
 		return rc; // 1-cansocket, 2-pthread
 
 	#ifdef CAN_NET_CONFIRMATION
-	// start something(platform dependent) that will check confirmation waiters timeout
+	// start something(platform dependent) that will check confirmation waiters timeout -.0
 		confirmation_tics_g = confirmation_tics_;
 		#ifdef CAN_NET_LINUX
 			pthread_t conf_thread;
@@ -257,20 +259,16 @@ typedef struct {
 
 // finish Msg_Send_Handler:
 void msh_finish(const int rc_up, send_msg_context_t* ctx) {
-//	MUTEX_L(&data_mutex) - why is it here?
 	int call_cb = 1;
 
     #ifdef CAN_NET_CONFIRMATION
-	if ( (ctx->msg->meta.is_system != 1) || (ctx->msg->meta.id != SYSMSG_HEARTBEAT_ID) ) {
-	    // not heartbeat:
-	    if ( (rc_up == CAN_NET_RC_NORM))
+	// if no errors found: normal msg (not heartbeat) will call callback when receives confirmation: -.4
+	if ( (!check_base_range_meta(heartbeat_range, &ctx->msg->meta)) && (rc_up == CAN_NET_RC_NORM) )
 	        call_cb = 0;
-    }
     #endif
 
 	if (call_cb)
 		call_scb(ctx->callback, rc_up, ctx->msg, ctx->cb_ctx);
-//	MUTEX_U(&data_mutex)
 
 	free(ctx->segm_ctx);
 	free(ctx);
@@ -319,8 +317,8 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 				return; }
 
 			#ifdef CAN_NET_CONFIRMATION
-			// register confirmation waiting before sending last frame
-			if ( (ctx->msg->meta.is_system != 1) || (ctx->msg->meta.id != SYSMSG_HEARTBEAT_ID) ) {
+			// register confirmation waiting before sending last frame -.1
+			if ( !check_base_range_meta(heartbeat_range, &ctx->msg->meta) ) {
 				// not heartbeat:
 				if (ctx->segm_ctx->lfb) {
 					MUTEX_L(&confirm_waiters_mutex)
@@ -356,8 +354,8 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 			#endif
 
 			msh_finish(CAN_NET_RC_NORM, ctx);
-			//<open kostyil>
 			#ifdef CAN_NET_QUEUING
+			//<open kostyil> - delete after beta
 			if (process_next)
 				msg_send_handler(CAN_DRV_RC_NORM, NULL, next_msg->ctx);
 
@@ -366,12 +364,11 @@ void msg_send_handler(const int drv_rc, can_frame_t* frame, void* context_void) 
 			#endif
 		}
 	} else {
-		// something went wrong:
 		#ifdef CAN_NET_CONFIRMATION
-		if ( (ctx->msg->meta.is_system != 1) || (ctx->msg->meta.id != SYSMSG_HEARTBEAT_ID) ) {
+		// delete confirmation waiter if something went wrong while sending last frame: -.2
+		if ( !check_base_range_meta(heartbeat_range, &ctx->msg->meta) ) {
 			// not heartbeat:
 			if (ctx->segm_ctx->lfb) {
-				// err while sending last frame => remove it from confirm_waiters:
 				MUTEX_L(&confirm_waiters_mutex)
 				confirm_waiter_t* waiter = find_confirm_waiter(ctx->msg->meta.port, ctx->msg->meta.hw_addr, ctx->msg->meta.is_system, ctx->msg->meta.id);
 				remove_confirm_waiter(waiter);
@@ -443,25 +440,23 @@ int accept_frame(const lvl_segm_fnl_t* segment, atom_descriptor_t* atom, const u
 			curr_frame = list_item_next(curr_frame);
 		}
 
-		// send confirmation of msg receiving:
 		int do_not_call_cb = 0;
 		#ifdef CAN_NET_CONFIRMATION
-		if ( (msg->it.meta.is_system != 1) || (msg->it.meta.id != SYSMSG_HEARTBEAT_ID) ) {
+		// send confirmation of msg receiving: -.3
+		if ( !check_base_range_meta(heartbeat_range, &msg->it.meta) ) {
 			// not heartbeat:
 			uint16_t base = 0;
 			can_frame_t* new_frame = (can_frame_t*)malloc(sizeof(can_frame_t));
-			if ( lvl2_acc_base_pack(&base, port, msg->it.meta.is_system, msg->it.meta.id) ) {
-				//FAILed to send confirmation:
-				do_not_call_cb = 1;
-			} else if ( lvl2_std_confirm_pack(&new_frame->data, base) ) {
-				do_not_call_cb = 1;
-			} else {
-				if ( can_frame_pack(new_frame, CAN_NET_LVL2_VER_STD_CONFIRM, msg->it.meta.hw_addr) ) {
-					do_not_call_cb = 1;
-				} else {
-					can_send(new_frame, NULL);
+
+			do_not_call_cb = 1;
+			if ( !lvl2_acc_base_pack(&base, port, msg->it.meta.is_system, msg->it.meta.id) ) {
+				if ( !lvl2_std_confirm_pack(&new_frame->data, base) ) {
+					if ( !can_frame_pack(new_frame, CAN_NET_LVL2_VER_STD_CONFIRM, msg->it.meta.hw_addr) )
+						can_send(new_frame, NULL);
+						do_not_call_cb = 0;
 				}
 			}
+			//else: FAILed to build confirms msg: // should never happen!
 		}
 		#endif
 

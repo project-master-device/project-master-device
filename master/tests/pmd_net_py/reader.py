@@ -19,34 +19,35 @@ BUTTON_OP_UP = 2
 def button_handle(lvl2_msg_data, params):
 	print " button_handle(", lvl2_msg_data, params, ")"
 	rc, op = button.read(lvl2_msg_data)
-	s = params['state']
+	print "op=", op
 	if (op == None):
 		print " button_handle: op=NONE"
 		return None
 	elif (op == BUTTON_OP_DOWN):
-		s = True
+		params['state'] = True
 	elif (op == BUTTON_OP_UP):
-		s = False
+		params['state'] = False
 	return 0
 
 LED_OP_ON = 1
 LED_OP_OFF = 2
 LED_OP_TOGGLE = 3
 def led_handle(lvl2_msg_data, params):
+	print " led_handle(", int(lvl2_msg_data), params, ")"
 	rc, op = led.read(lvl2_msg_data)
-	s = params['state']
+	print "op=", op
 	if (op == None):
 		print " led_handle: op=NONE"
 		return None
 	elif (op == LED_OP_ON):
-		s = True
+		params['state'] = True
 	elif (op == LED_OP_OFF):
-		s = False
+		params['state'] = False
 	elif (op == LED_OP_TOGGLE):
-		if (s == True):
-			s = False
+		if (params['state'] == True):
+			params['state'] = False
 		else:
-			s = True
+			params['state'] = True
 	return 0
 
 READER_OP_SEND_MSG = 0
@@ -88,10 +89,10 @@ devices = { led_1_id: {'name': 'led_1', 'state': False, 'id': led_1_id, 'handler
 # ("msg_lvl2", ("msg_metadata", hw_addr -int, port -int, is_system -int, id - int), data -string)
 
 def handle_msg(msg):
-	id = msg[1][4]
+	d_id = msg[1][4]
 	is_system = msg[1][3]
 	if (is_system == 0):
-		device = devices[id]
+		device = devices[d_id]
 		return device['handler'](msg[2], device)
 	else:
 		return None
@@ -102,7 +103,7 @@ def test_read():
 	net_confirm_timeout = 1000 # *1000us = 1s
 	lnet.init(2, 10, sync_timeout, drv_send_timeout, net_confirm_timeout)
 	x = True
-	for i in range(0, 5): # 10sec
+	for i in range(0, 10): # 10sec
 		rc, msg = lnet.recv(2)
 		if (rc != 0):
 			print "lnet.recv(port) FAIL: rc= ", rc

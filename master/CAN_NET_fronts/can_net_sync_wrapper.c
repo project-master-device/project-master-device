@@ -12,9 +12,15 @@
 #define SEND_CHT_US			1*1000 // 1ms
 #define RECV_CHT_US			1*1000 // 1ms
 
+#ifndef CAN_NET_LINUX
+	#error "Never tested on anything but linux (also uses linux-mutexes)"
+#endif
+
 typedef struct {
 	int is_sending;
 	int rc;
+	int actual;
+	pthread_mutex_t mutex;
 } sender_descriptor_t;
 
 typedef struct {
@@ -22,15 +28,29 @@ typedef struct {
 	int msgs_limit;
 	int timeout_cycles;
 	LIST_STRUCT(msgs);
-	can_net_recv_cb_record_t_plist* cb_plist;
+	can_net_recv_cb_record_t_plist* cb_plist; // useless at the moment (17.07.11)
 } port_buffer_t;
 port_buffer_t* ports[CAN_NET_PORT_MAX] = { NULL };
 pthread_mutex_t ports_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+inline void free_descr(sender_descriptor_t* descr) {
+	pthread_mutex_unlock(&descr->mutex);
+	pthread_mutex_destroy(&descr->mutex);
+	free(descr);
+}
+
+// should be called sooner or later, if not called - ctx memory will leak
 void sync_wr_send_callback(const int rc, msg_lvl2_t* msg, void* ctx) {
 	sender_descriptor_t* descr = (sender_descriptor_t*)ctx;
-	descr->is_sending = 0;
-	descr->rc = rc;
+	pthread_mutex_lock(&descr->mutex);
+	if (descr->actual == 1) {
+		descr->is_sending = 0;
+		descr->rc = rc;
+		pthread_mutex_unlock(&descr->mutex);
+	} else {
+		//free_descr(descr);
+		pthread_mutex_unlock(&descr->mutex);
+	}
 }
 
 void sync_wr_recv_callback(const msg_lvl2_t* msg, void* ctx) {
@@ -45,7 +65,6 @@ void sync_wr_recv_callback(const msg_lvl2_t* msg, void* ctx) {
 
 	pthread_mutex_unlock(&ports_mutex);
 }
-
 
 int can_net_sync_init(const uint8_t port, const int msgs_limit, const int timeout_cycles,
 		const uint32_t send_frame_timeout_us, const uint32_t confirmation_tics) {
@@ -70,21 +89,36 @@ int can_net_sync_init(const uint8_t port, const int msgs_limit, const int timeou
 int can_net_sync_send(const msg_lvl2_t* msg) {
 	int rc = -1;
 	if (msg->meta.port < CAN_NET_PORT_MAX) {
-		sender_descriptor_t descr;
-		descr.is_sending = 1;
-		descr.rc = 0;
+		// TODO: FIX TIMEOUT=>SEGFAULT BUG
+		sender_descriptor_t* descr = (sender_descriptor_t*)malloc(sizeof(sender_descriptor_t));
+		descr->is_sending = 1;
+		descr->rc = 1;
+		descr->actual = 1;
+		pthread_mutex_init(&descr->mutex, NULL);
 
-		can_net_start_sending_msg(msg, sync_wr_send_callback, (void*)&descr);
+		can_net_start_sending_msg(msg, sync_wr_send_callback, (void*)descr);
 
-		while(descr.is_sending) {
+		int cycles_spent = 0;
+		while( ((cycles_spent < ports[msg->meta.port]->timeout_cycles) && (descr->is_sending)) ||
+				(ports[msg->meta.port]->timeout_cycles < 0) ) { // no timeout - wait forever
 			usleep(SEND_CHT_US);
+			cycles_spent++;
 		}
-		rc = descr.rc;
+		pthread_mutex_lock(&descr->mutex);
+		rc = descr->rc;
+		if (descr->is_sending) {
+			// quit because of timeout
+			descr->actual = 0;
+			pthread_mutex_unlock(&descr->mutex);
+		} else {
+			// quit because of callback
+			free_descr(descr);
+		}
 	}
 	return rc;
 }
 
-//warning possibly govnokod; TODO: think more
+// WARNING: possibly govnokod; TODO: think more
 int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg) {
 	int rc = 1;
 	if ((port < CAN_NET_PORT_MAX) && (ports[port] != NULL)) {

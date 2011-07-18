@@ -242,17 +242,17 @@ static PyObject* pmd_net_sys_config_w_section_del_py(PyObject* self, PyObject* a
 }
 
 // ("config_section", id -uint, ["options", ("option", key -str, value -str/int/uint?, type -uint?), ...]) // type: [0;255]
-int convert_section_to_py(PyObject* section_py, config_section_t* section) {
+int convert_section_to_py(PyObject** section_py, config_section_t* section) {
 	//Py_ssize_t len = 0;
 	PyObject* options_list_py = PyList_New(0);
-	if ( PyList_Append(options_list_py, PyString_FromString("option")) )
+	if ( PyList_Append(options_list_py, PyString_FromString("options")) )
 		return 1;
 	PyObject* new_option = NULL;
 	config_option_t* curr = list_head(section->options);
 	while(curr != NULL) {
 		switch (curr->type) {
 			case CONFIG_OPTION_STR_TYPE:
-				new_option = Py_BuildValue("(sss#I)", "option", curr->key, curr->value, curr->size, curr->type);
+				new_option = Py_BuildValue("(sssI)", "option", curr->key, curr->value, curr->type);
 				break;
 			case CONFIG_OPTION_NUM_INT_TYPE:
 				new_option = Py_BuildValue("(ssiI)", "option", curr->key, *((config_int_t*)curr->value), curr->type);
@@ -265,23 +265,26 @@ int convert_section_to_py(PyObject* section_py, config_section_t* section) {
 			return 1;
 		curr = list_item_next(curr);
 	}
-	section_py = Py_BuildValue("(sIO)", "config_section", section->id, options_list_py);
+	*section_py = Py_BuildValue("(sIO)", "config_section", section->id, options_list_py);
 	return 0;
 }
 
 // ["config_cnf", config_section_0, ...]
-int convert_cnf_to_py(PyObject* cnf_py, config_cnf_t* cnf) {
+int convert_cnf_to_py(PyObject** cnf_py, config_cnf_t* cnf) {
 	//Py_ssize_t len = 0;
-	cnf_py = PyList_New(0);
-	if ( PyList_Append(cnf_py, PyString_FromString("config_cnf")) )
+	*cnf_py = PyList_New(0);
+	if ( PyList_Append(*cnf_py, PyString_FromString("config_cnf")) ) {
 		return 1;
+	}
 	PyObject* new_section = NULL;
 	config_section_t* curr = list_head(cnf->sections);
 	while(curr != NULL) {
-		if ( convert_section_to_py(new_section, curr) )
+		if ( convert_section_to_py(&new_section, curr) )
 			return 1;
-		else if ( PyList_Append(cnf_py, new_section) )
+
+		if ( PyList_Append(*cnf_py, new_section) )
 			return 2;
+
 		curr = list_item_next(curr);
 	}
 	return 0;
@@ -298,28 +301,27 @@ static PyObject* pmd_net_sys_config_r_py(PyObject* self, PyObject* args) {
 	if (rc) {
 		return Py_BuildValue("(iss)", rc, NULL, NULL);
 	} else {
-		int rc = -1;
 		PyObject* return_object = NULL;
 		switch (data.operation) {
 			case PMD_NET_SYS_CONFIG_REQUEST:
-				return Py_BuildValue("(iIs)", rc, data.operation, NULL);
+				return Py_BuildValue("(iIs)", 0, data.operation, NULL);
 
 			case PMD_NET_SYS_CONFIG_FULL:
-				if ( convert_cnf_to_py(return_object, data.config) )
+				if ( convert_cnf_to_py(&return_object, data.config) )
 					return Py_BuildValue("(iss)", -1, NULL, NULL);
 				else
-					return Py_BuildValue("(iIs)", rc, data.operation, return_object);
+				    return Py_BuildValue("(iIO)", 0, data.operation, return_object);
 				break;
 
 			case PMD_NET_SYS_CONFIG_SECTION_ADD:
-				if ( convert_section_to_py(return_object, data.section) )
+				if ( convert_section_to_py(&return_object, data.section) )
 					return Py_BuildValue("(iss)", -1, NULL, NULL);
 				else
-					return Py_BuildValue("(iIs)", -1, data.operation, return_object);
+					return Py_BuildValue("(iIO)", -1, data.operation, return_object);
 				break;
 
 			case PMD_NET_SYS_CONFIG_SECTION_DEL:
-				return Py_BuildValue("(iII)", rc, data.operation, data.section->id);
+				return Py_BuildValue("(iII)", 0, data.operation, data.section->id);
 				break;
 		}
 	}

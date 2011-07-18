@@ -7,9 +7,9 @@ PROCESS(blink_process, "Contiki OS port blink test");
 PROCESS(led_toggle_process, "Contiki OS port blink test");
 PROCESS(button_check_process, "Contiki OS port blink test");
 
-AUTOSTART_PROCESSES(&led_toggle_process, &button_check_process);
+//AUTOSTART_PROCESSES(&led_toggle_process, &button_check_process);
 //AUTOSTART_PROCESSES(&blink_process);
-//AUTOSTART_PROCESSES(NULL);
+AUTOSTART_PROCESSES(NULL);
 
 static process_event_t g_ev;
 

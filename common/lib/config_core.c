@@ -35,11 +35,6 @@
 
 #define CONFIG_EMIT_BUF_SIZE 256
 
-#define CONFIG_STR_TYPE          's'
-#define CONFIG_NUM_INT_TYPE      'i'
-#define CONFIG_NUM_UINT_TYPE     'I'
-
-
 #define SNPRINTF_SIZE_CONDITION(size) ((size) > 0 ? (size): 0)
 
 typedef enum {
@@ -54,6 +49,10 @@ typedef enum {
 
 
 void config_option_construct(config_option_t * config_option) {
+    if(config_option == NULL) {
+        return;
+    }
+
     config_option->next = NULL;
     strcpy(config_option->key, "");
     config_option->value = NULL;
@@ -78,7 +77,7 @@ void config_option_set_value(config_option_t * config_option, const char * value
     config_option->type = value[0];
 
     switch(config_option->type) {
-        case CONFIG_STR_TYPE:
+        case CONFIG_OPTION_STR_TYPE:
             config_option->value = malloc(size);
             config_option->size = size;
             if(config_option->value == NULL) {
@@ -88,7 +87,7 @@ void config_option_set_value(config_option_t * config_option, const char * value
             }
             break;
 
-        case CONFIG_NUM_INT_TYPE:
+        case CONFIG_OPTION_NUM_INT_TYPE:
             config_option->value = (config_int_t *) malloc(sizeof(config_int_t));
             config_option->size = sizeof(config_int_t);
             if(config_option->value == NULL) {
@@ -98,7 +97,7 @@ void config_option_set_value(config_option_t * config_option, const char * value
             }
             break;
 
-        case CONFIG_NUM_UINT_TYPE:
+        case CONFIG_OPTION_NUM_UINT_TYPE:
             config_option->value = (config_uint_t *) malloc(sizeof(config_uint_t));
             config_option->size = sizeof(config_uint_t);
             if(config_option->value == NULL) {
@@ -114,7 +113,25 @@ void config_option_set_value(config_option_t * config_option, const char * value
 }
 
 
+config_section_t * config_section_new(uint8_t id) {
+    config_section_t * sect = (config_section_t *)malloc(sizeof(config_section_t));
+    config_section_construct(sect, id);
+
+    return sect;
+}
+
+void config_section_delete(config_section_t * config_section) {
+    if(config_section != NULL) {
+        config_section_destruct(config_section);
+        free(config_section);
+    }
+}
+
 void config_section_construct(config_section_t * config_section, uint8_t id) {
+    if(config_section == NULL) {
+        return;
+    }
+
     config_section->next = NULL;
     config_section->id = id;
     LIST_STRUCT_INIT(config_section, options);
@@ -162,7 +179,7 @@ config_int_t config_section_get_int(config_section_t * config_section, const cha
     config_int_t res;
     config_option_t * opt = config_section_find_option(config_section, key);
 
-    if(opt->type != CONFIG_NUM_INT_TYPE) {
+    if(opt->type != CONFIG_OPTION_NUM_INT_TYPE) {
         res = default_val;
     } else {
         res = *(config_int_t *)(opt->value);
@@ -175,7 +192,7 @@ config_uint_t config_section_get_uint(config_section_t * config_section, const c
     config_uint_t res;
     config_option_t * opt = config_section_find_option(config_section, key);
 
-    if(opt->type != CONFIG_NUM_UINT_TYPE) {
+    if(opt->type != CONFIG_OPTION_NUM_UINT_TYPE) {
         res = default_val;
     } else {
         res = *(config_uint_t *)(opt->value);
@@ -184,14 +201,13 @@ config_uint_t config_section_get_uint(config_section_t * config_section, const c
     return res;
 }
 
-//TODO: use strncpy
 void config_section_get_str(config_section_t * config_section, const char * key, const char * default_val, char * dest, unsigned int dest_size) {
     config_option_t * opt = config_section_find_option(config_section, key);
 
-    if(opt->type != CONFIG_STR_TYPE) {
-        strcpy(dest, default_val/*, dest_size*/);
+    if(opt->type != CONFIG_OPTION_STR_TYPE) {
+        strncpy(dest, default_val, dest_size);
     } else {
-        strcpy(dest, (char *)(opt->value)/*, dest_size*/);
+        strncpy(dest, (char *)(opt->value), dest_size);
     }
 }
 
@@ -201,11 +217,11 @@ int config_section_set_int(config_section_t * config_section, const char * key, 
 
     if  (opt == NULL) {
         opt = config_section_create_option(config_section);
-        strcpy(opt->key, key);
-        opt->type = CONFIG_NUM_INT_TYPE;
+        strncpy(opt->key, key, CONFIG_OPTION_KEY_LEN);
+        opt->type = CONFIG_OPTION_NUM_INT_TYPE;
     }
 
-    if(opt->type != CONFIG_NUM_INT_TYPE) {
+    if(opt->type != CONFIG_OPTION_NUM_INT_TYPE) {
         res = -1;
     } else {
         opt->value = malloc(sizeof(config_int_t));
@@ -222,11 +238,11 @@ int config_section_set_uint(config_section_t * config_section, const char * key,
 
     if  (opt == NULL) {
         opt = config_section_create_option(config_section);
-        strcpy(opt->key, key);
-        opt->type = CONFIG_NUM_UINT_TYPE;
+        strncpy(opt->key, key, CONFIG_OPTION_KEY_LEN);
+        opt->type = CONFIG_OPTION_NUM_UINT_TYPE;
     }
 
-    if(opt->type != CONFIG_NUM_UINT_TYPE) {
+    if(opt->type != CONFIG_OPTION_NUM_UINT_TYPE) {
         res = -1;
     } else {
         opt->value = malloc(sizeof(config_uint_t));
@@ -243,11 +259,11 @@ int config_section_set_str(config_section_t * config_section, const char * key, 
 
     if  (opt == NULL) {
         opt = config_section_create_option(config_section);
-        strcpy(opt->key, key);
-        opt->type = CONFIG_STR_TYPE;
+        strncpy(opt->key, key, CONFIG_OPTION_KEY_LEN);
+        opt->type = CONFIG_OPTION_STR_TYPE;
     }
 
-    if(opt->type != CONFIG_STR_TYPE) {
+    if(opt->type != CONFIG_OPTION_STR_TYPE) {
         res = -1;
     } else {
         if(opt->value) free(opt->value);
@@ -262,11 +278,33 @@ int config_section_set_str(config_section_t * config_section, const char * key, 
 }
 
 
+config_cnf_t * config_cnf_new() {
+    config_cnf_t * cnf = (config_cnf_t *)malloc(sizeof(config_cnf_t));
+    config_cnf_construct(cnf);
+
+    return cnf;
+}
+
+void config_cnf_delete(config_cnf_t * config) {
+    if(config != NULL) {
+        config_cnf_destruct(config);
+        free(config);
+    }
+}
+
 void config_cnf_construct(config_cnf_t * config) {
+    if(config == NULL) {
+        return;
+    }
+
     LIST_STRUCT_INIT(config, sections);
 }
 
 void config_cnf_destruct(config_cnf_t * config) {
+    if(config == NULL) {
+        return;
+    }
+
     config_section_t * it = NULL;
     config_section_t * next = NULL;
 
@@ -329,13 +367,10 @@ config_section_t * config_cnf_create_section(config_cnf_t * config, uint8_t id) 
         return NULL;
     }
 
-    config_section_t * sect = malloc(sizeof(config_section_t));
-    if(sect != NULL) {
-        config_section_construct(sect, id);
-        if(config_cnf_add_section(config, sect) != 0) {
-            free(sect);
-            sect = NULL;
-        }
+    config_section_t * sect = config_section_new(id);
+    if((sect != NULL) && (config_cnf_add_section(config, sect) != 0)) {
+        config_section_delete(sect);
+        sect = NULL;
     }
 
     return sect;
@@ -524,15 +559,15 @@ char * config_emit(config_cnf_t * src_config) {
             dest_str_buf_it += snprintf(dest_str_buf_it, SNPRINTF_SIZE_CONDITION(dest_str_buf_end - dest_str_buf_it), "%s=%c", opt_it->key, opt_it->type);
 
             switch(opt_it->type) {
-                case CONFIG_STR_TYPE:
+                case CONFIG_OPTION_STR_TYPE:
                     dest_str_buf_it += snprintf(dest_str_buf_it, SNPRINTF_SIZE_CONDITION(dest_str_buf_end - dest_str_buf_it), "%s", (char *)(opt_it->value));
                     break;
 
-                case CONFIG_NUM_INT_TYPE:
+                case CONFIG_OPTION_NUM_INT_TYPE:
                     dest_str_buf_it += snprintf(dest_str_buf_it, SNPRINTF_SIZE_CONDITION(dest_str_buf_end - dest_str_buf_it), "%d", *(config_int_t *)(opt_it->value));
                     break;
 
-                case CONFIG_NUM_UINT_TYPE:
+                case CONFIG_OPTION_NUM_UINT_TYPE:
                     dest_str_buf_it += snprintf(dest_str_buf_it, SNPRINTF_SIZE_CONDITION(dest_str_buf_end - dest_str_buf_it), "%u", *(config_uint_t *)(opt_it->value));
                     break;
 

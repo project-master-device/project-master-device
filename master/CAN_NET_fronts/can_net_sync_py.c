@@ -9,6 +9,8 @@
 
 #include "can_net_sync_py.h"
 
+typedef uint32_t python_uint_t;
+
 static PyObject* can_net_sync_py_init(PyObject* self, PyObject* args) {
 	unsigned port;
 	int msgs_limit;
@@ -25,19 +27,26 @@ static PyObject* can_net_sync_py_init(PyObject* self, PyObject* args) {
 
 static PyObject* can_net_sync_py_send(PyObject* self, PyObject* args) {
 	msg_lvl2_t msg;
-	int data_len;
 	char* msg_lvl2_name;
 	char* msg_metadata_name;
 
-	uint32_t id;
+    python_uint_t hw_addr_buf;
+    python_uint_t port_buf;
+    python_uint_t is_system_buf;
+	python_uint_t id_buf;
+	python_uint_t data_len_buf;
+
 	// ("msg_lvl2", ("msg_metadata", hw_addr -int, port -int, is_system -int, id - int), data -string)
 	if(!PyArg_ParseTuple(args, "(s(sIIII)s#)", &msg_lvl2_name, &msg_metadata_name,
-			&msg.meta.hw_addr, &msg.meta.port, &msg.meta.is_system, &id, &msg.data.itself, &data_len)) {
+			&hw_addr_buf, &port_buf, &is_system_buf, &id_buf, &msg.data.itself, &data_len_buf)) {
 		PyErr_Format(PyExc_TypeError, "can_net_sync.send - expected ('',('',uint,uint,uint),str)");
 		return Py_BuildValue("i", -1);
 	}
-	msg.meta.id = (uint16_t)id;
-	msg.data.len = data_len; // ???
+    msg.meta.hw_addr = (uint32_t)hw_addr_buf;
+    msg.meta.port = (uint8_t)port_buf;
+    msg.meta.is_system = (uint8_t)is_system_buf;
+	msg.meta.id = (uint16_t)id_buf;
+	msg.data.len = (uint32_t)data_len_buf; // ???
 
 	int rc = can_net_sync_send(&msg);
 	return Py_BuildValue("i", rc);

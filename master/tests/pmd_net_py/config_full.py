@@ -1,11 +1,15 @@
 import can_net_sync as cn
 import pmd_net_system as sys
 
-section = ("config_section", 2, ["options", ("option", "type", "led", "s"), ("option", "test", "trololol", "s"), ("option", "ddr", 36, "I"), ("option", "port", 37, "I"), ("option", "offset", 4, "I")])
-config = ["config_cnf", section]
+section1 = ("config_section", 42, ["options", ("option", "type", "led", sys.ConfigOptionTypes['STRING']), ("option", "qwer", 123, sys.ConfigOptionTypes['UINT']), ("option", "rewq", -333, sys.ConfigOptionTypes['INT'])])
 
-print sys.config_w_section_add(section)
-#msg = ("msg_lvl2", ("msg_metadata", 1, 1, 1, sys.config_w_section_add(config)[1]))
-#print(msg)
-#cn.init(1, 100, 100, 100, 100)
-#cn.send(msg)
+section2 = ("config_section", 24, ["options", ("option", "option", 321, sys.ConfigOptionTypes['UINT']), ("option", "avavavavafaf", -666, sys.ConfigOptionTypes['INT'])])
+
+config = ["config_cnf", section1, section2]
+
+data = sys.config_w_full(config)
+if(data[0] == 0):
+    msg = ("msg_lvl2", ("msg_metadata", 123, 1, 1, sys.Ids['CONFIG']), data[1])
+    print msg
+    cn.init(1, 100, 100, 100, 100)
+    cn.send(msg)

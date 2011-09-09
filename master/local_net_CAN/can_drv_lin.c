@@ -81,7 +81,7 @@ void* drv_main_cycle(void* p) {
 	struct can_frame cs_frame;
 	can_frame_t frame;
 	int bytes_sent;
-	int rc_s = 0;
+	int rc_s = CAN_DRV_RC_NORM;
 	while (1) {
 		// send:
 		pthread_mutex_lock(&frames_out_mutex);

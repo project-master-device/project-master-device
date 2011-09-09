@@ -12,6 +12,7 @@
 #define SEND_CHT_US			1*1000 // 1ms
 #define RECV_CHT_US			1*1000 // 1ms
 
+#warning "Sync Wrapper: broadcast port isnt real broadcast - msg is extracted by first app - fix before using >1 apps"
 #ifndef CAN_NET_LINUX
 	#error "Never tested on anything but linux (also uses linux-mutexes)"
 #endif
@@ -89,7 +90,7 @@ int can_net_sync_init(const uint8_t port, const int msgs_limit, const int timeou
 int can_net_sync_send(const msg_lvl2_t* msg) {
 	int rc = -1;
 	if (msg->meta.port < CAN_NET_PORT_MAX) {
-		// TODO: FIX TIMEOUT=>SEGFAULT BUG
+		// TODO: FIX TIMEOUT=>SEGFAULT BUG // fixed in 06.2011?
 		sender_descriptor_t* descr = (sender_descriptor_t*)malloc(sizeof(sender_descriptor_t));
 		descr->is_sending = 1;
 		descr->rc = 1;
@@ -120,7 +121,7 @@ int can_net_sync_send(const msg_lvl2_t* msg) {
 
 // WARNING: possibly govnokod; TODO: think more
 int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg) {
-	int rc = 1;
+	int rc = -1; //impossible rc
 	if ((port < CAN_NET_PORT_MAX) && (ports[port] != NULL)) {
 		msg_lvl2_t_plist* msg_pl;
 		int timeout_counter = 0;
@@ -139,7 +140,7 @@ int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg) {
 			}
 			if ( (timeout_counter > ports[port]->timeout_cycles) && (ports[port]->timeout_cycles >= 0) ) {
 				*msg = NULL;
-				rc = 2;
+				rc = 1;
 				break;
 			}
 			usleep(RECV_CHT_US);

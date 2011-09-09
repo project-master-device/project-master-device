@@ -31,6 +31,7 @@ int can_net_sync_init(const uint8_t port, const int msgs_limit, const int timeou
  * @return: return codes: look at callback return codes in can_net_middle.h
  */
 int can_net_sync_send(const msg_lvl2_t* msg);
+#define CAN_NET_SYNC_SEND_RC_INVALID_PORT	-1
 
 /**
  * can_net_sync_recv - recv next message
@@ -41,6 +42,7 @@ int can_net_sync_send(const msg_lvl2_t* msg);
  * can net sync wrapper will allocate memory for msg automatically, give it just pointer
  */
 int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg);
+#define CAN_NET_SYNC_RECV_RC_TIMEOUT	1
 
 /**
  * can_net_sync_close - close, stop listening for incoming messages

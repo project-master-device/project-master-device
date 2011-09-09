@@ -80,6 +80,9 @@ static PyObject* can_net_sync_py_close(PyObject *self, PyObject *args) {
 	return Py_BuildValue("i", rc);
 }
 */
+
+/* ----------------------------------------PY_MODULE--------------------------------------------*/
+
 static PyMethodDef can_net_sync_methods[] = {
 	{"init", can_net_sync_py_init, METH_VARARGS, "initialize, start listening for incoming messages | args: msgs_limit -int, timeout_cycles -int, send_frame_timeout_us -int, confirmation_tics -int | return: rc -int"},
 	{"send", can_net_sync_py_send, METH_VARARGS, "send message | args: ('msg_lvl2', ('msg_metadata', hw_addr -int, port -int, is_system -int, id - int), data -string)| return: rc -int"},
@@ -90,4 +93,22 @@ static PyMethodDef can_net_sync_methods[] = {
 
 PyMODINIT_FUNC initcan_net_sync(void) {
 	(void) Py_InitModule("can_net_sync", can_net_sync_methods);
+
+	PyObject * rc_ok = Py_BuildValue("i", 0);
+	PyModule_AddObject(m, "rc_ok", rc_ok);
+
+	PyObject * send_rc_candrv_timer_err = Py_BuildValue("i", CAN_DRV_RC_TIMER_ERR);
+	PyModule_AddObject(m, "send_rc_candrv_timer_err", send_rc_candrv_timer_err);
+
+	PyObject * send_rc_can_drv_norm = Py_BuildValue("i", CAN_DRV_RC_TIMEOUT);
+	PyModule_AddObject(m, "send_rc_candrv_timeout", send_rc_candrv_timeout);
+
+	PyObject * send_rc_can_drv_norm = Py_BuildValue("i", CAN_DRV_RC_NORM);
+	PyModule_AddObject(m, "send_rc_can_drv_norm", send_rc_can_drv_norm);
+
+	PyObject * send_rc_invalid_port = Py_BuildValue("i", CAN_NET_SYNC_SEND_RC_INVALID_PORT);
+	PyModule_AddObject(m, "send_rc_invalid_port", send_rc_invalid_port);
+
+	PyObject * recv_rc_timeout = Py_BuildValue("i", CAN_NET_SYNC_RECV_RC_TIMEOUT);
+	PyModule_AddObject(m, "recv_rc_timeout", recv_rc_timeout);
 }

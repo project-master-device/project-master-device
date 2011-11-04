@@ -369,6 +369,21 @@ static PyObject* pmd_net_sys_set_op_r_py(PyObject *self, PyObject *args) {
 }
 
 /* ----------------------------------------PY_MODULE--------------------------------------------*/
+static PyMethodDef pmd_net_system_methods[] = {
+        {"heartbeat_w", pmd_net_sys_heartbeat_w_py, METH_VARARGS, "(i)make data for heartbeat msg, return:(rc -int, packed_msg -str)"},
+        {"config_w_request", pmd_net_sys_config_w_request_py, METH_VARARGS, "(o?)pack command for config: request full config| args: - | return:(rc -int, packed_msg -str)"},
+        {"config_w_full", pmd_net_sys_config_w_full_py, METH_VARARGS, "(i?)pack command for config: write full config| args: config -list| return:(rc -int, packed_msg -str)"},
+        {"config_w_section_add", pmd_net_sys_config_w_section_add_py, METH_VARARGS, "(o)pack command for config: add config section| args: section -tuple| return:(rc -int, packed_msg -str)"},
+        {"config_w_section_del", pmd_net_sys_config_w_section_del_py, METH_VARARGS, "(o)pack command for config: del config section| args: section -tuple| return:(rc -int, packed_msg -str)"},
+//        {"config_write", pmd_net_sys_config_w_py, METH_VARARGS, "pack command for config, return:(rc -int, packed_msg -str)"},
+        {"config_read", pmd_net_sys_config_r_py, METH_VARARGS, "unpack command for config| args: packed_msg -str| return:(rc -int, operation_code -int, data -uint/None/config-tuple/section-tuple)"},
+        {"set_op_w_init", pmd_net_set_op_w_init_py, METH_VARARGS, "pack command: set mode <initialization> | args: - | return:(rc -int, packed_msg -str)"},
+        {"set_op_w_normal", pmd_net_set_op_w_normal_py, METH_VARARGS, "pack command: set mode <normal> | args: - | return:(rc -int, packed_msg -str)"},
+        {"set_op_w_configuration", pmd_net_set_op_w_configuration_py, METH_VARARGS, "pack command: set mode <configuration> | args: - | return:(rc -int, packed_msg -str)"},
+//        {"set_op_write", pmd_net_sys_set_op_w_py, METH_VARARGS, "pack command for set_op, return:(rc -int, packed_msg -str)"},
+        {"set_op_read", pmd_net_sys_set_op_r_py, METH_VARARGS, "unpack command for set_op| args: packed_msg -str| return:(rc -int, operation_code -int)"},
+        {NULL, NULL, 0, NULL}        /* Sentinel */
+};
 
 PyMODINIT_FUNC initpmd_net_system(void) {
 	PyObject * m = Py_InitModule("pmd_net_system", pmd_net_system_methods);

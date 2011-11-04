@@ -26,6 +26,8 @@
 #ifndef CAN_NET_CORE_H_
 #define CAN_NET_CORE_H_
 
+//TODO:CANNET_REFACTORING rename to can_net_internal_structs
+
 #include <stdlib.h>
 #include "can_protocols.h"
 #include "../lib/list.h"

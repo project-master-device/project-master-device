@@ -25,6 +25,8 @@
 #ifndef CAN_NET_MIDDLE_H_
 #define CAN_NET_MIDDLE_H_
 
+//TODO: rename to can_net_core
+
 #include "can_net_core.h"
 #include "../lib/bytearray.h"
 
@@ -34,6 +36,8 @@
 #define CAN_NET_CONFIRMATION
 
 /* -------------------------------------INTERFACE_STRUCTS---------------------------------------*/
+
+//TODO:CANNET_REFACTORING make file can_net_interface_structs
 
 /**
  * @struct msg_metadata_t
@@ -80,6 +84,8 @@ inline void call_scb(can_net_send_callback_t send_cb, const int rc, msg_lvl2_t* 
 #define CAN_NET_RC_DRIVER_ERRS_START		10000
 
 /* -----------------------------------CONFIRMATION_data/struct/funcs----------------------------*/
+
+//TODO:CANNET_REFACTORING make file can_net_confirmations
 
 #ifdef CAN_NET_CONFIRMATION
 

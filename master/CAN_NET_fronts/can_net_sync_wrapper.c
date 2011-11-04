@@ -24,6 +24,7 @@ typedef struct {
 	pthread_mutex_t mutex;
 } sender_descriptor_t;
 
+// port lvl msgs buffer:
 typedef struct {
 	int msgs_num;
 	int msgs_limit;
@@ -40,7 +41,7 @@ inline void free_descr(sender_descriptor_t* descr) {
 	free(descr);
 }
 
-// should be called sooner or later, if not called - ctx memory will leak
+// should be called sooner or later, if not called - ctx memory becomes leak
 void sync_wr_send_callback(const int rc, msg_lvl2_t* msg, void* ctx) {
 	sender_descriptor_t* descr = (sender_descriptor_t*)ctx;
 	pthread_mutex_lock(&descr->mutex);
@@ -90,7 +91,7 @@ int can_net_sync_init(const uint8_t port, const int msgs_limit, const int timeou
 int can_net_sync_send(const msg_lvl2_t* msg) {
 	int rc = -1;
 	if (msg->meta.port < CAN_NET_PORT_MAX) {
-		// TODO: FIX TIMEOUT=>SEGFAULT BUG // fixed in 06.2011?
+		// TODO: FIX TIMEOUT=>SEGFAULT BUG // fixed 06.2011?
 		sender_descriptor_t* descr = (sender_descriptor_t*)malloc(sizeof(sender_descriptor_t));
 		descr->is_sending = 1;
 		descr->rc = 1;
@@ -101,35 +102,38 @@ int can_net_sync_send(const msg_lvl2_t* msg) {
 
 		int cycles_spent = 0;
 		while( ((cycles_spent < ports[msg->meta.port]->timeout_cycles) && (descr->is_sending)) ||
-				(ports[msg->meta.port]->timeout_cycles < 0) ) { // no timeout - wait forever
+				(ports[msg->meta.port]->timeout_cycles < 0) ) { // no timeout = when it's done
 			usleep(SEND_CHT_US);
 			cycles_spent++;
 		}
 		pthread_mutex_lock(&descr->mutex);
 		rc = descr->rc;
 		if (descr->is_sending) {
-			// quit because of timeout
+			// quit on timeout
 			descr->actual = 0;
 			pthread_mutex_unlock(&descr->mutex);
 		} else {
-			// quit because of callback
+			// quit on callback
 			free_descr(descr);
 		}
 	}
 	return rc;
 }
 
-// WARNING: possibly govnokod; TODO: think more
+
+// WARNING: possibly govnokod; TODO: think more - fixed?
 int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg) {
 	int rc = -1; //impossible rc
 	if ((port < CAN_NET_PORT_MAX) && (ports[port] != NULL)) {
 		msg_lvl2_t_plist* msg_pl;
 		int timeout_counter = 0;
 		while(1) {
+			// try to get msg:
 			pthread_mutex_lock(&ports_mutex);
 			msg_pl = list_pop(ports[port]->msgs);
 			pthread_mutex_unlock(&ports_mutex);
 			if (msg_pl != NULL) {
+				// quit on receiving:
 				*msg = msg_pl->it_p;
 				free(msg_pl);
 				pthread_mutex_lock(&ports_mutex);
@@ -139,6 +143,7 @@ int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg) {
 				break;
 			}
 			if ( (timeout_counter > ports[port]->timeout_cycles) && (ports[port]->timeout_cycles >= 0) ) {
+				// quit on timeout:
 				*msg = NULL;
 				rc = 1;
 				break;
@@ -149,6 +154,7 @@ int can_net_sync_recv(const uint8_t port, msg_lvl2_t** msg) {
 	}
 	return rc;
 }
+
 
 int can_net_sync_close(const uint8_t port) {
 //	TODO: can_net_core.c::38

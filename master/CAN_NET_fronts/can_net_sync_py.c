@@ -104,7 +104,7 @@ PyMODINIT_FUNC initcan_net_sync(void) {
 	PyModule_AddObject(m, "send_rc_candrv_timeout", send_rc_candrv_timeout);
 
 	PyObject * send_rc_can_drv_norm = Py_BuildValue("i", CAN_DRV_RC_NORM);
-	PyModule_AddObject(m, "send_rc_can_drv_norm", send_rc_can_drv_norm);
+	PyModule_AddObject(m, "send_rc_candrv_norm", send_rc_can_drv_norm);
 
 	PyObject * send_rc_invalid_port = Py_BuildValue("i", CAN_NET_SYNC_SEND_RC_INVALID_PORT);
 	PyModule_AddObject(m, "send_rc_invalid_port", send_rc_invalid_port);

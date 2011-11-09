@@ -1,7 +1,0 @@
-#!/bin/bash
-
-ELF=../build/at90_jtag_test/at90_jtag_test
-
-command="sudo avarice --erase --program --file $ELF --jtag /dev/ttyUSB0 -P at90can128 :4242 $1"
-echo $command
-$command

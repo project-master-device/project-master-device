@@ -1,7 +1,0 @@
-#!/bin/sh
-cd ../build
-make
-cd ..
-utils/convert_bin build/at90_jtag_test/at90_jtag_test
-
-sudo utils/upload hex/at90_jtag_test /dev/`dmesg | grep 'FTDI.*ttyUSB' | tail -1 | cut -d ' ' -f 12` at90can

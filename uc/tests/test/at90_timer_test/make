@@ -1,4 +1,0 @@
-#!/bin/sh
-cd ../build
-make $1
-cd ../at90_timer_test

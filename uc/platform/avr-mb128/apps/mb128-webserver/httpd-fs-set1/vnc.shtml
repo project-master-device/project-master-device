@@ -1,9 +1,0 @@
-%!: /header.html
-<center>
-  <applet code="vncviewer" archive="vncviewer.jar"
-	      width="480" height="400">
-	<param name="PORT" value="80">
-	  Java must be enabled in your web browser for this to work.
-  </applet>
-</center>
-%!: /footer.html

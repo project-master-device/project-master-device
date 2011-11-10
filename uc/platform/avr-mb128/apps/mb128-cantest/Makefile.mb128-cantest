@@ -1,6 +1,0 @@
-
-mb128-cantest_src = cantest-rx.c cantest-tx.c can.c can-drv.c
-#mb128-cantest_dsc = cantest-dsc.c
-
-#Tell platform main routine cantest-response is present, for parameter display at startup
-#CFLAGS             += -DCANTEST

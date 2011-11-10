@@ -1,7 +1,0 @@
-
-mb128-canconverter_src = canconverter.c can.c can-drv.c
-#mb128-canconverter_dsc = canconverter-dsc.c
-
-#Tell platform main routine canconverter is present, for parameter display at startup
-CFLAGS             += -DCANCONVERTER
-CFLAGS             += -DCAN_BAUDRATE_VARIABLE

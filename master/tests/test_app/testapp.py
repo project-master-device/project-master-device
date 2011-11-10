@@ -1,6 +1,4 @@
 #virtual test:
-#as it was 16.10.2011
-#not srsly tested yet
 
 import time
 

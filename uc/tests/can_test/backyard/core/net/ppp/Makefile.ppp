@@ -1,1 +1,0 @@
-CONTIKI_SOURCEFILES += ahdlc.c ipcp.c lcp.c pap.c ppp-service.c ppp.c ppp_process.c

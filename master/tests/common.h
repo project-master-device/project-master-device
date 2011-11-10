@@ -1,8 +1,3 @@
-/*
- * common.h
- *
- *  Created on: 25.03.2011
- */
 #ifndef COMMON_H_
 #define COMMON_H_
 

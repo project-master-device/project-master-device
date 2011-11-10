@@ -1,10 +1,3 @@
-/*
- * can_net_sync_wrapper.h
- *
- *  Created on: Jun 27, 2011
- *      Author: Gennady.Kalashnikov
- */
-
 #include "common.h"
 
 unsigned sleep_time_us = 10 * 1000; // 10ms

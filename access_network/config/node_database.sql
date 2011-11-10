@@ -1,9 +1,5 @@
+-- Authors: Sergey Gnuskov, Gennady Kalashnikov, Timofey Kirillov
 -- Creator:       MySQL Workbench 5.2.28/ExportSQLite plugin 2009.12.02
--- Author:        TripleTeam
--- Caption:       MAN
--- Project:       MAN
--- Changed:       2010-11-14 20:47
--- Created:       2010-10-09 22:58
 PRAGMA foreign_keys = OFF;
 
 -- Schema: MAN

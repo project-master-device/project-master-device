@@ -1,11 +1,4 @@
 /*
- * can_net_sync_wrapper.h
- *
- *  Created on: Jun 27, 2011
- *      Author: Gennady.Kalashnikov
- */
-
-/*
 #define CANSOCKET_LOG
 #define CANSOCKET_LOOPBACK
 #define CAN_NET_LINUX

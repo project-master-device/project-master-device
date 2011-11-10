@@ -1,7 +1,20 @@
-# x3.10.2010
-# 17.12.2010
+# Copyright (c) 2010-2011 Gennady Kalashnikov, Timofey Kirillov
+#
+# This file is part of Project Master Device.
+#
+# Project Master Device is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# Project Master Device is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with Project Master Device.  If not, see <http://www.gnu.org/licenses/>.
 
-#TODO: licence - MIT(2p)
 
 import traceback
 import thread
@@ -15,23 +28,22 @@ class AccessPoint:
     @staticmethod
     def config():
         assert 0
-    
+
     def address_list(self):
         assert 0
-    
+
     def process_msg(self, msg, recieved_device_addr):
         assert 0
-    
+
     # Check access from database for the code and the point with point_id.
     @staticmethod
     def __check_access(code, point_id):
         scripts = db.Script.select(db.AND(db.Script.q.id == db.Access.q.script, db.Access.q.user_group == db.UserGroup.q.id, db.UserGroup.q.id == db.UserGroupLink.q.user_group, db.UserGroupLink.q.user == db.User.q.id, db.User.q.id == db.EmMarineCard.q.user, db.Access.q.point_group == db.PointGroup.q.id, db.PointGroup.q.id == db.PointGroupLink.q.point_group, db.PointGroupLink.q.point == db.Point.q.id, db.EmMarineCard.q.code == code, db.Point.q.id == point_id), distinct = True)
         
         #res format : (helper_name, additional_data)
-        res = (None, None)
+        #res = (None, None)
         
         # Run each script in order.
-        # TODO:FIX_DB_STRUCT mega kostyil: script sets his priority itself!
         priority_max = -1
         priority = 0
         for script in scripts:

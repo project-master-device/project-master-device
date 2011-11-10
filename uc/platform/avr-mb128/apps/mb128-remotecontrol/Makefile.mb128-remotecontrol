@@ -1,6 +1,0 @@
-
-mb128-remotecontrol_src = remote-control.c  time-control.c adc-control.c io-control.c psock.c memb.c
-#mb128-remotecontrol_dsc = remote-control-dsc.c
-
-#Tell platform main routine remotecontrol is present, for parameter display at startup
-CFLAGS             += -DREMOTE_CONTROL

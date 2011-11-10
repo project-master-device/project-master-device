@@ -1,5 +1,3 @@
-#created 08.07.2011
-
 import pmd_net_button as button
 import pmd_net_system as system
 import pmd_net_led as led

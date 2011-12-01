@@ -1,7 +1,7 @@
 = Description =
 The goal of this project is to create hardware and software platform that allows you integrate many devices into single network and control it from simple python interface.
 
-[[File:http://github.com/project-master-device/project-master-device/blob/master/doc/img/pic_system.png]]
+http://github.com/project-master-device/project-master-device/blob/master/doc/img/pic_system.png
 
 System’s '''hardware''' consists of one master (pc or embedded board), many slaves (controllers) and wired network to connect them (Controller Area Network).
 

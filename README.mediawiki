@@ -14,7 +14,7 @@ System’s '''hardware''' consists of one master (pc or embedded board), many sl
 
 To add new device to the network, you need to provide device driver for slave and device driver for master. Driver provides device API for application, which controls the network.
 
-It can be applied for both industrial and home automation.
+Platform can be applied for both industrial and home automation.
 
 
 

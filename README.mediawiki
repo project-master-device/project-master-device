@@ -15,3 +15,41 @@ System’s '''hardware''' consists of one master (pc or embedded board), many sl
 To add new device to the network, you need to provide device driver for slave and device driver for master. Driver provides device API for application, which controls the network.
 
 It can be applied for both industrial and home automation.
+
+
+
+== Where it really stopped ==
+
+slave OS: Contiki OS
+
+=== Hardware ===
+(the one that worked last time)
+
+master: ooooold (200Mhz/32Mb RAM) ARM board
+
+slave: Atmel at90can128.
+
+
+=== Perfomance notes ===
+
+(on hardware listed higher):
+Sending commands from pure C interface:
+    delay was acceptable (undetectable with bare eye (<100ms))
+Sending same commands from python:
+    almost 500ms (need better HW for master)
+
+=== Simultaneous work of more than one app ===
+
+not supported
+
+=== Applications created ===
+
+Access Control System: not adopted for system
+Test application: nonexistent
+
+=== Bugs and bad design ===
+
+not fixed
+
+...
+))))))

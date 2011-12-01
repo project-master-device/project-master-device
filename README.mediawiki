@@ -1,7 +1,7 @@
 = Description =
 The goal of this project is to create hardware and software platform that allows you integrate many devices into single network and control it from simple python interface.
 
-pic_system.jpg
+[[File:doc/img/pic_system.png|system]]
 
 System’s '''hardware''' consists of one master (pc or embedded board), many slaves (controllers) and wired network to connect them (Controller Area Network).
 
@@ -9,9 +9,8 @@ System’s '''hardware''' consists of one master (pc or embedded board), many sl
 
 '''Slave''' runs under Contiki OS. System’s software on slave consist of two parts:
 
-1. Basic firmware part with network capabilities.
-
-2. Drivers for devices, which builds into firmware.
+#Basic firmware part with network capabilities.
+#Drivers for devices, which builds into firmware.
 
 To add new device to the network, you need to provide device driver for slave and device driver for master. Driver provides device API for application, which controls the network.
 

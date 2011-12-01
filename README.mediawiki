@@ -34,9 +34,10 @@ slave: Atmel at90can128.
 
 (on hardware listed higher):
 Sending commands from pure C interface:
-    delay was acceptable (undetectable with bare eye (<100ms))
+*delay was acceptable (undetectable with bare eye (<100ms))
+
 Sending same commands from python:
-    almost 500ms (need better HW for master)
+*almost 500ms (need better HW for master)
 
 === Simultaneous work of more than one app ===
 

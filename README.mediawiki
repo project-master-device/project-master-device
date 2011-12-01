@@ -23,9 +23,9 @@ Platform can be applied for both industrial and home automation.
 === Hardware ===
 (the one that worked last time)
 
-master: ooooold (200Mhz/32Mb RAM) ARM board
+Master: ARM926 board (AT91SAM9XE512, 200Mhz, 32Mb RAM).
 
-slave: Atmel at90can128.
+Slave: Atmel at90can128.
 
 
 === Perfomance notes ===
@@ -33,15 +33,15 @@ slave: Atmel at90can128.
 
 Sending commands from pure C interface:
 
-  delay was acceptable ( undetectable with bare eye ( <100ms ) )
+=>  delay was acceptable ( undetectable with bare eye ( <100ms ) ).
 
 Sending same commands from python:
 
-  ~500ms (need better HW for master)
+=> ~500ms (need better HW for master).
 
 === Simultaneous work of more than one app ===
 
-not supported
+Not supported.
 
 === Applications created ===
 

@@ -29,8 +29,7 @@ slave: Atmel at90can128.
 
 
 === Perfomance notes ===
-
-(on hardware listed higher):
+(on hardware listed higher)
 
 Sending commands from pure C interface:
 
@@ -46,12 +45,6 @@ not supported
 
 === Applications created ===
 
-Access Control System: not adopted for system
-Test application: nonexistent
+Access Control System: not adopted for system.
 
-=== Bugs and bad design ===
-
-not fixed
-
-...
-))))))
+Test application: nonexistent.
